@@ -95,7 +95,7 @@ GameObject:
   - component: {fileID: 4340692467272015658}
   - component: {fileID: -4399299388019068585}
   m_Layer: 0
-  m_Name: EnemyTank
+  m_Name: EnemyTankNormal
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -262,11 +262,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _targetSpeed: 1
-  _detectSpeed: 3
   _enemyScanRadius: 20
   _scanCollider: {fileID: 1505011591}
-  _scanMoveRange: 20
-  _moveDelay: 1.5
+  _scanMoveRange: 3
+  _moveDelay: 2.5
+  _staticEnemy: 0
 --- !u!1 &548672796481932956
 GameObject:
   m_ObjectHideFlags: 0
