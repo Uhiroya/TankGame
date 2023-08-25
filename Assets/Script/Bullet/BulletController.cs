@@ -7,6 +7,7 @@ public class BulletController : MonoBehaviour
 {
     [SerializeField] int _reflectCount = 1;
     [SerializeField] float _bulletSpeed = 1.0f;
+    [SerializeField] int _bulletDamege = 30;
     Rigidbody _bulletRigidbody;
     void Awake()
     {
@@ -53,9 +54,10 @@ public class BulletController : MonoBehaviour
                 Destroy(gameObject);
             }
         }
-        if (collision.transform.tag == "Tank")
+        if (collision.transform.tag == "Enemy" || collision.transform.tag == "Player")
         {
-             Destroy(gameObject);
+            collision.transform.gameObject.GetComponent<TankHelth>()?.TakeDamege(_bulletDamege);
+            Destroy(gameObject);
         }
     }
 }

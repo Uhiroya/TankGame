@@ -7,6 +7,8 @@ public class TankAction : MonoBehaviour
     [SerializeField] GameObject _bullet;
     [SerializeField] GameObject _nozzle;
     [SerializeField] Transform _burrelTransform;
+    [SerializeField] float _fireCoolTime = 1.5f;
+    private float _fireTimer = 0f;
     void Awake()
     {
         
@@ -29,10 +31,19 @@ public class TankAction : MonoBehaviour
 
     void Update()
     {
-
+        _fireTimer += Time.deltaTime;
     }
-    public void Fire()
+    public void OnFire(bool targeting)
     {
-        Instantiate(_bullet, _nozzle.transform.position, _burrelTransform.rotation);
+        if (!targeting)
+        {
+            _fireTimer = 0f;
+        }
+        if (_fireTimer > _fireCoolTime)
+        {
+            Instantiate(_bullet, _nozzle.transform.position, _burrelTransform.rotation);
+            _fireTimer = 0f;
+        }
+
     }
 }

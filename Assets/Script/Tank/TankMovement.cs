@@ -4,7 +4,7 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class TankMovement : MonoBehaviour
 {
-    [SerializeField] private Transform _barrelTranform;
+    public Transform _barrelTranform;
     [SerializeField] float _turnBarrelSpeed = 1f;
     [SerializeField] float _moveSpeed = 1f ;
     [SerializeField] float _turnMoveSpeed = 1f;

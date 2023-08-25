@@ -52,7 +52,7 @@ public class PlayerInputManager : MonoBehaviour
             _inputHorizontal = Input.GetAxis("Horizontal2");
             if (Input.GetButtonDown("Fire1"))
             {
-                _tankAction.Fire();
+                _tankAction.OnFire(true);
             }
         }
     }
