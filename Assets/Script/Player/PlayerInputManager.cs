@@ -14,46 +14,37 @@ public class PlayerInputManager : MonoBehaviour
     private float _inputVertical;
     private float _inputHorizontal;
 
-    private bool _active = false;
     void Awake()
     {
         _tankMovement = GetComponent<TankMovement>();
         _tankAction = GetComponent<TankAction>();
     }
 
-    void OnEnable()
-    {
-        _active = true;
-    }
-
-    void OnDisable()
-    {
-        _active = false;
-    }
-
-    void Start()
-    {
-        
-    }
     private void FixedUpdate()
     {
         _tankMovement.Move(_inputMoveVertical);
         _tankMovement.Turn(_inputMoveHorizontal);
         _tankMovement.BarrelTurn(_inputHorizontal);
     }
+    void OnEnable()
+    {
+        
+    }
     void Update()
     {
-        if( _active)
-        {
-            _inputMoveVertical = Input.GetAxis("Vertical");
-            _inputMoveHorizontal = Input.GetAxis("Horizontal");
+        _inputMoveVertical = Input.GetAxis("Vertical");
+        _inputMoveHorizontal = Input.GetAxis("Horizontal");
 
-            _inputVertical = Input.GetAxis("Vertical2");
-            _inputHorizontal = Input.GetAxis("Horizontal2");
-            if (Input.GetButtonDown("Fire1"))
-            {
-                _tankAction.OnFire(true);
-            }
+        _inputVertical = Input.GetAxis("Vertical2");
+        _inputHorizontal = Input.GetAxis("Horizontal2");
+        if (Input.GetButtonDown("Fire1"))
+        {
+            _tankAction.OnFire(true);
+        }
+        if (Input.GetButtonDown("Cancel"))
+        {
+            print("cancel");
+            PauseManager.Pause();
         }
     }
 }

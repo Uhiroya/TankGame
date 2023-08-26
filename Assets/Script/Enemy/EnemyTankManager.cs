@@ -14,7 +14,7 @@ public class EnemyTankManager : MonoBehaviour, IStart, IPause , ITankData
 
     void OnEnable()
     {
-
+        AddPauseScript();
     }
 
     void OnDisable()
@@ -39,7 +39,7 @@ public class EnemyTankManager : MonoBehaviour, IStart, IPause , ITankData
 
     public void Pause()
     {
-        throw new System.NotImplementedException();
+        Debug.Log("‚æ‚Î‚ê‚Ä‚ç‚Ÿ");
     }
 
     public void Resume()
@@ -50,5 +50,10 @@ public class EnemyTankManager : MonoBehaviour, IStart, IPause , ITankData
     public TankData GetTankData()
     {
         return TankData;
+    }
+
+    public void AddPauseScript()
+    {
+        PauseManager.PauseScripts.Add(this as IPause);
     }
 }
