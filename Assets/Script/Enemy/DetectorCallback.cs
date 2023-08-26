@@ -7,6 +7,7 @@ public class DetectorCallback : MonoBehaviour
 {
     [SerializeField] string _detectorTag = "";
     [SerializeField] UnityEvent<Collider> _onhit;
+    [SerializeField] UnityEvent<Collider> _onOut;
     [SerializeField] UnityEvent<Collider> _onStay;
 
     void Awake()
@@ -45,6 +46,13 @@ public class DetectorCallback : MonoBehaviour
         if (other.gameObject.tag == _detectorTag)
         {
             _onStay?.Invoke(other);
+        }
+    }
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.tag == _detectorTag)
+        {
+            _onOut?.Invoke(other);
         }
     }
 }

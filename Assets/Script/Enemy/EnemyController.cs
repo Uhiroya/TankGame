@@ -10,28 +10,29 @@ using TMPro;
 
 public class EnemyController : MonoBehaviour
 {
-    [SerializeField] float _targetSpeed = 1f;
-    [SerializeField] float _enemyScanRadius = 20f;
-    [SerializeField] SphereCollider _scanCollider;
-    [SerializeField] float _scanMoveRange = 1.0f;
-    [SerializeField] float _moveDelay = 1.0f;
-    [SerializeField] bool _staticEnemy = false ;
-    private TankMovement _tankMovement;
-    private TankAction _tankAction;
+    [SerializeField] SphereCollider _scanPlayerCollider;
+    [SerializeField] SphereCollider _scanFieldCollider;
+    [SerializeField] float _scanFieldRange = 3f;
+    TankEnemyParam _enemyParam;
+    TankMovement _tankMovement;
+    TankAction _tankAction;
     Vector3 _moveDir;
     CancellationTokenSource cts;
     bool _moveFlag = false;
+    bool _isNearField = false;
     void Awake()
     {
         _tankMovement = GetComponent<TankMovement>();
         _tankAction = GetComponent<TankAction>();
-        _scanCollider.radius = _enemyScanRadius;
+        _enemyParam = GetComponent<ITankData>().GetTankData().TankEnemyParam;
+        _scanPlayerCollider.radius = _enemyParam._enemyScanRadius;
+        _scanFieldCollider.radius = _scanFieldRange;
     }
     void OnEnable()
     {
         cts?.Dispose();
         cts = new CancellationTokenSource();
-        _moveFlag = !_staticEnemy;
+        _moveFlag = true;
         _ = AutoMover();
     }
     void OnDisable()
@@ -44,59 +45,94 @@ public class EnemyController : MonoBehaviour
     {
         cts?.Dispose();
     }
-    void Start()
-    {
+    //void OnDrawGizmos()
+    //{
+    //    var scale = transform.lossyScale.x;
+    //    var isHit = Physics.BoxCast(transform.position, Vector3.one * scale, _moveDir, out RaycastHit hit, Quaternion.identity, _enemyParam._scanMoveRange);
 
-    }
-    void Update()
-    {
-        
-    }
-    public async UniTask AutoMover()
+    //    if (isHit)
+    //    {
+    //        Gizmos.DrawRay(transform.position, transform.forward * hit.distance);
+    //        Gizmos.DrawWireCube(transform.position + transform.forward * hit.distance, Vector3.one * scale * 2);
+    //    }
+    //}
+        public async UniTask AutoMover()
     { 
         while (_moveFlag)
         {
             await Move().SuppressCancellationThrow();
-            await UniTask.Delay((int)(_moveDelay * 1000));
+            await UniTask.Delay((int)(_enemyParam._moveDelay * 1000));
         }
     }
     public async UniTask Move()
     {
-        _moveDir = Quaternion.Euler(0f, UnityEngine.Random.Range(0,360f), 0f) * transform.forward;
-        Ray ray = new Ray(transform.position, _moveDir * _scanMoveRange);
-        Debug.DrawRay(transform.position, _moveDir * _scanMoveRange, Color.green , 5f);
-        Physics.Raycast(ray, out RaycastHit hit, _scanMoveRange);
+        var randomQua = Quaternion.Euler(0f, UnityEngine.Random.Range(0, 360f), 0f);
+        _moveDir = randomQua * transform.forward * _enemyParam._scanMoveRange;
+        Ray ray = new Ray(transform.position, _moveDir );
+        Debug.DrawRay(transform.position, _moveDir, Color.green , 5f);
+        Physics.BoxCast(transform.position, Vector3.one * transform.lossyScale.x, _moveDir, out RaycastHit hit , Quaternion.identity , _enemyParam._scanMoveRange);
         try
         {
             if (hit.collider?.gameObject.tag != "Field" && hit.collider?.gameObject.tag != "Player")
             {
-
-                while (Vector3.Angle(transform.forward, _moveDir) >= 1f)
+                var previousPosition = transform.position;
+                while ((transform.position - previousPosition).magnitude < _moveDir.magnitude)
                 {
-                    if(IsInferiorAngle(transform.forward , _moveDir))
+                    if(Vector3.Angle(transform.forward, _moveDir) >= 1f)
                     {
-                        _tankMovement?.Turn(-1.0f);
+                        if (IsInferiorAngle(transform.forward, _moveDir))
+                        {
+                            _tankMovement?.Turn(-1.0f);
+                        }
+                        else
+                        {
+                            _tankMovement?.Turn(1.0f);
+                        }
                     }
-                    else
-                    {
-                        _tankMovement?.Turn(1.0f);
-                    }
-                    
+                    _tankMovement.Move(1.0f);
                     await UniTask.Yield(cancellationToken: cts.Token);
+                    if (_isNearField)
+                    {
+                        _isNearField = false;
+                        break;
+                    }
                 }
-                await transform.DOMove(transform.position + _moveDir, 1f)
-                       .ToUniTask(cancellationToken: cts.Token);
+                //while (Vector3.Angle(transform.forward, _moveDir) >= 1f)
+                //{
+                //    if(IsInferiorAngle(transform.forward , _moveDir))
+                //    {
+                //        _tankMovement?.Turn(-1.0f);
+                //    }
+                //    else
+                //    {
+                //        _tankMovement?.Turn(1.0f);
+                //    }
+
+                //    await UniTask.Yield(cancellationToken: cts.Token);
+                //}
+                //var previousPosition = transform.position;
+                //while ((transform.position - previousPosition).magnitude  <  _moveDir.magnitude )
+                //{
+                //    _tankMovement.Move(1.0f);
+                //    await UniTask.Yield(cancellationToken: cts.Token);
+                //}
             }
         }
         catch
         {
-            Debug.Log("キャンセル済み");
         }
     }
-
+    public void IsHitField(Collider field)
+    {
+        _isNearField = true;
+    }
+    public void IsOutField(Collider field)
+    {
+        _isNearField = false;
+    }
     public void DetectPlayer(Collider player)
     {
-        Physics.Raycast(transform.position , player.transform.position - transform.position, out RaycastHit hit, _enemyScanRadius);
+        Physics.Raycast(transform.position , player.transform.position - transform.position, out RaycastHit hit, _enemyParam._enemyScanRadius);
         Debug.DrawRay(transform.position, player.transform.position - transform.position, Color.red);
         if (hit.collider?.gameObject.tag == "Player")
         {
@@ -120,7 +156,7 @@ public class EnemyController : MonoBehaviour
             }
         }
     }
-     public void DetectedPlayer(Collider player)
+    public void DetectedPlayer(Collider player)
     {
         //円でサーチ
         var bullelTransform = _tankMovement._barrelTranform;
@@ -129,12 +165,12 @@ public class EnemyController : MonoBehaviour
         if (IsInferiorAngle(bullelTransform.forward, toPlayerVec))
         {
             //左回り
-            _targetSpeed = -Mathf.Abs(_targetSpeed);
+            _enemyParam._targetSpeed = -Mathf.Abs(_enemyParam._targetSpeed);
         }
         else
         {
             //右回り
-            _targetSpeed = Mathf.Abs(_targetSpeed);
+            _enemyParam._targetSpeed = Mathf.Abs(_enemyParam._targetSpeed);
         }
         var angleToPlayer = Vector3.Angle(bullelTransform.forward, toPlayerVec);
         if (angleToPlayer < 5f)
@@ -142,12 +178,12 @@ public class EnemyController : MonoBehaviour
             _tankAction.OnFire(true);
             if (angleToPlayer > 2f)
             {
-                _tankMovement.BarrelTurn(_targetSpeed);
+                _tankMovement.BarrelTurn(_enemyParam._targetSpeed);
             }
         }
         else
         {
-            _tankMovement.BarrelTurn(_targetSpeed);
+            _tankMovement.BarrelTurn(_enemyParam._targetSpeed);
             _tankAction.OnFire(false);
         }
     }

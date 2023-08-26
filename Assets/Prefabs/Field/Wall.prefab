@@ -98,7 +98,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: Wall2
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 276990139905363027, guid: 74145a1de5c4d1a49a96094c8cdfa3e4, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 74145a1de5c4d1a49a96094c8cdfa3e4, type: 3}
 --- !u!4 &5153573366499715708 stripped
 Transform:
@@ -168,7 +169,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: Wall2 (1)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 276990139905363027, guid: 74145a1de5c4d1a49a96094c8cdfa3e4, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 74145a1de5c4d1a49a96094c8cdfa3e4, type: 3}
 --- !u!4 &5153573367070425054 stripped
 Transform:
@@ -196,7 +198,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 276990139905363028, guid: 74145a1de5c4d1a49a96094c8cdfa3e4, type: 3}
       propertyPath: m_LocalScale.z
-      value: 31
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 276990139905363028, guid: 74145a1de5c4d1a49a96094c8cdfa3e4, type: 3}
       propertyPath: m_LocalPosition.x
@@ -246,7 +248,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: Wall
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 276990139905363027, guid: 74145a1de5c4d1a49a96094c8cdfa3e4, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 74145a1de5c4d1a49a96094c8cdfa3e4, type: 3}
 --- !u!4 &5153573367592927545 stripped
 Transform:
@@ -274,7 +277,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 276990139905363028, guid: 74145a1de5c4d1a49a96094c8cdfa3e4, type: 3}
       propertyPath: m_LocalScale.z
-      value: 31
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 276990139905363028, guid: 74145a1de5c4d1a49a96094c8cdfa3e4, type: 3}
       propertyPath: m_LocalPosition.x
@@ -324,7 +327,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: Wall (1)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 276990139905363027, guid: 74145a1de5c4d1a49a96094c8cdfa3e4, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 74145a1de5c4d1a49a96094c8cdfa3e4, type: 3}
 --- !u!4 &5153573368311468449 stripped
 Transform:

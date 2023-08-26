@@ -123,6 +123,25 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &98315158 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2642512349154686061, guid: 38592906e0be04d4687d913584775a65, type: 3}
+  m_PrefabInstance: {fileID: 2049067748}
+  m_PrefabAsset: {fileID: 0}
+--- !u!136 &98315169
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 98315158}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 1.3321018
+  m_Height: 1.125915
+  m_Direction: 1
+  m_Center: {x: 0.0000003874302, y: 0.06295732, z: -0.038929284}
 --- !u!1 &166091141
 GameObject:
   m_ObjectHideFlags: 0
@@ -769,7 +788,6 @@ GameObject:
   - component: {fileID: 770524079}
   - component: {fileID: 770524078}
   - component: {fileID: 770524077}
-  - component: {fileID: 770524076}
   m_Layer: 0
   m_Name: Wall (2)
   m_TagString: Field
@@ -792,22 +810,6 @@ Transform:
   m_Father: {fileID: 4812288105356088253}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!54 &770524076
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 770524074}
-  serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0
-  m_UseGravity: 0
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 126
-  m_CollisionDetection: 0
 --- !u!65 &770524077
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -937,7 +939,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 25, y: 2, z: 7}
+  m_Size: {x: 22, y: 2, z: 7}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &963194225
 GameObject:
@@ -1946,7 +1948,6 @@ GameObject:
   - component: {fileID: 3784922533133051441}
   - component: {fileID: 3784922533133051442}
   - component: {fileID: 3784922533133051443}
-  - component: {fileID: 3784922533133051447}
   m_Layer: 0
   m_Name: Wall2
   m_TagString: Field
@@ -2032,22 +2033,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!54 &3784922533133051447
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3784922533133051404}
-  serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0
-  m_UseGravity: 0
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 126
-  m_CollisionDetection: 0
 --- !u!1 &3784922534680141265
 GameObject:
   m_ObjectHideFlags: 0
@@ -2060,7 +2045,6 @@ GameObject:
   - component: {fileID: 3784922534680141292}
   - component: {fileID: 3784922534680141295}
   - component: {fileID: 3784922534680141294}
-  - component: {fileID: 3784922534680141290}
   m_Layer: 0
   m_Name: Wall (1)
   m_TagString: Field
@@ -2068,22 +2052,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!54 &3784922534680141290
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3784922534680141265}
-  serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0
-  m_UseGravity: 0
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 126
-  m_CollisionDetection: 0
 --- !u!33 &3784922534680141292
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -2236,7 +2204,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5153573368311468454, guid: 53d86322ae1550a4a8351b7891ae5161, type: 3}
+    - {fileID: 5153573367070425049, guid: 53d86322ae1550a4a8351b7891ae5161, type: 3}
+    - {fileID: 5153573366499715707, guid: 53d86322ae1550a4a8351b7891ae5161, type: 3}
+    - {fileID: 5153573367592927550, guid: 53d86322ae1550a4a8351b7891ae5161, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 53d86322ae1550a4a8351b7891ae5161, type: 3}
 --- !u!1 &8014901606203326089
 GameObject:

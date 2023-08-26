@@ -83,6 +83,86 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &2117828462855948447
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8859489294582473213}
+  - component: {fileID: 6584824293330484301}
+  - component: {fileID: 8329376171019935225}
+  m_Layer: 0
+  m_Name: FieldDetector
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8859489294582473213
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2117828462855948447}
+  m_LocalRotation: {x: -0, y: -0.92387956, z: -0, w: 0.38268343}
+  m_LocalPosition: {x: -9.553017, y: 0, z: 21.800102}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3642738412087453382}
+  m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!135 &6584824293330484301
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2117828462855948447}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 20
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &8329376171019935225
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2117828462855948447}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b3a1759f59fb9b47a56b7e98c133c4a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _detectorTag: Field
+  _onhit:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 7913675780761548068}
+        m_TargetAssemblyTypeName: EnemyController, Assembly-CSharp
+        m_MethodName: IsHitField
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  _onOut:
+    m_PersistentCalls:
+      m_Calls: []
+  _onStay:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &2935447222388067055
 GameObject:
   m_ObjectHideFlags: 0
@@ -177,12 +257,13 @@ GameObject:
   - component: {fileID: 3642738412087453382}
   - component: {fileID: 7206517098564364855}
   - component: {fileID: 4748320853959064300}
-  - component: {fileID: 1965672473321089071}
   - component: {fileID: 1377176244282891089}
   - component: {fileID: 1377176244282891090}
   - component: {fileID: 1377176244282891095}
   - component: {fileID: 1377176244282891097}
   - component: {fileID: 7913675780761548068}
+  - component: {fileID: 6146476414632103709}
+  - component: {fileID: -3439788582990442056}
   m_Layer: 0
   m_Name: EnemyTankEasy
   m_TagString: Enemy
@@ -198,7 +279,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3159610648309780855}
   m_LocalRotation: {x: 0, y: 0.92387956, z: 0, w: 0.38268343}
-  m_LocalPosition: {x: -22.17, y: -0.9999962, z: 8.66}
+  m_LocalPosition: {x: -22.17, y: 0, z: 8.66}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -209,6 +290,7 @@ Transform:
   - {fileID: 2263122849416026243}
   - {fileID: 8243142310330312659}
   - {fileID: 3396148092042765302}
+  - {fileID: 8859489294582473213}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 135, z: 0}
@@ -262,19 +344,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &1965672473321089071
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3159610648309780855}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 2, y: 1.75, z: 2}
-  m_Center: {x: 0, y: 0.1, z: 0}
 --- !u!54 &1377176244282891089
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -304,9 +373,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _barrelTranform: {fileID: 8859499715088149095}
-  _turnBarrelSpeed: 1
-  _moveSpeed: 3
-  _turnMoveSpeed: 0.2
 --- !u!114 &1377176244282891095
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -322,7 +388,6 @@ MonoBehaviour:
   _bullet: {fileID: 5634639283650341757, guid: adf5fc27cc229744db5d37b1f584e5e5, type: 3}
   _nozzle: {fileID: 8243142309346114898}
   _burrelTransform: {fileID: 8859499715088149095}
-  _fireCoolTime: 2.5
 --- !u!114 &1377176244282891097
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -337,7 +402,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _slider: {fileID: 8243142309210017152}
   _HPImage: {fileID: 8243142310641513177}
-  _maxHelth: 30
+  _immortal: 0
 --- !u!114 &7913675780761548068
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -350,12 +415,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e25d85e5897a4245a662a397af6473d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _targetSpeed: 1
-  _enemyScanRadius: 20
-  _scanCollider: {fileID: 3396148092042765300}
-  _scanMoveRange: 3
-  _moveDelay: 2.5
-  _staticEnemy: 1
+  _scanPlayerCollider: {fileID: 3396148092042765300}
+  _scanFieldCollider: {fileID: 6584824293330484301}
+  _scanFieldRange: 3
+--- !u!114 &6146476414632103709
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3159610648309780855}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea4d6fb4a28d98045952535486b13421, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TankData: {fileID: 11400000, guid: 76ae234a9c353b146898f386f6985843, type: 2}
+--- !u!136 &-3439788582990442056
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3159610648309780855}
+  m_Material: {fileID: 13400000, guid: c9b686cdcc533e84abddc144b855aeb8, type: 2}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 1.3321018
+  m_Height: 1.125915
+  m_Direction: 1
+  m_Center: {x: 0.0000003874302, y: 0.06295732, z: -0.038929284}
 --- !u!1 &3396148092042765303
 GameObject:
   m_ObjectHideFlags: 0
@@ -416,6 +505,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _detectorTag: Player
   _onhit:
+    m_PersistentCalls:
+      m_Calls: []
+  _onOut:
     m_PersistentCalls:
       m_Calls: []
   _onStay:
@@ -845,7 +937,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 0}
   m_FillRect: {fileID: 8243142310641513178}
   m_HandleRect: {fileID: 0}

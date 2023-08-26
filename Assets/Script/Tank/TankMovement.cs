@@ -5,14 +5,14 @@ using UnityEngine;
 public class TankMovement : MonoBehaviour
 {
     public Transform _barrelTranform;
-    [SerializeField] float _turnBarrelSpeed = 1f;
-    [SerializeField] float _moveSpeed = 1f ;
-    [SerializeField] float _turnMoveSpeed = 1f;
+
     private Rigidbody _rb;
+    TankMoveParam _tankMoveParam;
 
     void Awake()
     {
         _rb = GetComponent<Rigidbody>();
+        _tankMoveParam = GetComponent<ITankData>().GetTankData().TankMoveParam;
     }
 
     void OnEnable()
@@ -39,18 +39,18 @@ public class TankMovement : MonoBehaviour
 
     public void Move(float inputVertical)
     {
-        Vector3 movement = inputVertical *  transform.forward * _moveSpeed;
+        Vector3 movement = inputVertical *  transform.forward * _tankMoveParam._moveSpeed;
         _rb.velocity = movement;
     }
     public void Turn(float inputHorizontal)
     {
-        float turn = inputHorizontal * _turnMoveSpeed;
+        float turn = inputHorizontal * _tankMoveParam._turnMoveSpeed;
         Quaternion turnRotation = Quaternion.Euler(0f, turn, 0f);
         transform.rotation *= turnRotation;
     }
     public void BarrelTurn(float inputVertical)
     {
-        float turn = inputVertical * _turnBarrelSpeed;
+        float turn = inputVertical * _tankMoveParam._turnBarrelSpeed;
         Quaternion turnRotation = Quaternion.Euler(0f, turn, 0f);
         _barrelTranform.rotation *= turnRotation;
     }

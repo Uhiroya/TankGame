@@ -7,15 +7,20 @@ public class TankHelth : MonoBehaviour
 {
     [SerializeField] Slider _slider;
     [SerializeField] Image _HPImage;
-    [SerializeField] int _maxHelth = 100;
     [SerializeField] bool _immortal = false;
+    int _maxHelth;
     int _currentHelth;
-
-    void OnEnable()
+    void Awake()
     {
+        _maxHelth = GetComponent<ITankData>().GetTankData().TankHP;
         _currentHelth = _maxHelth;
         _slider.maxValue = _maxHelth;
         UpdateHelthUI();
+    }
+    void OnEnable()
+    {
+
+        
     }
 
     void OnDisable()

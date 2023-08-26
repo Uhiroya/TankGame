@@ -483,7 +483,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 0}
   m_FillRect: {fileID: 70858601}
   m_HandleRect: {fileID: 0}
@@ -589,12 +589,13 @@ GameObject:
   - component: {fileID: 4465526386372494300}
   - component: {fileID: 7743823841625657133}
   - component: {fileID: 5661107707675303926}
-  - component: {fileID: 3622034482447606163}
   - component: {fileID: 7023698139113070306}
   - component: {fileID: 7023698139113070305}
   - component: {fileID: 7023698139113070308}
   - component: {fileID: 7023698139113070314}
   - component: {fileID: 7023698139113070309}
+  - component: {fileID: -4621837695347990387}
+  - component: {fileID: -4052623351017134777}
   m_Layer: 0
   m_Name: PlayerTank
   m_TagString: Player
@@ -673,19 +674,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &3622034482447606163
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2642512349154686061}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 2, y: 1.75, z: 2}
-  m_Center: {x: 0, y: 0.1, z: 0}
 --- !u!54 &7023698139113070306
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -715,9 +703,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _barrelTranform: {fileID: 618895634568474580}
-  _turnBarrelSpeed: 1
-  _moveSpeed: 8
-  _turnMoveSpeed: 1
 --- !u!114 &7023698139113070308
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -733,7 +718,6 @@ MonoBehaviour:
   _bullet: {fileID: 5634639283650341757, guid: adf5fc27cc229744db5d37b1f584e5e5, type: 3}
   _nozzle: {fileID: 1936718049}
   _burrelTransform: {fileID: 618895634568474580}
-  _fireCoolTime: 1.5
 --- !u!114 &7023698139113070314
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -748,7 +732,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _slider: {fileID: 2072660019}
   _HPImage: {fileID: 70858602}
-  _maxHelth: 100
   _immortal: 1
 --- !u!114 &7023698139113070309
 MonoBehaviour:
@@ -762,6 +745,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e68393de5d3c2d94ebaef9525f6e4d4e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-4621837695347990387
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2642512349154686061}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7956da16389d7c4598a5c7e04533a51, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TankData: {fileID: 11400000, guid: 3b0a5105f33fb0f48b2594937fc8f149, type: 2}
+--- !u!136 &-4052623351017134777
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2642512349154686061}
+  m_Material: {fileID: 13400000, guid: c9b686cdcc533e84abddc144b855aeb8, type: 2}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 1.3321018
+  m_Height: 1.125915
+  m_Direction: 1
+  m_Center: {x: 0.0000003874302, y: 0.06295732, z: -0.038929284}
 --- !u!1 &2867080395422199797
 GameObject:
   m_ObjectHideFlags: 0

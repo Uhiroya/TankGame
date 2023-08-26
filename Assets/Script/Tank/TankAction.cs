@@ -7,11 +7,11 @@ public class TankAction : MonoBehaviour
     [SerializeField] GameObject _bullet;
     [SerializeField] GameObject _nozzle;
     [SerializeField] Transform _burrelTransform;
-    [SerializeField] float _fireCoolTime = 1.5f;
+    float _fireCoolTime;
     private float _fireTimer = 0f;
     void Awake()
     {
-        
+        _fireCoolTime = GetComponent<ITankData>().GetTankData().FireCoolTime;
     }
 
     void OnEnable()
