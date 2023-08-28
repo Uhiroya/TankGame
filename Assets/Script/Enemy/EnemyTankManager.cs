@@ -14,12 +14,15 @@ public class EnemyTankManager : MonoBehaviour, IStart, IPause , ITankData
 
     void OnEnable()
     {
-        AddPauseScript();
+        MyServiceLocator.Register(this as IPause);
+        MyServiceLocator.Register(this as IStart);
     }
 
     void OnDisable()
     {
-
+        GameManager.Instance?.DestroyEnemy();
+        MyServiceLocator.UnRegister(this as IPause);
+        MyServiceLocator.UnRegister(this as IStart);
     }
 
     void Start()
@@ -34,26 +37,26 @@ public class EnemyTankManager : MonoBehaviour, IStart, IPause , ITankData
 
     public void Active()
     {
+        print("Active CPU");
         _enemyController.enabled = true;
+    }
+    public void InActive()
+    {
+        _enemyController.enabled = false;
     }
 
     public void Pause()
     {
-        Debug.Log("‚æ‚Î‚ê‚Ä‚ç‚Ÿ");
+        _enemyController.enabled = false;
     }
 
     public void Resume()
     {
-        throw new System.NotImplementedException();
+        _enemyController.enabled = true;
     }
 
     public TankData GetTankData()
     {
         return TankData;
-    }
-
-    public void AddPauseScript()
-    {
-        PauseManager.PauseScripts.Add(this as IPause);
     }
 }

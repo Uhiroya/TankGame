@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 [RequireComponent (typeof (Rigidbody))]
-public class BulletController : MonoBehaviour
+public class BulletController : MonoBehaviour , IPause
 {
     [SerializeField] int _reflectCount = 1;
     [SerializeField] float _bulletSpeed = 1.0f;
     [SerializeField] int _bulletDamege = 30;
     Rigidbody _bulletRigidbody;
+    float _myBulletSpeed;
     void Awake()
     {
         _bulletRigidbody = GetComponent<Rigidbody> ();
@@ -16,12 +17,13 @@ public class BulletController : MonoBehaviour
 
     void OnEnable()
     {
-        
+        _myBulletSpeed = _bulletSpeed;
+        MyServiceLocator.Register<IPause>(this);
     }
 
     void OnDisable()
     {
-        
+        MyServiceLocator.UnRegister<IPause>(this);
     }
 
     void Start()
@@ -59,5 +61,15 @@ public class BulletController : MonoBehaviour
             collision.transform.gameObject.GetComponent<TankHelth>()?.TakeDamege(_bulletDamege);
             Destroy(gameObject);
         }
+    }
+    public void Pause()
+    {
+        _bulletSpeed = 0;
+        _bulletRigidbody.Sleep();
+    }
+    public void Resume()
+    {
+        _bulletRigidbody.WakeUp(); 
+        _bulletSpeed = _myBulletSpeed;
     }
 }

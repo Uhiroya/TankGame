@@ -4,4 +4,5 @@
 interface IStart 
 {
     void Active();
+    void InActive();
 }

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerInputManager : MonoBehaviour
+public class PlayerTankInputManager : MonoBehaviour
 {
     private TankMovement _tankMovement;
     private TankAction _tankAction;
@@ -13,6 +13,7 @@ public class PlayerInputManager : MonoBehaviour
     //BarrelRotation
     private float _inputVertical;
     private float _inputHorizontal;
+
 
     void Awake()
     {
@@ -34,17 +35,11 @@ public class PlayerInputManager : MonoBehaviour
     {
         _inputMoveVertical = Input.GetAxis("Vertical");
         _inputMoveHorizontal = Input.GetAxis("Horizontal");
-
         _inputVertical = Input.GetAxis("Vertical2");
         _inputHorizontal = Input.GetAxis("Horizontal2");
         if (Input.GetButtonDown("Fire1"))
         {
             _tankAction.OnFire(true);
-        }
-        if (Input.GetButtonDown("Cancel"))
-        {
-            print("cancel");
-            PauseManager.Pause();
         }
     }
 }

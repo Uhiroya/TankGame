@@ -5,21 +5,23 @@ using UnityEngine;
 public class PlayerTankManager : MonoBehaviour , IStart , IPause , ITankData
 {
     public TankData TankData;
-    PlayerInputManager _playerInputManager;
+    PlayerTankInputManager _playerInputManager;
     void Awake()
     {
-        _playerInputManager = GetComponent<PlayerInputManager>();
+        _playerInputManager = GetComponent<PlayerTankInputManager>();
         //_playerInputManager.enabled = false;
     }
 
     void OnEnable()
     {
-        AddPauseScript();
+        MyServiceLocator.Register(this as IPause);
+        MyServiceLocator.Register(this as IStart);
     }
 
     void OnDisable()
     {
-        
+        MyServiceLocator.UnRegister(this as IPause);
+        MyServiceLocator.UnRegister(this as IStart);
     }
 
     void Start()
@@ -31,27 +33,25 @@ public class PlayerTankManager : MonoBehaviour , IStart , IPause , ITankData
     {
         
     }
-
-    public void Active()
-    {
-        _playerInputManager.enabled = true;
-    }
     public TankData GetTankData()
     {
         return TankData;
     }
+    public void Active()
+    {
+        _playerInputManager.enabled = true;
+    }
+    public void InActive()
+    {
+        _playerInputManager.enabled = false;
+    }
     public void Pause()
     {
-        Debug.Log("‚æ‚Î‚ê‚Ä‚ç‚Ÿ");
+        _playerInputManager.enabled = false;
     }
 
     public void Resume()
     {
-        throw new System.NotImplementedException();
-    }
-
-    public void AddPauseScript()
-    {
-        PauseManager.PauseScripts.Add(this as IPause);
+        _playerInputManager.enabled = true;
     }
 }

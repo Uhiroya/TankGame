@@ -1,21 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.Experimental.GraphView.GraphView;
 using System.Linq;
+using UnityEngine.SceneManagement;
+using Cysharp.Threading.Tasks;
+using System.Threading;
 public class GameManager : MonoBehaviour
 {
     [SerializeField] GameObject EnemyField = null;
     static GameManager instance;
     public static GameManager Instance => instance;
     static int _enemyCount;
-    List<IStart> _takeActives = new();
-    List<IPause> _takePauses = new();
-    EnemyTankManager[] _enemies;
-    PlayerTankManager _player ;
     void Awake()
     {
-        if(instance == null)
+        if (instance == null)
         {
             instance = this;
         }
@@ -24,25 +22,21 @@ public class GameManager : MonoBehaviour
             Destroy(this);
         }
     }
+    async void Start()
+    {
+        InActiveObjects();
+        await UniTask.Delay(3000);
+        RoundStart();
+    }
     public void RoundStart()
     {
-        //_player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerTankManager>();
-        //_enemies = EnemyField.GetComponentsInChildren<EnemyTankManager>();
         _enemyCount = EnemyField.GetComponentsInChildren<EnemyTankManager>().Length;
-
-        var objs = FindObjectsOfType<GameObject>();
-        foreach (var obj in objs)
-        {
-            IStart start = obj.GetComponent<IStart>();
-            start?.Active();
-        }
-
-
+        ActiveObjects();
     }
-    public static void DestroyEnemy()
+    public void DestroyEnemy()
     {
         _enemyCount--;
-        if(_enemyCount == 0)
+        if (_enemyCount == 0)
         {
             RoundClear();
         }
@@ -50,18 +44,20 @@ public class GameManager : MonoBehaviour
     public static void RoundClear()
     {
         //クリア
+        InActiveObjects();
+        SceneManager.LoadScene("Title");
     }
     public static void GameOver()
     {
         //プレイヤーがやられた。
+        SceneManager.LoadScene("Title");
     }
-    void Start()
+    public static void ActiveObjects()
     {
-        
+        MyServiceLocator.IResolve<IStart>().OfType<IStart>().ToList().ForEach(x => x.Active());
     }
-
-    void Update()
+    public static void InActiveObjects()
     {
-        
+        MyServiceLocator.IResolve<IStart>().OfType<IStart>().ToList().ForEach(x => x.InActive());
     }
 }

@@ -56,7 +56,7 @@ public class EnemyController : MonoBehaviour
     //        Gizmos.DrawWireCube(transform.position + transform.forward * hit.distance, Vector3.one * scale * 2);
     //    }
     //}
-        public async UniTask AutoMover()
+    public async UniTask AutoMover()
     { 
         while (_moveFlag)
         {
@@ -120,6 +120,7 @@ public class EnemyController : MonoBehaviour
         }
         catch
         {
+            Debug.Log("Stop");
         }
     }
     public void IsHitField(Collider field)
@@ -132,6 +133,7 @@ public class EnemyController : MonoBehaviour
     }
     public void DetectPlayer(Collider player)
     {
+        if (!_moveFlag) return;
         Physics.Raycast(transform.position , player.transform.position - transform.position, out RaycastHit hit, _enemyParam._enemyScanRadius);
         Debug.DrawRay(transform.position, player.transform.position - transform.position, Color.red);
         if (hit.collider?.gameObject.tag == "Player")

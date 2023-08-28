@@ -14,13 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TankType: 1
   TankHP: 30
-  FireCoolTime: 1.5
+  FireCoolTime: 5
   TankMoveParam:
     _turnBarrelSpeed: 1.4
     _moveSpeed: 0
-    _turnMoveSpeed: 1
+    _turnMoveSpeed: 0.3
   TankEnemyParam:
-    _targetSpeed: 1
+    _targetSpeed: -1
     _enemyScanRadius: 20
     _scanMoveRange: 1
     _moveDelay: 0

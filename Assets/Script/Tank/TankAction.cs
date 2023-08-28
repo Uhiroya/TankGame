@@ -2,13 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TankAction : MonoBehaviour
+public class TankAction : MonoBehaviour ,IPause
 {
     [SerializeField] GameObject _bullet;
     [SerializeField] GameObject _nozzle;
     [SerializeField] Transform _burrelTransform;
     float _fireCoolTime;
     private float _fireTimer = 0f;
+    private float _pauseTimer;
     void Awake()
     {
         _fireCoolTime = GetComponent<ITankData>().GetTankData().FireCoolTime;
@@ -16,12 +17,12 @@ public class TankAction : MonoBehaviour
 
     void OnEnable()
     {
-        
+        MyServiceLocator.Register(this as IPause);
     }
 
     void OnDisable()
     {
-        
+        MyServiceLocator.UnRegister(this as IPause);
     }
 
     void Start()
@@ -45,5 +46,15 @@ public class TankAction : MonoBehaviour
             _fireTimer = 0f;
         }
 
+    }
+    
+    public void Pause()
+    {
+        _pauseTimer = _fireTimer;
+    }
+
+    public void Resume()
+    {
+        _fireTimer = _pauseTimer;
     }
 }

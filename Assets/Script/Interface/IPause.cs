@@ -4,8 +4,6 @@ using System.Xml.Serialization;
 /// </summary>
 interface IPause
 {
-    /// <summary>©g‚ğPauseManager‚É’Ç‰Á‚·‚é/// </summary>
-    void AddPauseScript();
     /// <summary>ˆê’â~‚Ì‚½‚ß‚Ìˆ—‚ğÀ‘•‚·‚é</summary>
     void Pause();
     /// <summary>ÄŠJ‚Ì‚½‚ß‚Ìˆ—‚ğÀ‘•‚·‚é</summary>
