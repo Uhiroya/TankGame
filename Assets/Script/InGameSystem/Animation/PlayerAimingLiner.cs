@@ -41,6 +41,9 @@ public class PlayerAimingLiner : MonoBehaviour
         {
             _lineRenderer.enabled = true;
             _lineRenderer.SetPosition(1, hit.point) ;
+            Vector3 RefDir = Vector3.Reflect(_lineRenderer.GetPosition(1) - _lineRenderer.GetPosition(0), hit.normal).normalized;
+            var dis = (_lineRenderer.GetPosition(1) - _lineRenderer.GetPosition(0)).magnitude;
+            _lineRenderer.SetPosition(2, hit.point + RefDir * 2f);
         }
         else
         {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 [RequireComponent (typeof (Rigidbody))]
-public class BulletController : MonoBehaviour , IPause
+public class BulletController : MonoBehaviour , IPause , IStart
 {
     [SerializeField] int _reflectCount = 1;
     [SerializeField] float _bulletSpeed = 1.0f;
@@ -22,11 +22,13 @@ public class BulletController : MonoBehaviour , IPause
     {
         _myBulletSpeed = _bulletSpeed;
         MyServiceLocator.IRegister<IPause>(this);
+        MyServiceLocator.IRegister<IStart>(this);
     }
 
     void OnDisable()
     {
         MyServiceLocator.IUnRegister<IPause>(this);
+        MyServiceLocator.IUnRegister<IStart>(this);
     }
 
     void Start()
@@ -55,7 +57,7 @@ public class BulletController : MonoBehaviour , IPause
         {
             if(_reflectCount > 0)
             {
-                Debug.Log("‚Ô‚Â‚©‚Á‚½");
+                //Debug.Log("‚Ô‚Â‚©‚Á‚½");
                 AudioManager.Instance.PlaySE(AudioManager.TankGameSoundType.reflectBullet);
                 _reflectCount -= 1;
                 Vector3 dir = Vector3.Reflect(transform.forward, collision.contacts[0].normal);
@@ -90,5 +92,14 @@ public class BulletController : MonoBehaviour , IPause
         _bulletRigidbody.WakeUp(); 
         _bulletSpeed = _myBulletSpeed;
         _trailParticleSystem.Play();
+    }
+    public void Active()
+    {
+
+    }
+
+    public void InActive()
+    {
+        Destroy(gameObject);
     }
 }

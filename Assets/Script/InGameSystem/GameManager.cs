@@ -7,14 +7,19 @@ using Cysharp.Threading.Tasks;
 using System.Threading;
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] GameObject EnemyField = null;
-    [SerializeField] float StartDelay = 3.0f;
+    /// <summary>
+    /// シングルトン、ゲームマネージャー
+    /// </summary>
     static GameManager instance;
-    public static GameManager Instance => instance;
-    public static bool ActivFlag = false;
+    [SerializeField] float StartDelay = 3.0f;
+    [SerializeField] int StageCount = 2;
+    [SerializeField] int PlayerCount = 3;
+    static int _nowStage = 1;
+    static int _breakEnemyCount = 0;
     static int _enemyCount = -1;
-    [SerializeField] static int PlayerCount = 3;
-    public static int NowPlayerCount;
+    int _nowEnemyCount = 0;
+    public static int NowPlayerCount { get; private set; }
+    public static GameManager Instance => instance;
     void Awake()
     {
         if (instance == null)
@@ -45,7 +50,7 @@ public class GameManager : MonoBehaviour
     }
     public async UniTask Initialize()
     {
-        _enemyCount = -1;
+        _nowEnemyCount = -1;
         InActiveObjects();
         //await UniTask.Delay((int)StartDelay * 1000);
         var objs = MyServiceLocator.IResolve<IAnimAwake>().OfType<IAnimAwake>().ToList();
@@ -59,17 +64,16 @@ public class GameManager : MonoBehaviour
 
     public void RoundStart()
     {
-        EnemyField = GameObject.FindWithTag("EnemyField");
-        if(EnemyField != null)
-        {
-            _enemyCount = EnemyField.GetComponentsInChildren<EnemyTankManager>().Length;
-        }
+        _enemyCount = GameObject.FindGameObjectsWithTag("Enemy").Length;
+        _nowEnemyCount = _enemyCount;
+        print($"EnemyCount : {_nowEnemyCount}");
+        _breakEnemyCount += _enemyCount;
         ActiveObjects();
     }
     public void DestroyEnemy()
     {
-        _enemyCount--;
-        if (_enemyCount == 0)
+        _nowEnemyCount--;
+        if (_nowEnemyCount == 0)
         {
             RoundClear();
         }
@@ -78,27 +82,43 @@ public class GameManager : MonoBehaviour
     {
         //クリア
         InActiveObjects();
+        _nowStage += 1;
         AudioManager.Instance.PlaySE(AudioManager.TankGameSoundType.Sucseece);
         await SceneUIManager.Instance.ClearUI();
-        SceneUIManager.Instance?.FadeAndNextStage("Stage 1");
+        if(_nowStage <= StageCount)
+        {
+            SceneUIManager.Instance?.FadeAndNextStage($"Stage {_nowStage}");
+        }
+        else
+        {
+            BackToTitle();
+        }
+        
     }
 
     public async void GameOver()
     {
         //プレイヤーがやられた。
+        _breakEnemyCount -= _enemyCount ;
         InActiveObjects();
         AudioManager.Instance.PlaySE(AudioManager.TankGameSoundType.Fail);
         await SceneUIManager.Instance.GameOverUI();
         NowPlayerCount--;
         if(NowPlayerCount == 0)
         {
-            SceneUIManager.Instance?.FadeAndNextScene("Title");
+            BackToTitle();
         }
         else
         {
-            SceneUIManager.Instance?.FadeAndNextStage("Stage 1");
+            SceneUIManager.Instance?.FadeAndNextStage($"Stage {_nowStage}");
         }
-        
+    }
+    public async void BackToTitle()
+    {
+        _nowStage = 1;
+        await SceneUIManager.Instance.ShowUpResult(_breakEnemyCount);
+        _breakEnemyCount = 0;
+        SceneUIManager.Instance?.FadeAndNextScene("Title");
     }
     public void ActiveObjects()
     {

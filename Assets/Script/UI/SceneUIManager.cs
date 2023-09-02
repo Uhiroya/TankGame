@@ -22,6 +22,9 @@ public class SceneUIManager : MonoBehaviour
     [SerializeField] Image _clearImage;
     [SerializeField] Image _gameOverImage;
     [SerializeField] Image _pauseImage;
+    [SerializeField] GameObject _resultUI;
+    [SerializeField] Image _resultImage;
+    [SerializeField] Text _resultCountText;
     [SerializeField] float _fadeTime = 0.5f;
     [SerializeField] float _startStageFade = 1.5f;
     [SerializeField] float _fadeUpTime = 0.7f;
@@ -40,7 +43,7 @@ public class SceneUIManager : MonoBehaviour
         }
         else
         {
-            Destroy(this);
+            Destroy(gameObject);
         }
     }
     private void Start()
@@ -54,7 +57,6 @@ public class SceneUIManager : MonoBehaviour
         await _fadeImage.DOFade(1, _fadeTime);
         await SceneManager.LoadSceneAsync(nextScene);
         _ = _fadeImage.DOFade(0, _fadeTime);
-        
         if (nextScene.Contains("Title"))
         {
            await GameManager.Instance.TitleInitialize();
@@ -70,16 +72,26 @@ public class SceneUIManager : MonoBehaviour
         _fadeImage.gameObject.SetActive(true);
         await _fadeImage.DOFade(1, _fadeTime);
         await SceneManager.LoadSceneAsync(nextStage);
-        _fadeImage.gameObject.SetActive(false);
         //UI‚É•¶Žš‚ð“ü‚ê‚éB
         _nextStageUI.gameObject.SetActive(true);
         _nextStageText.text = nextStage +"\n" ;
         _playerCountText.text = "~" + GameManager.NowPlayerCount.ToString() ;
         await _nextStageUIgroup.DOFade(1, _startStageFade);
+        _fadeImage.gameObject.SetActive(false);
         var task = GameManager.Instance.GameInitialize();
         await _nextStageUIgroup.DOFade(0, _startStageFade);
         await UniTask.WhenAll(task);
         _nextStageUI.gameObject.SetActive(false);
+    }
+    public async UniTask ShowUpResult(int enemyCount)
+    {
+        _resultUI.gameObject.SetActive(true);
+        await _resultCountText.DOCounter(0 , enemyCount ,1f);
+        //await UniTask.WaitUntil(() => Input.anyKey);
+        await UniTask.WaitForSeconds(2f);
+        _resultUI.GetComponent<Animator>().Play("PauseEnd");
+        await UniTask.WaitForSeconds(0.2f);
+        _resultUI.gameObject.SetActive(false);
     }
     public async UniTask StartUI()
     {
@@ -105,10 +117,9 @@ public class SceneUIManager : MonoBehaviour
     {
         _pauseImage.gameObject.SetActive(true);
     }
-    public async void Resume()
+    public void Resume()
     {
         _pauseAnim.Play("PauseEnd");
-        await UniTask.WaitForSeconds(0.2f);
         _pauseImage.gameObject.SetActive(false);
     }
 }

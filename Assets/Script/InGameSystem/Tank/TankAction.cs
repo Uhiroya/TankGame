@@ -16,6 +16,7 @@ public class TankAction : MonoBehaviour ,IPause
     private float _fireTimer;
     private float _pauseTimer;
     bool _isReloaded = true;
+    bool _isPause = false;
     void Awake()
     {
         _fireCoolTime = GetComponent<ITankData>().GetTankData().FireCoolTime;
@@ -39,7 +40,11 @@ public class TankAction : MonoBehaviour ,IPause
 
     void Update()
     {
-        _fireTimer += Time.deltaTime;
+        if(!_isPause)
+        {
+            _fireTimer += Time.deltaTime;
+        }
+        
         UpdateHelthUI();
         if (_fireTimer > _fireCoolTime -0.5f)
         {
@@ -72,11 +77,13 @@ public class TankAction : MonoBehaviour ,IPause
     }
     public void Pause()
     {
+        _isPause = true;
         _pauseTimer = _fireTimer;
     }
 
     public void Resume()
     {
+        _isPause = false;
         _fireTimer = _pauseTimer;
     }
 
