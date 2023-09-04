@@ -9,31 +9,6 @@ public class DetectorCallback : MonoBehaviour
     [SerializeField] UnityEvent<Collider> _onhit;
     [SerializeField] UnityEvent<Collider> _onOut;
     [SerializeField] UnityEvent<Collider> _onStay;
-
-    void Awake()
-    {
-        
-    }
-
-    void OnEnable()
-    {
-        
-    }
-
-    void OnDisable()
-    {
-        
-    }
-
-    void Start()
-    {
-        
-    }
-
-    void Update()
-    {
-        
-    }
     private void OnTriggerEnter(Collider other)
     {
         if(other.gameObject.tag == _detectorTag)

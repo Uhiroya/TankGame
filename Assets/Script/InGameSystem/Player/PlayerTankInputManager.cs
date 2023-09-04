@@ -25,7 +25,14 @@ public class PlayerTankInputManager : MonoBehaviour
     private void FixedUpdate()
     {
         _tankMovement.Move(_inputMoveVertical);
-        _tankMovement.Turn(_inputMoveHorizontal);
+        if(_inputMoveVertical >= 0)
+        {
+            _tankMovement.Turn(_inputMoveHorizontal);
+        }
+        else
+        {
+            _tankMovement.Turn(-_inputMoveHorizontal);
+        }
         _tankMovement.BarrelTurn(_inputHorizontal);
     }
     void OnEnable()
@@ -54,5 +61,9 @@ public class PlayerTankInputManager : MonoBehaviour
             }
             
         }
+    }
+   public void StopTankAudio()
+    {
+        _audioSource.Pause();
     }
 }

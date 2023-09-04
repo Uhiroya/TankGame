@@ -61,7 +61,6 @@ public class GameManager : MonoBehaviour
         }
         await UniTask.WhenAll(tasks);
     }
-
     public void RoundStart()
     {
         _enemyCount = GameObject.FindGameObjectsWithTag("Enemy").Length;
@@ -95,7 +94,6 @@ public class GameManager : MonoBehaviour
         }
         
     }
-
     public async void GameOver()
     {
         //プレイヤーがやられた。
@@ -127,5 +125,9 @@ public class GameManager : MonoBehaviour
     public void InActiveObjects()
     {
         MyServiceLocator.IResolve<IStart>().OfType<IStart>().ToList().ForEach(x => x.InActive());
+    }
+    public void Debug()
+    {
+        NowPlayerCount = 99;
     }
 }

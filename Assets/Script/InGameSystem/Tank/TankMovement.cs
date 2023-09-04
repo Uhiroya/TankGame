@@ -15,7 +15,6 @@ public class TankMovement : MonoBehaviour, IAnimAwake
     {
         MyServiceLocator.IRegister(this as IAnimAwake);
     }
-
     void OnDisable()
     {
         MyServiceLocator.IUnRegister(this as IAnimAwake);

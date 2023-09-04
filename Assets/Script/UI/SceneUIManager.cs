@@ -57,14 +57,7 @@ public class SceneUIManager : MonoBehaviour
         await _fadeImage.DOFade(1, _fadeTime);
         await SceneManager.LoadSceneAsync(nextScene);
         _ = _fadeImage.DOFade(0, _fadeTime);
-        if (nextScene.Contains("Title"))
-        {
-           await GameManager.Instance.TitleInitialize();
-        }
-        else
-        {
-            await GameManager.Instance.GameInitialize();
-        }
+        await GameManager.Instance.TitleInitialize();
         _fadeImage.gameObject.SetActive(false);
     }
     public async void FadeAndNextStage(string nextStage)
@@ -76,9 +69,10 @@ public class SceneUIManager : MonoBehaviour
         _nextStageUI.gameObject.SetActive(true);
         _nextStageText.text = nextStage +"\n" ;
         _playerCountText.text = "Å~" + GameManager.NowPlayerCount.ToString() ;
+        var task = GameManager.Instance.GameInitialize();
         await _nextStageUIgroup.DOFade(1, _startStageFade);
         _fadeImage.gameObject.SetActive(false);
-        var task = GameManager.Instance.GameInitialize();
+        
         await _nextStageUIgroup.DOFade(0, _startStageFade);
         await UniTask.WhenAll(task);
         _nextStageUI.gameObject.SetActive(false);

@@ -7,7 +7,6 @@ public class PlayerSystemInputManager : MonoBehaviour , IStart
 {
     private static PlayerSystemInputManager instance = null;
     bool _isActive = false;
-
     private void Awake()
     {
         if (instance == null)
@@ -35,15 +34,16 @@ public class PlayerSystemInputManager : MonoBehaviour , IStart
             PauseManager.Pause();
             if(PauseManager.IsPause)
             {
+                AudioManager.Instance._audioBGMSource.volume *= 0.25f ;
                 SceneUIManager.Instance?.Pause();
             }
             else
             {
+                AudioManager.Instance._audioBGMSource.volume *= 4f;
                 SceneUIManager.Instance?.Resume();
             }
         }
     }
-
     public void Active()
     {
         _isActive = true; 

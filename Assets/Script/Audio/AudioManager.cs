@@ -20,7 +20,6 @@ public class AudioManager : MonoBehaviour
         Fall = 9 ,
         Landing = 10,
     }
-
     public enum BGMSceneType
     {
         Title = 0, //Œ‹¥Ž®‚Ý‚½‚¢‚È‰¹Šy
@@ -31,11 +30,10 @@ public class AudioManager : MonoBehaviour
     public AudioSource _audioBGMSource;
     [SerializeField]  AudioClip[] _audioSEClips;
     [SerializeField]  AudioClip[] _audioBGMClips;
-
     public void PlaySE(TankGameSoundType soundIndex)
         => _audioSESource.PlayOneShot(_audioSEClips[(int)soundIndex]);
     public void PlaySE(int soundIndex)
-=> _audioSESource.PlayOneShot(_audioSEClips[soundIndex]);
+        => _audioSESource.PlayOneShot(_audioSEClips[soundIndex]);
     public void PlayBGM(BGMSceneType soundIndex)
     {
         _audioBGMSource.clip = _audioBGMClips[(int)soundIndex];

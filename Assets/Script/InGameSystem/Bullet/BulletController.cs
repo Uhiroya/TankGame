@@ -30,11 +30,6 @@ public class BulletController : MonoBehaviour , IPause , IStart
         MyServiceLocator.IUnRegister<IPause>(this);
         MyServiceLocator.IUnRegister<IStart>(this);
     }
-
-    void Start()
-    {
-    }
-
     void Update()
     {
         if (!PauseManager.IsPause)
@@ -42,11 +37,10 @@ public class BulletController : MonoBehaviour , IPause , IStart
             _timer += Time.time;
             if( _timer > _lifeTime)
             {
-                //Destroy(gameObject );
+                Destroy(gameObject);
             }
         }
     }
-
     private void FixedUpdate()
     {
         _bulletRigidbody.MovePosition(_bulletRigidbody.position + transform.forward * _bulletSpeed * Time.deltaTime);
@@ -95,9 +89,7 @@ public class BulletController : MonoBehaviour , IPause , IStart
     }
     public void Active()
     {
-
     }
-
     public void InActive()
     {
         Destroy(gameObject);

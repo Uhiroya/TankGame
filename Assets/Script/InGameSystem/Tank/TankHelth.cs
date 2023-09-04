@@ -15,26 +15,6 @@ public class TankHelth : MonoBehaviour
         _maxHelth = GetComponent<ITankData>().GetTankData().TankHP;
         _currentHelth = _maxHelth;
     }
-    void OnEnable()
-    {
-
-        
-    }
-
-    void OnDisable()
-    {
-        
-    }
-
-    void Start()
-    {
-    }
-
-    void Update()
-    {
-        
-    }
-
     public void TakeDamege(int Damege)
     {
         if (!_immortal)

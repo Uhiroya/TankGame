@@ -41,6 +41,7 @@ public class PlayerTankManager : MonoBehaviour , IStart , IPause , ITankData
     }
     public void Pause()
     {
+        _playerInputManager.StopTankAudio();
         _playerInputManager.enabled = false;
     }
 

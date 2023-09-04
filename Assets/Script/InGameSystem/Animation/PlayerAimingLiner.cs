@@ -7,30 +7,11 @@ public class PlayerAimingLiner : MonoBehaviour
     [SerializeField] float _cursorRange = 20f;
     private TankMovement _tankMovement;
     private LineRenderer _lineRenderer;
-    void Awake()
-    {
-        
-    }
-
-    void OnEnable()
-    {
-        
-    }
-
-    void OnDisable()
-    {
-        
-    }
-
     void Start()
     {
-
         _tankMovement = GetComponentInParent<TankMovement>();
         _lineRenderer = GetComponent<LineRenderer>();
-        
-
     }
-
     void Update()
     {
         _lineRenderer.SetPosition(0, transform.position);

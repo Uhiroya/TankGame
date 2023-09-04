@@ -22,7 +22,6 @@ public class TankAction : MonoBehaviour ,IPause
         _fireCoolTime = GetComponent<ITankData>().GetTankData().FireCoolTime;
         _slider.maxValue = _fireCoolTime;
     }
-
     void OnEnable()
     {
         MyServiceLocator.IRegister(this as IPause);
@@ -32,12 +31,6 @@ public class TankAction : MonoBehaviour ,IPause
     {
         MyServiceLocator.IUnRegister(this as IPause);
     }
-
-    void Start()
-    {
-        
-    }
-
     void Update()
     {
         if(!_isPause)

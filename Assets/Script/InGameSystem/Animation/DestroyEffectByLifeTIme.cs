@@ -10,12 +10,10 @@ public class DestroyEffectByLifeTIme : MonoBehaviour , IPause
     {
         MyServiceLocator.IRegister(this as IPause);
     }
-
     void OnDisable()
     {
         MyServiceLocator.IUnRegister(this as IPause);
     }
-
     void Update()
     {
         if (!PauseManager.IsPause)

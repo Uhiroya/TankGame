@@ -352,13 +352,13 @@ MonoBehaviour:
     FireCoolTime: 1.5
     TankMoveParam:
       _turnBarrelSpeed: 1
-      _moveSpeed: 2
+      _moveSpeed: 2.5
       _turnMoveSpeed: 1
     TankEnemyParam:
       _targetSpeed: 1
-      _enemyScanRadius: 40
-      _scanMoveRange: 3
-      _moveDelay: 0.3
+      _enemyScanRadius: 45
+      _scanMoveRange: 4
+      _moveDelay: 0.15
 --- !u!136 &-613707860683070695
 CapsuleCollider:
   m_ObjectHideFlags: 0

@@ -23,17 +23,6 @@ public class EnemyTankManager : MonoBehaviour, IStart, IPause , ITankData
         MyServiceLocator.IUnRegister(this as IPause);
         MyServiceLocator.IUnRegister(this as IStart);
     }
-
-    void Start()
-    {
-
-    }
-
-    void Update()
-    {
-
-    }
-
     public void Active()
     {
         print("Active CPU");
@@ -48,12 +37,10 @@ public class EnemyTankManager : MonoBehaviour, IStart, IPause , ITankData
     {
         _enemyController.enabled = false;
     }
-
     public void Resume()
     {
         _enemyController.enabled = true;
     }
-
     public TankData GetTankData()
     {
         return TankData;
