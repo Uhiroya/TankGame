@@ -116,7 +116,7 @@ public class GameManager : MonoBehaviour
         _nowStage = 1;
         await SceneUIManager.Instance.ShowUpResult(_breakEnemyCount);
         _breakEnemyCount = 0;
-        SceneUIManager.Instance?.FadeAndNextScene("Title");
+        SceneUIManager.Instance?.FadeAndNextScene();
     }
     public void ActiveObjects()
     {

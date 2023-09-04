@@ -39,7 +39,7 @@ public class SceneUIManager : MonoBehaviour
         {
             instance = this;
             DontDestroyOnLoad(gameObject);
-            FadeAndNextScene("Title");
+            FadeAndNextScene();
         }
         else
         {
@@ -51,11 +51,11 @@ public class SceneUIManager : MonoBehaviour
         _pauseAnim = _pauseImage.GetComponent<Animator>();
         _nextStageUIgroup = _nextStageUI.gameObject.GetComponent<CanvasGroup>();
     }
-    public async void FadeAndNextScene(string nextScene)
+    public async void FadeAndNextScene()
     {
         _fadeImage.gameObject.SetActive(true);
         await _fadeImage.DOFade(1, _fadeTime);
-        await SceneManager.LoadSceneAsync(nextScene);
+        await SceneManager.LoadSceneAsync("Title");
         _ = _fadeImage.DOFade(0, _fadeTime);
         await GameManager.Instance.TitleInitialize();
         _fadeImage.gameObject.SetActive(false);
@@ -72,7 +72,6 @@ public class SceneUIManager : MonoBehaviour
         var task = GameManager.Instance.GameInitialize();
         await _nextStageUIgroup.DOFade(1, _startStageFade);
         _fadeImage.gameObject.SetActive(false);
-        
         await _nextStageUIgroup.DOFade(0, _startStageFade);
         await UniTask.WhenAll(task);
         _nextStageUI.gameObject.SetActive(false);

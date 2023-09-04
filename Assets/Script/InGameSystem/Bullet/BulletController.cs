@@ -17,7 +17,6 @@ public class BulletController : MonoBehaviour , IPause , IStart
     {
         _bulletRigidbody = GetComponent<Rigidbody> ();
     }
-
     void OnEnable()
     {
         _myBulletSpeed = _bulletSpeed;
@@ -34,7 +33,7 @@ public class BulletController : MonoBehaviour , IPause , IStart
     {
         if (!PauseManager.IsPause)
         {
-            _timer += Time.time;
+            _timer += Time.deltaTime;
             if( _timer > _lifeTime)
             {
                 Destroy(gameObject);
