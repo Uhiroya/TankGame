@@ -540,6 +540,7 @@ MonoBehaviour:
       _enemyScanRadius: 20
       _scanMoveRange: 1
       _moveDelay: 1
+  _action: {fileID: 7023698139113070308}
 --- !u!136 &-4052623351017134777
 CapsuleCollider:
   m_ObjectHideFlags: 0

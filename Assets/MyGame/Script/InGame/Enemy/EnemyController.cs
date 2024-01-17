@@ -141,7 +141,7 @@ public class EnemyController : MonoBehaviour
         var angleToPlayer = Vector3.Angle(bullelTransform.forward, toPlayerVec);
         if (angleToPlayer < 5f)
         {
-            _tankAction.OnFire(true);
+            _tankAction.ReadyToFire();
             if (angleToPlayer > 2f)
             {
                 _tankMovement.BarrelTurn(_enemyParam._targetSpeed);
@@ -150,8 +150,6 @@ public class EnemyController : MonoBehaviour
         else
         {
             _tankMovement.BarrelTurn(_enemyParam._targetSpeed);
-            //射撃秒数をリセットする。
-            //_tankAction.OnFire(false);
         }
     }
     //二つのベクトルのなす角が時計回りか反時計かを判定　trueが反時計

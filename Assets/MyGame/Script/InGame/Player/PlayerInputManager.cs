@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,6 +8,7 @@ public class PlayerInputManager : MonoBehaviour
     private TankMovement _tankMovement;
     private TankAction _tankAction;
 
+    public event Action OnFire;
     //input
     private float _inputMoveVertical;
     private float _inputMoveHorizontal;
@@ -47,7 +49,8 @@ public class PlayerInputManager : MonoBehaviour
         _inputHorizontal = Input.GetAxis("Horizontal2");
         if (Input.GetButtonDown("Fire1"))
         {
-            _tankAction.OnFire(true);
+            OnFire?.Invoke();
+            
         }
         if (_inputMoveVertical == 0f)
         {

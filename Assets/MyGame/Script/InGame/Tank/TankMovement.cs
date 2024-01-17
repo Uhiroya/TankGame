@@ -10,7 +10,6 @@ public class TankMovement : MonoBehaviour, IAnimAwake
     public Transform BrrelTransform;
     private Rigidbody _rb;
     TankMoveParam _tankMoveParam;
-
     void OnEnable()
     {
         MyServiceLocator.IRegister(this as IAnimAwake);
@@ -28,7 +27,7 @@ public class TankMovement : MonoBehaviour, IAnimAwake
 
     public void Move(float inputVertical)
     {
-        Vector3 movement = inputVertical * transform.forward * _tankMoveParam._moveSpeed;
+        Vector3 movement = transform.forward * (inputVertical * _tankMoveParam._moveSpeed);
         _rb.velocity = movement;
     }
     public void Turn(float inputHorizontal)

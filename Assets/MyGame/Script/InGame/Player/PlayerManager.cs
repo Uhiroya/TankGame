@@ -10,20 +10,21 @@ public class PlayerManager : MonoBehaviour , IStart , IPause , ITankData
     [SerializeField] bool _immortal = false;
     public TankData TankData;
     private TankModel _model;
+    [SerializeField] private TankAction _action;
     PlayerInputManager _playerInputManager;
     
     void Awake()
     {
         _model = gameObject.AddComponent<TankModel>().Initialize(_destroyEffect, TankData.TankHP, _immortal);
         _playerInputManager = gameObject.AddComponent<PlayerInputManager>();
-
-        _model.OnDead += RegisterEvent;
+         RegisterEvent();
         //_playerInputManager.enabled = false;
     }
 
     void RegisterEvent()
     {
-        GameManager.Instance?.GameOver();
+        _model.OnDead += () => GameManager.Instance?.GameOver();
+        _playerInputManager.OnFire += () => _action.ReadyToFire();
     }
     void OnEnable()
     {

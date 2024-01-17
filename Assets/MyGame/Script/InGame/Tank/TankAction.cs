@@ -38,7 +38,7 @@ public class TankAction : MonoBehaviour ,IPause
             _fireTimer += Time.deltaTime;
         }
         
-        UpdateHelthUI();
+        UpdateReloadUI();
         if (_fireTimer > _fireCoolTime -0.5f)
         {
             if (!_isReloaded)
@@ -48,22 +48,22 @@ public class TankAction : MonoBehaviour ,IPause
             }
         }
     }
-    public void OnFire(bool targeting)
+    public void ReadyToFire()
     {
-        if (!targeting)
-        {
-            _fireTimer = 0f;
-        }
         if (_fireTimer > _fireCoolTime && !_isHitNozzle)
         {
-            _isReloaded = false;
-            Instantiate(_bullet, _nozzle.transform.position, _burrelTransform.rotation);
-            AudioManager.Instance.PlaySE(AudioManager.TankGameSoundType.Fire);
-            _fireTimer = 0f;
+            Fire();
         }
-
     }
-    public void UpdateHelthUI()
+
+    public void Fire()
+    {
+        Instantiate(_bullet, _nozzle.transform.position, _burrelTransform.rotation);
+        AudioManager.Instance.PlaySE(AudioManager.TankGameSoundType.Fire);
+        _isReloaded = false;
+        _fireTimer = 0f;
+    }
+    public void UpdateReloadUI()
     {
         _slider.value = _fireTimer;
         //FIreTimeImage.color = Color.Lerp(Color.red, Color.green, _fireCoolTime/ _fireTimer);

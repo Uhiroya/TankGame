@@ -174,7 +174,6 @@ GameObject:
   - component: {fileID: 4340692467272015650}
   - component: {fileID: 4340692467272015649}
   - component: {fileID: 4340692467272015652}
-  - component: {fileID: 4340692467272015658}
   - component: {fileID: -4399299388019068585}
   - component: {fileID: 3168279919712731350}
   - component: {fileID: -613707860683070695}
@@ -305,18 +304,6 @@ MonoBehaviour:
   _burrelTransform: {fileID: 6184232559994482196}
   _slider: {fileID: 416109169077700528}
   _isHitNozzle: 0
---- !u!114 &4340692467272015658
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 358242425953260804}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7e6c42efce0ccaa4eb0462afed07f1a5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &-4399299388019068585
 MonoBehaviour:
   m_ObjectHideFlags: 0
