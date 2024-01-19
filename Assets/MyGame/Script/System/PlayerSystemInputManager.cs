@@ -49,7 +49,7 @@ public class PlayerSystemInputManager : MonoBehaviour , IStart
         _isActive = true; 
     }
 
-    public void InActive()
+    public void DeActive()
     {
         _isActive = false;
     }

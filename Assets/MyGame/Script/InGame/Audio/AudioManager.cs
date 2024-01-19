@@ -22,9 +22,8 @@ public class AudioManager : MonoBehaviour
     }
     public enum BGMSceneType
     {
-        Title = 0, //�������݂����ȉ��y
-        InGame = 1, //�e���|�Ԃ̂���N���b�V�b�N
-        //Result = 2, //�������Ԃ̂��鉹�y
+        Title = 0, 
+        InGame = 1, 
     }
     public AudioSource _audioSESource;
     public AudioSource _audioBGMSource;
@@ -44,11 +43,10 @@ public class AudioManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
         }
         else
         {
-            Destroy(this.gameObject);
+            Destroy(this);
         }
     }
 }

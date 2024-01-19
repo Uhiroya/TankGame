@@ -7,17 +7,13 @@ using DG.Tweening;
 using Cysharp.Threading.Tasks;
 using System.Threading;
 using UnityEngine.SceneManagement;
+
 public class SceneUIManager : MonoBehaviour 
 {
-
-    private static SceneUIManager instance = null;
-    public static SceneUIManager Instance => instance;
     [SerializeField] Image _fadeImage ;
     [SerializeField] GameObject _nextStageUI;
     [SerializeField] Text _nextStageText;
-    //[SerializeField] Image _nextStageImage;
     [SerializeField] Text _playerCountText;
-    //[SerializeField] Image _playerImage;
     [SerializeField] Image _startImage;
     [SerializeField] Image _clearImage;
     [SerializeField] Image _gameOverImage;
@@ -33,13 +29,12 @@ public class SceneUIManager : MonoBehaviour
     CanvasGroup _nextStageUIgroup;
 
     Animator _pauseAnim;
+    public static SceneUIManager Instance;
     void Awake()
     {
-        if (!instance)
+        if (!Instance)
         {
-            instance = this;
-            DontDestroyOnLoad(gameObject);
-            FadeAndNextScene();
+            Instance = this;
         }
         else
         {
@@ -51,29 +46,29 @@ public class SceneUIManager : MonoBehaviour
         _pauseAnim = _pauseImage.GetComponent<Animator>();
         _nextStageUIgroup = _nextStageUI.gameObject.GetComponent<CanvasGroup>();
     }
-    public async void FadeAndNextScene()
+    public async UniTask FadeIn()
     {
         _fadeImage.gameObject.SetActive(true);
         await _fadeImage.DOFade(1, _fadeTime);
-        await SceneManager.LoadSceneAsync("Title");
-        _ = _fadeImage.DOFade(0, _fadeTime);
-        await GameManager.Instance.TitleInitialize();
+    }
+
+    public async UniTask FadeOut()
+    {
+        await  _fadeImage.DOFade(0, _fadeTime);
         _fadeImage.gameObject.SetActive(false);
     }
-    public async void FadeAndNextStage(string nextStage)
+
+    public async UniTask FadeInStageUI(string nextStage)
     {
-        _fadeImage.gameObject.SetActive(true);
-        await _fadeImage.DOFade(1, _fadeTime);
-        await SceneManager.LoadSceneAsync(nextStage);
-        //UIに文字を入れる。
         _nextStageUI.gameObject.SetActive(true);
-        _nextStageText.text = nextStage +"\n" ;
-        _playerCountText.text = "×" + GameManager.NowPlayerCount.ToString() ;
-        var task = GameManager.Instance.GameInitialize();
+        _nextStageText.text = nextStage + "\n" ;
+        _playerCountText.text = "×" + GameManager.CurrentLifeCount;
         await _nextStageUIgroup.DOFade(1, _startStageFade);
-        _fadeImage.gameObject.SetActive(false);
+    }
+
+    public async UniTask FadeOutStageUI()
+    {
         await _nextStageUIgroup.DOFade(0, _startStageFade);
-        await UniTask.WhenAll(task);
         _nextStageUI.gameObject.SetActive(false);
     }
     public async UniTask ShowUpResult(int enemyCount)
@@ -86,15 +81,15 @@ public class SceneUIManager : MonoBehaviour
         await UniTask.WaitForSeconds(0.2f);
         _resultUI.gameObject.SetActive(false);
     }
-    public async UniTask StartUI()
+    public async UniTask ShowStartText()
     {
          await FadeUpImage(_startImage);
     }
-    public async UniTask ClearUI()
+    public async UniTask ShowClearText()
     {
         await FadeUpImage(_clearImage);
     }
-    public async UniTask GameOverUI()
+    public async UniTask ShowGameOverText()
     {
         await FadeUpImage(_gameOverImage);
     }

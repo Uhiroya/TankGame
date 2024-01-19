@@ -89,7 +89,7 @@ public class BulletController : MonoBehaviour , IPause , IStart
     public void Active()
     {
     }
-    public void InActive()
+    public void DeActive()
     {
         Destroy(gameObject);
     }

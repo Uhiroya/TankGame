@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 
 public class EnemyManager : MonoBehaviour, IStart, IPause , ITankData
@@ -13,11 +14,10 @@ public class EnemyManager : MonoBehaviour, IStart, IPause , ITankData
     {
         _enemyController = GetComponent<EnemyController>();
         _model = gameObject.AddComponent<TankModel>().Initialize(_destroyEffect, TankData.TankHP);
-
         _model.OnDead += RegisterEvent;
-        //_playerInputManager.enabled = false;
+        _enemyController.enabled = false;
     }
-
+    
     void RegisterEvent()
     {
         GameManager.Instance?.DestroyEnemy();
@@ -36,10 +36,12 @@ public class EnemyManager : MonoBehaviour, IStart, IPause , ITankData
     }
     public void Active()
     {
+        if(PhotonNetwork.IsMasterClient)
+            _enemyController.enabled = true;
         print("Active CPU");
-        _enemyController.enabled = true;
+        
     }
-    public void InActive()
+    public void DeActive()
     {
         _enemyController.enabled = false;
     }

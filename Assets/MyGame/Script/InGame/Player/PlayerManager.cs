@@ -1,24 +1,25 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEditor.SceneManagement;
+﻿using Photon.Pun;
 using UnityEngine;
 
 public class PlayerManager : MonoBehaviour , IStart , IPause , ITankData 
 {
+    [SerializeField] private TankAction _action;
+    [SerializeField] private TankMovement _tankMovement;
     [SerializeField] GameObject _destroyEffect;
     [SerializeField] bool _immortal = false;
     public TankData TankData;
     private TankModel _model;
-    [SerializeField] private TankAction _action;
-    PlayerInputManager _playerInputManager;
     
+    PlayerInputManager _playerInputManager;
+    private PhotonView _photonView;
     void Awake()
     {
         _model = gameObject.AddComponent<TankModel>().Initialize(_destroyEffect, TankData.TankHP, _immortal);
+        
         _playerInputManager = gameObject.AddComponent<PlayerInputManager>();
          RegisterEvent();
-        //_playerInputManager.enabled = false;
+         _photonView = GetComponent<PhotonView>();
+        _playerInputManager.enabled = false;
     }
 
     void RegisterEvent()
@@ -38,17 +39,16 @@ public class PlayerManager : MonoBehaviour , IStart , IPause , ITankData
         MyServiceLocator.IUnRegister(this as IStart);
         
     }
-
-
-    public TankData GetTankData()
-    {
-        return TankData;
-    }
+    public TankData GetTankData() => TankData;
     public void Active()
     {
-        _playerInputManager.enabled = true;
+        if (_photonView.IsMine)
+        {
+            _playerInputManager.enabled = true;
+        }
+        
     }
-    public void InActive()
+    public void DeActive()
     {
         _playerInputManager.enabled = false;
     }

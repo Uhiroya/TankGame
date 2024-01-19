@@ -1,58 +1,64 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-using UnityEngine.SceneManagement;
 using Cysharp.Threading.Tasks;
-using System.Threading;
-public class GameManager : MonoBehaviour
+using Photon.Pun;
+using UnityEngine.SceneManagement;
+public class GameManager : MonoBehaviourPunCallbacks
 {
     /// <summary>
     /// シングルトン、ゲームマネージャー
     /// </summary>
     static GameManager instance;
     [SerializeField] float StartDelay = 3.0f;
-    [SerializeField] int StageCount = 2;
-    [SerializeField] int PlayerCount = 3;
-    static int _nowStage = 1;
-    static int _breakEnemyCount = 0;
-    static int _enemyCount = -1;
-    int _nowEnemyCount = 0;
-    public static int NowPlayerCount { get; private set; }
-    public static GameManager Instance => instance;
+    [SerializeField] int StageCount = 2; 
+    [SerializeField] int LifeCount = 3;
+    static int _currentStage = 1;
+    static int _sumBreakCount = 0;
+    static int _maxEnemyCount = -1;
+    int _currentEnemyCount = 0;
+    public static int CurrentLifeCount { get; private set; }
+    public static bool IsNetworking = false;
+    public static GameManager Instance;
     void Awake()
     {
-        if (instance == null)
+        if (Instance == null)
         {
-            instance = this;
+            Instance = this;
             DontDestroyOnLoad(gameObject);
         }
         else
         {
-            Destroy(gameObject);
+            Destroy(this);
         }
     }
-    public async UniTask TitleInitialize()
+    [PunRPC]
+    public async UniTask StartTitle()
     {
-        NowPlayerCount = PlayerCount;
+        CurrentLifeCount = LifeCount;
         AudioManager.Instance.PlaySE(AudioManager.TankGameSoundType.Fall);
         await Initialize();
         AudioManager.Instance.PlaySE(AudioManager.TankGameSoundType.Landing);
-        ActiveObjects();
+        ActivateObjects();
     }
-    public async UniTask GameInitialize()
+    [PunRPC]
+    public async UniTask StartGame()
     {
         AudioManager.Instance.PlaySE(AudioManager.TankGameSoundType.SceneChange);
         await Initialize();
         AudioManager.Instance.PlaySE(AudioManager.TankGameSoundType.Start);
-        await SceneUIManager.Instance.StartUI();
+        await SceneUIManager.Instance.ShowStartText();
         RoundStart();
     }
     public async UniTask Initialize()
     {
-        _nowEnemyCount = -1;
-        InActiveObjects();
-        //await UniTask.Delay((int)StartDelay * 1000);
+        _currentEnemyCount = -1;
+        DeActivateObjects();
+        await InitializeObjects();
+    }
+    async UniTask InitializeObjects()
+    {
         var objs = MyServiceLocator.IResolve<IAnimAwake>().OfType<IAnimAwake>().ToList();
         List<UniTask> tasks = new List<UniTask>();
         foreach (var obj in objs)
@@ -63,16 +69,15 @@ public class GameManager : MonoBehaviour
     }
     public void RoundStart()
     {
-        _enemyCount = GameObject.FindGameObjectsWithTag("Enemy").Length;
-        _nowEnemyCount = _enemyCount;
-        print($"EnemyCount : {_nowEnemyCount}");
-        _breakEnemyCount += _enemyCount;
-        ActiveObjects();
+        _maxEnemyCount = GameObject.FindGameObjectsWithTag("Enemy").Length;
+        _currentEnemyCount = _maxEnemyCount;
+        _sumBreakCount += _maxEnemyCount;
+        ActivateObjects();
     }
     public void DestroyEnemy()
     {
-        _nowEnemyCount--;
-        if (_nowEnemyCount == 0)
+        _currentEnemyCount--;
+        if (_currentEnemyCount == 0)
         {
             RoundClear();
         }
@@ -80,13 +85,13 @@ public class GameManager : MonoBehaviour
     public async void RoundClear()
     {
         //クリア
-        InActiveObjects();
-        _nowStage += 1;
+        DeActivateObjects();
+        _currentStage += 1;
         AudioManager.Instance.PlaySE(AudioManager.TankGameSoundType.Sucseece);
-        await SceneUIManager.Instance.ClearUI();
-        if(_nowStage <= StageCount)
+        await SceneUIManager.Instance.ShowClearText();
+        if(_currentStage <= StageCount)
         {
-            SceneUIManager.Instance?.FadeAndNextStage($"Stage {_nowStage}");
+            await GoNextStage($"Stage {_currentStage}");
         }
         else
         {
@@ -94,40 +99,48 @@ public class GameManager : MonoBehaviour
         }
         
     }
+
+    public async UniTask GoNextStage(string nextStage)
+    {
+        _ = SceneUIManager.Instance.FadeIn();
+        await SceneUIManager.Instance.FadeInStageUI(nextStage);
+        await SceneManager.LoadSceneAsync(nextStage);
+        _ = SceneUIManager.Instance.FadeOutStageUI();
+        await SceneUIManager.Instance.FadeOut();
+    }
     public async void GameOver()
     {
-        //プレイヤーがやられた。
-        _breakEnemyCount -= _enemyCount ;
-        InActiveObjects();
+        _sumBreakCount -= _maxEnemyCount ;
+        DeActivateObjects();
         AudioManager.Instance.PlaySE(AudioManager.TankGameSoundType.Fail);
-        await SceneUIManager.Instance.GameOverUI();
-        NowPlayerCount--;
-        if(NowPlayerCount == 0)
+        await SceneUIManager.Instance.ShowGameOverText();
+        CurrentLifeCount--;
+        if(CurrentLifeCount == 0)
         {
             BackToTitle();
         }
         else
         {
-            SceneUIManager.Instance?.FadeAndNextStage($"Stage {_nowStage}");
+            await GoNextStage($"Stage {_currentStage}");
         }
     }
     public async void BackToTitle()
     {
-        _nowStage = 1;
-        await SceneUIManager.Instance.ShowUpResult(_breakEnemyCount);
-        _breakEnemyCount = 0;
-        SceneUIManager.Instance?.FadeAndNextScene();
+        _currentStage = 1;
+        await SceneUIManager.Instance.ShowUpResult(_sumBreakCount);
+        _sumBreakCount = 0;
+        SceneUIManager.Instance?.FadeIn();
     }
-    public void ActiveObjects()
+    public void ActivateObjects()
     {
         MyServiceLocator.IResolve<IStart>().OfType<IStart>().ToList().ForEach(x => x.Active());
     }
-    public void InActiveObjects()
+    public void DeActivateObjects()
     {
-        MyServiceLocator.IResolve<IStart>().OfType<IStart>().ToList().ForEach(x => x.InActive());
+        MyServiceLocator.IResolve<IStart>().OfType<IStart>().ToList().ForEach(x => x.DeActive());
     }
     public void Debug()
     {
-        NowPlayerCount = 99;
+        CurrentLifeCount = 99;
     }
 }

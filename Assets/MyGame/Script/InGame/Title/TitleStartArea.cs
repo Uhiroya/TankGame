@@ -46,7 +46,7 @@ public class TitleStartArea : MonoBehaviour
             _startSlider.value += Time.deltaTime;
             if( !_done && _startSlider.value >= _startSlider.maxValue)
             {
-                SceneUIManager.Instance.FadeAndNextStage( _nextScene );
+                GameManager.Instance.GoNextStage( _nextScene );
                 _done = true;
                 //SceneManager.LoadScene( _nextScene );
             }

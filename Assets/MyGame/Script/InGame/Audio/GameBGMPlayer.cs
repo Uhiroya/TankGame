@@ -24,7 +24,7 @@ public class GameBGMPlayer : MonoBehaviour , IStart
     {
         AudioManager.Instance.PlayBGM(_bgmType);
     }
-    public void InActive()
+    public void DeActive()
     {
         AudioManager.Instance._audioBGMSource?.Stop();
     }
