@@ -9,30 +9,6 @@ public class TitleStartArea : MonoBehaviour
     [SerializeField] Slider _startSlider;
     [SerializeField] string _nextScene;
     bool _done = false;
-    void Awake()
-    {
-        
-    }
-
-    void OnEnable()
-    {
-        
-    }
-
-    void OnDisable()
-    {
-        
-    }
-
-    void Start()
-    {
-        
-    }
-
-    void Update()
-    {
-        
-    }
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "Player")

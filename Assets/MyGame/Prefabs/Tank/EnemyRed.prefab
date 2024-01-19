@@ -178,6 +178,7 @@ GameObject:
   - component: {fileID: 3168279919712731350}
   - component: {fileID: -613707860683070695}
   - component: {fileID: 4511576773086303523}
+  - component: {fileID: 1978459458}
   m_Layer: 0
   m_Name: EnemyRed
   m_TagString: Enemy
@@ -286,6 +287,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bfd3ef245221fa34ca582c592b281066, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _startPositionY: 50
   BrrelTransform: {fileID: 6184232559994482196}
 --- !u!114 &4340692467272015652
 MonoBehaviour:
@@ -311,7 +313,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 358242425953260804}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9e25d85e5897a4245a662a397af6473d, type: 3}
   m_Name: 
@@ -335,7 +337,7 @@ MonoBehaviour:
   TankData:
     TankType: 3
     TankHP: 100
-    FireCoolTime: 2.5
+    FireCoolTime: 1.5
     TankMoveParam:
       _turnBarrelSpeed: 1
       _moveSpeed: 2
@@ -375,6 +377,28 @@ MonoBehaviour:
   _rightBackWheel: {fileID: 8941419961818861956}
   _trailObject: {fileID: 7094270856313174126, guid: 01a7aeab98b4b5b4aa06d8a347285207, type: 3}
   _makeTrailDistance: 0.35
+--- !u!114 &1978459458
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 358242425953260804}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 1
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &548672796481932956
 GameObject:
   m_ObjectHideFlags: 0

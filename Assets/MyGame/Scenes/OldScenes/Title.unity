@@ -1596,6 +1596,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -8016641955402862827, guid: 38592906e0be04d4687d913584775a65, type: 3}
+      propertyPath: sceneViewId
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: -4621837695347990387, guid: 38592906e0be04d4687d913584775a65, type: 3}
       propertyPath: _immortal
       value: 1
@@ -1962,6 +1966,10 @@ PrefabInstance:
     - target: {fileID: -4399299388019068585, guid: 701cb9e513f49d54cb7c9f72cdda7d4a, type: 3}
       propertyPath: _moveDelay
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1978459458, guid: 701cb9e513f49d54cb7c9f72cdda7d4a, type: 3}
+      propertyPath: sceneViewId
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 358242425953260804, guid: 701cb9e513f49d54cb7c9f72cdda7d4a, type: 3}
       propertyPath: m_Name

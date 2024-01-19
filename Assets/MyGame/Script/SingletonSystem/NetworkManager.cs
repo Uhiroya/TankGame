@@ -22,8 +22,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks // Photon Realtime 用�
         if (Instance == null)
         {
             Instance = this;
-            PhotonNetwork.SendRate = 165;
-            PhotonNetwork.SerializationRate = 330;
             PhotonNetwork.AutomaticallySyncScene = false;
         }
         else
@@ -35,6 +33,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks // Photon Realtime 用�
     private void Start()
     {
         // Photon に接続する
+
         Connect("1.0"); // 1.0 はバージョン番号（同じバージョンを指定したクライアント同士が接続できる）
     }
 
@@ -43,8 +42,15 @@ public class NetworkManager : MonoBehaviourPunCallbacks // Photon Realtime 用�
     /// </summary>
     private void Connect(string gameVersion)
     {
+
         if (PhotonNetwork.IsConnected == false)
         {
+            if (_maxPlayer == 1)
+            {
+                PhotonNetwork.Disconnect();
+                PhotonNetwork.OfflineMode = true;
+                return;
+            }
             PhotonNetwork.GameVersion = gameVersion;    // 同じバージョンを指定したもの同士が接続できる
             PhotonNetwork.ConnectUsingSettings();
         }
@@ -107,15 +113,18 @@ public class NetworkManager : MonoBehaviourPunCallbacks // Photon Realtime 用�
     /// <summary>
     /// プレイヤーを生成する
     /// </summary>
-    public async void SpawnPlayer()
+    public void SpawnPlayer()
     {
-        if(_spawnPositions == null)
-            _spawnPositions = GameObject.FindGameObjectWithTag("SpawnPoint").GetComponentsInChildren<Transform>();
+        _spawnPositions = GameObject.FindGameObjectWithTag("SpawnPoint").GetComponentsInChildren<Transform>();
         // プレイヤーをどこに spawn させるか決める
         int actorNumber = PhotonNetwork.LocalPlayer.ActorNumber;    // 自分の ActorNumber を取得する。なお ActorNumber は「1から」入室順に振られる。
 
         if (_playerPrefabName.Length > 0)
         {
+            if (PhotonNetwork.OfflineMode)
+            {
+                actorNumber = 1;
+            }//ソロモード
             //Debug.Log("My ActorNumber: " + actorNumber);
             Transform spawnPoint = _spawnPositions[actorNumber];
             // プレイヤーを生成し、他のクライアントと同期する
@@ -127,14 +136,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks // Photon Realtime 用�
          * 部屋を閉じないと、最大人数から減った時に次のユーザーが入ってきてしまう。
          * 現状のコードではユーザーが最大人数から減った際の追加入室を考慮していないため、追加入室させたい場合はプログラムを変更する必要がある。
          * **************************************************/
-        if (actorNumber > PhotonNetwork.CurrentRoom.MaxPlayers - 1)
-        {
-            //Debug.Log("Closing Room");
-            PhotonNetwork.CurrentRoom.IsOpen = false;
-            await UniTask.Delay(1000);
-            photonView.RPC(nameof(GameManager.Instance.StartTitle) , RpcTarget.All);
-            
-        }
+
     }
     /* ***********************************************
      * 
@@ -147,6 +149,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks // Photon Realtime 用�
     {
         //Debug.Log("OnConnected");
         SetMyNickName(System.Environment.UserName + "@" + System.Environment.MachineName);
+        
     }
 
     /// <summary>Photon との接続が切れた時</summary>
@@ -159,7 +162,15 @@ public class NetworkManager : MonoBehaviourPunCallbacks // Photon Realtime 用�
     public override void OnConnectedToMaster()
     {
         //Debug.Log("OnConnectedToMaster");
-        JoinLobby();
+        if (PhotonNetwork.OfflineMode)
+        {
+            PhotonNetwork.JoinRoom("SoloRoom");
+        }
+        else
+        {
+            JoinLobby();
+        }
+        
     }
 
     /// <summary>ロビーに参加した時</summary>
@@ -167,6 +178,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks // Photon Realtime 用�
     {
         //Debug.Log("OnJoinedLobby");
         JoinExistingRoom();
+        
     }
 
     /// <summary>ロビーから出た時</summary>
@@ -188,10 +200,16 @@ public class NetworkManager : MonoBehaviourPunCallbacks // Photon Realtime 用�
     }
 
     /// <summary>部屋に入室した時</summary>
-    public override void OnJoinedRoom()
+    public async override void OnJoinedRoom()
     {
         //Debug.Log("OnJoinedRoom");
-        SpawnPlayer();
+        if ( PhotonNetwork.LocalPlayer.ActorNumber > PhotonNetwork.CurrentRoom.MaxPlayers - 1)
+        {
+            PhotonNetwork.CurrentRoom.IsOpen = false;
+            await UniTask.Delay(1000);
+            photonView.RPC(nameof(GameManager.Instance.StartTitle) , RpcTarget.All);
+        }
+        
     }
 
     /// <summary>指定した部屋への入室に失敗した時</summary>

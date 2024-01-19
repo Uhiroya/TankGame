@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using Photon.Pun;
+using Unity.VisualScripting;
 using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviourPunCallbacks
 {
@@ -11,6 +12,8 @@ public class GameManager : MonoBehaviourPunCallbacks
     /// シングルトン、ゲームマネージャー
     /// </summary>
     static GameManager instance;
+
+    [SerializeField] private string _titleScene;
     [SerializeField] float StartDelay = 3.0f;
     [SerializeField] int StageCount = 2; 
     [SerializeField] int LifeCount = 3;
@@ -26,11 +29,13 @@ public class GameManager : MonoBehaviourPunCallbacks
         if (Instance == null)
         {
             Instance = this;
+            var photon = gameObject.AddComponent<PhotonView>();
+            photon.ViewID = 1;
             DontDestroyOnLoad(gameObject);
         }
         else
         {
-            Destroy(this);
+            Destroy(this.gameObject);
         }
     }
     [PunRPC]
@@ -54,8 +59,10 @@ public class GameManager : MonoBehaviourPunCallbacks
     public async UniTask Initialize()
     {
         _currentEnemyCount = -1;
+        NetworkManager.Instance.SpawnPlayer();
         DeActivateObjects();
         await InitializeObjects();
+        
     }
     async UniTask InitializeObjects()
     {
@@ -107,6 +114,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         await SceneManager.LoadSceneAsync(nextStage);
         _ = SceneUIManager.Instance.FadeOutStageUI();
         await SceneUIManager.Instance.FadeOut();
+        _ = StartGame();
     }
     public async void GameOver()
     {
@@ -129,7 +137,10 @@ public class GameManager : MonoBehaviourPunCallbacks
         _currentStage = 1;
         await SceneUIManager.Instance.ShowUpResult(_sumBreakCount);
         _sumBreakCount = 0;
-        SceneUIManager.Instance?.FadeIn();
+        await SceneUIManager.Instance.FadeIn();
+        await SceneManager.LoadSceneAsync(_titleScene);
+        _ = SceneUIManager.Instance.FadeOut();
+        _ = StartTitle();
     }
     public void ActivateObjects()
     {
