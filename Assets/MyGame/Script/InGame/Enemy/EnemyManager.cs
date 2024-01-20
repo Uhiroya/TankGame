@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Photon.Pun;
 using UnityEngine;
 
-public class EnemyManager : MonoBehaviour, IStart, IPause , ITankData
+public class EnemyManager : MonoBehaviourPunCallbacks, IStart, IPause , ITankData
 {
     [SerializeField] private GameObject _destroyEffect;
     public TankData TankData;
@@ -19,9 +19,16 @@ public class EnemyManager : MonoBehaviour, IStart, IPause , ITankData
     }
     
     void RegisterEvent()
+    { 
+        photonView.RPC(nameof(TryDestroy) , RpcTarget.AllViaServer);
+    }
+    [PunRPC]
+    void TryDestroy()
     {
-        GameManager.Instance?.DestroyEnemy();
-        Destroy(this.gameObject);
+        if (PhotonNetwork.IsMasterClient) 
+            MasterGameManager.Instance.OnDestroyEnemy();
+        if(this) 
+            Destroy(this.gameObject);
     }
     void OnEnable()
     {

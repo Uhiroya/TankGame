@@ -5,13 +5,15 @@ using UnityEngine;
 using ExitGames.Client.Photon;
 using Photon.Pun;
 using Photon.Realtime;
+using UnityEngine.Serialization;
+
 /// <summary>
 /// Photon に接続するためのコンポーネント
 /// </summary>
 
 public class NetworkManager : MonoBehaviourPunCallbacks // Photon Realtime 用のクラスを継承する
 {
-    [SerializeField] private int _maxPlayer = 2;
+    public int MaxPlayer = 2;
     /// <summary>プレイヤーのプレハブの名前</summary>
     [SerializeField] string _playerPrefabName = "Prefab";
     /// <summary>プレイヤーを生成する場所を示すアンカーのオブジェクト</summary>
@@ -42,10 +44,9 @@ public class NetworkManager : MonoBehaviourPunCallbacks // Photon Realtime 用�
     /// </summary>
     private void Connect(string gameVersion)
     {
-
         if (PhotonNetwork.IsConnected == false)
         {
-            if (_maxPlayer == 1)
+            if (MaxPlayer == 1)
             {
                 PhotonNetwork.Disconnect();
                 PhotonNetwork.OfflineMode = true;
@@ -105,7 +106,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks // Photon Realtime 用�
              * MaxPlayers の型は byte なのでキャストしている。
              * MaxPlayers の型が byte である理由はおそらく1ルームのプレイ人数を255人に制限したいため
              * **************************************************/
-            roomOptions.MaxPlayers = _maxPlayer;
+            roomOptions.MaxPlayers = MaxPlayer;
             PhotonNetwork.CreateRoom(null, roomOptions); // ルーム名に null を指定するとランダムなルーム名を付ける
         }
     }
@@ -113,6 +114,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks // Photon Realtime 用�
     /// <summary>
     /// プレイヤーを生成する
     /// </summary>
+    [PunRPC]
     public void SpawnPlayer()
     {
         _spawnPositions = GameObject.FindGameObjectWithTag("SpawnPoint").GetComponentsInChildren<Transform>();
@@ -125,19 +127,13 @@ public class NetworkManager : MonoBehaviourPunCallbacks // Photon Realtime 用�
             {
                 actorNumber = 1;
             }//ソロモード
-            //Debug.Log("My ActorNumber: " + actorNumber);
             Transform spawnPoint = _spawnPositions[actorNumber];
-            // プレイヤーを生成し、他のクライアントと同期する
-            GameObject player = PhotonNetwork.Instantiate(_playerPrefabName, spawnPoint.position, spawnPoint.rotation);
-        }   // プレイヤープレハブ名が空白の時はプレイヤーを生成しない
-
-        /* **************************************************
-         * ルームに参加している人数が最大に達したら部屋を閉じる（参加を締め切る）
-         * 部屋を閉じないと、最大人数から減った時に次のユーザーが入ってきてしまう。
-         * 現状のコードではユーザーが最大人数から減った際の追加入室を考慮していないため、追加入室させたい場合はプログラムを変更する必要がある。
-         * **************************************************/
-
+            PhotonNetwork.Instantiate(_playerPrefabName, spawnPoint.position, spawnPoint.rotation);
+        }   
     }
+
+    public bool IsRoomPlayerAllConnected()
+        => PhotonNetwork.CurrentRoom.PlayerCount == PhotonNetwork.CurrentRoom.MaxPlayers;
     /* ***********************************************
      * 
      * これ以降は Photon の Callback メソッド
@@ -203,11 +199,12 @@ public class NetworkManager : MonoBehaviourPunCallbacks // Photon Realtime 用�
     public async override void OnJoinedRoom()
     {
         //Debug.Log("OnJoinedRoom");
+        
         if ( PhotonNetwork.LocalPlayer.ActorNumber > PhotonNetwork.CurrentRoom.MaxPlayers - 1)
         {
+            photonView.RPC(nameof(MasterGameManager.Instance.InitializeGame),RpcTarget.MasterClient);
             PhotonNetwork.CurrentRoom.IsOpen = false;
-            await UniTask.Delay(1000);
-            photonView.RPC(nameof(GameManager.Instance.StartTitle) , RpcTarget.All);
+            //await UniTask.Delay(3000);
         }
         
     }

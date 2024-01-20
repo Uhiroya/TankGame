@@ -17,27 +17,42 @@ public class PlayerManager : MonoBehaviour , IStart , IPause , ITankData
         _model = gameObject.AddComponent<TankModel>().Initialize(_destroyEffect, TankData.TankHP, _immortal);
         
         _playerInputManager = gameObject.AddComponent<PlayerInputManager>();
-         RegisterEvent();
          _photonView = GetComponent<PhotonView>();
         _playerInputManager.enabled = false;
     }
 
     void RegisterEvent()
     {
-        _model.OnDead += () => GameManager.Instance?.GameOver();
-        _playerInputManager.OnFire += () => _action.ReadyToFire();
+        _model.OnDead += PlayerDead;
+        _playerInputManager.OnFire += ReadyToFire;
     }
+    void UnRegisterEvent()
+    {
+        _model.OnDead -= PlayerDead;
+        _playerInputManager.OnFire -= ReadyToFire;
+    }
+
+    void PlayerDead()
+    {
+        if (_photonView.IsMine)
+        {
+            LocalGameManager.Instance?.OnPlayerDead();
+        }
+    } 
+    void ReadyToFire() => _action.ReadyToFire();
     void OnEnable()
     {
+        print("準備かんりょう");
+        LocalGameManager.Instance.OnPlayerLoaded();
+        RegisterEvent();
         MyServiceLocator.IRegister(this as IPause);
         MyServiceLocator.IRegister(this as IStart);
     }
-
     void OnDisable()
     {
+        UnRegisterEvent();
         MyServiceLocator.IUnRegister(this as IPause);
         MyServiceLocator.IUnRegister(this as IStart);
-        
     }
     public TankData GetTankData() => TankData;
     public void Active()

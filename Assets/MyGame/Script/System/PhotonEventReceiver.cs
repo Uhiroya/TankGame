@@ -20,11 +20,17 @@ public class PhotonEventReceiver : MonoBehaviourPunCallbacks, IOnEventCallback
     /// <param name="e">イベントデータ</param>
     void IOnEventCallback.OnEvent(EventData eventData)
     {
-        switch (eventData.Code)
+        switch ((MyPhotonEvent)eventData.Code)
         {
-            case 1://GameStart
-                GameManager.Instance.StartGame();
+            case MyPhotonEvent.SpawnPlayer://GameStart
+                NetworkManager.Instance.SpawnPlayer();
                 break;
         }
     }
+}
+
+public enum MyPhotonEvent
+{
+    SpawnPlayer = 1,
+    Ready = 2 ,
 }

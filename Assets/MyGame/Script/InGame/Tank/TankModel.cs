@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 public class TankModel : MonoBehaviour
 {
+    
     GameObject _destroyEffect;
     public event Action OnDead;
     private bool _immortal;
@@ -13,6 +14,7 @@ public class TankModel : MonoBehaviour
     int _currentHP;
     public TankModel Initialize(GameObject destroyEffect , int maxHP ,bool immortal = false)
     {
+        
         _destroyEffect = destroyEffect;
         _maxHP = maxHP;
         _currentHP = maxHP;

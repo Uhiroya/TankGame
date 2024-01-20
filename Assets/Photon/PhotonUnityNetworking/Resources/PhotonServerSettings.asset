@@ -47,6 +47,27 @@ MonoBehaviour:
   - PunBarrelTurn
   - PunMove
   - PunTurn
+  - SpawnPlayer
+  - InitializeObjects
+  - TryDestroy
+  - DestroyEnemy
+  - SynchronizeGoNextStage
+  - RoundClear
+  - ReadyPlayer
+  - GoNextStage
+  - PlayerDead
+  - PlayerJoin
+  - Ready
+  - IsReady
+  - Wait
+  - CheckReady
+  - BackToTitle
+  - GameOver
+  - OnDestroyEnemy
+  - OnPlayerDead
+  - StartTitleSynclonize
+  - StartTitles
+  - StartGames
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

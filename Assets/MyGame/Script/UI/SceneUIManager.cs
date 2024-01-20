@@ -62,7 +62,7 @@ public class SceneUIManager : MonoBehaviour
     {
         _nextStageUI.gameObject.SetActive(true);
         _nextStageText.text = nextStage + "\n" ;
-        _playerCountText.text = "×" + GameManager.CurrentLifeCount;
+        _playerCountText.text = "×" + LocalGameManager.CurrentLifeCount;
         await _nextStageUIgroup.DOFade(1, _startStageFade);
     }
 
