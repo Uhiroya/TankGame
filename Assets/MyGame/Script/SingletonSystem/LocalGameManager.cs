@@ -33,8 +33,19 @@ public class LocalGameManager : MonoBehaviourPunCallbacks
     {
         IsReady = false;
     }
-
-    
+/// <summary>
+/// 初回起動時または、シーンチェンジ後に
+/// Punで生成されているPlayerが共有された後OnEnabledが呼ばれた際にロード済みにして、
+/// 最大数になったら準備完了を伝える。
+/// </summary>
+    public void OnPlayerLoaded()
+    {
+        _loadedPlayer++;
+        if (_loadedPlayer == NetworkManager.Instance.MaxPlayer)
+        {
+            photonView.RPC(nameof(MasterGameManager.Instance.CheckReady) , RpcTarget.MasterClient , PhotonNetwork.LocalPlayer.ActorNumber);
+        }
+    }
     private void Awake()
     {
         if (Instance == null)
@@ -80,14 +91,7 @@ public class LocalGameManager : MonoBehaviourPunCallbacks
 
 
     
-    public void OnPlayerLoaded()
-    {
-        _loadedPlayer++;
-        if (_loadedPlayer == NetworkManager.Instance.MaxPlayer)
-        {
-            photonView.RPC(nameof(MasterGameManager.Instance.CheckReady) , RpcTarget.MasterClient , PhotonNetwork.LocalPlayer.ActorNumber);
-        }
-    }
+
 
     public void OnPlayerDead()
     {

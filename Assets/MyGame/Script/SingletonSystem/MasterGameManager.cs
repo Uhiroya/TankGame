@@ -4,11 +4,12 @@ using Cysharp.Threading.Tasks;
 using Photon.Pun;
 using Photon.Pun.Demo.PunBasics;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class MasterGameManager : MonoBehaviourPunCallbacks
 {
-    [SerializeField] private int StageCount = 2;
-    [SerializeField] private int LifeCount = 3;
+    [FormerlySerializedAs("StageCount")] [SerializeField] private int _maxStageCount = 2;
+    [FormerlySerializedAs("LifeCount")] [SerializeField] private int _maxLife = 3;
     private static int _sumBreakCount;
     private static int _currentStage ;
     private static int _readyFlags = 0;
@@ -48,7 +49,7 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     public void InitializeGame()
     {
-        photonView.RPC(nameof(LocalGameManager.Instance.Wait) , RpcTarget.AllViaServer);
+        
         _ = StartTitles();
     }
     [PunRPC]
@@ -58,6 +59,7 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
         _currentPlayerCount = 0;
         _currentEnemyCount = -1;
         _sumBreakCount = 0;
+        photonView.RPC(nameof(LocalGameManager.Instance.Wait) , RpcTarget.AllViaServer);
         photonView.RPC(nameof(NetworkManager.Instance.SpawnPlayer) , RpcTarget.AllViaServer);
         await UniTask.WaitUntil(() =>  LocalGameManager.IsReady);
         photonView.RPC(nameof(LocalGameManager.Instance.StartTitle) , RpcTarget.AllViaServer);
@@ -67,6 +69,7 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
     {
         _currentEnemyCount = _maxEnemyCount = GameObject.FindGameObjectsWithTag("Enemy").Length;
         _sumBreakCount += _maxEnemyCount;
+        photonView.RPC(nameof(LocalGameManager.Instance.Wait) , RpcTarget.AllViaServer);
         photonView.RPC(nameof(NetworkManager.Instance.SpawnPlayer) , RpcTarget.AllViaServer);
         await UniTask.WaitUntil(() =>  LocalGameManager.IsReady);
         photonView.RPC(nameof(LocalGameManager.Instance.StartGame) , RpcTarget.AllViaServer);
@@ -96,7 +99,7 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
         _currentStage += 1;
         photonView.RPC(nameof(LocalGameManager.Instance.RoundClear) , RpcTarget.AllViaServer);
         
-        if (_currentStage < StageCount)
+        if (_currentStage < _maxStageCount)
             ChangeStages($"Stage {_currentStage}");
         else
             BackToTitles();
@@ -104,20 +107,17 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
 
     public void ChangeStages(string nextScene)
     {
-        photonView.RPC(nameof(LocalGameManager.Instance.Wait) , RpcTarget.AllViaServer);
         photonView.RPC(nameof(LocalGameManager.Instance.GoNextStage), RpcTarget.AllViaServer,nextScene);
     }
 
     public void BackToTitles()
     {
-        photonView.RPC(nameof(LocalGameManager.Instance.Wait) , RpcTarget.AllViaServer);
         photonView.RPC(nameof(LocalGameManager.Instance.BackToTitle), RpcTarget.AllViaServer , _sumBreakCount);
     }
 
     public async void GameOver()
     {
         _sumBreakCount -= _maxEnemyCount;
-        photonView.RPC(nameof(LocalGameManager.Instance.GameOver) , RpcTarget.AllViaServer);
         BackToTitles();
         
     }

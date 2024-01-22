@@ -897,8 +897,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a31dadfaa25890b429fd0b362a99e3a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StageCount: 2
-  LifeCount: 3
+  _maxStageCount: 2
+  _maxLife: 3
 --- !u!1 &915997984
 GameObject:
   m_ObjectHideFlags: 0
