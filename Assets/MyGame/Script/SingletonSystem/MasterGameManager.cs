@@ -17,6 +17,7 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
     private int _currentEnemyCount;
     private int _maxEnemyCount;
     private static int _currentPlayerCount ;
+    private static int _currentLife;
     private void Awake()
     {
         if (Instance == null)
@@ -34,7 +35,7 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     public void GetReady(int actorNumber)
     {
-        _readyFlags += 1 << (actorNumber- 1);
+        _readyFlags += 1 << (actorNumber - 1);
     }
 
     [PunRPC]
@@ -57,14 +58,14 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     public void InitializeGame()
     {
-        
-        _ = StartTitles();
+        _ = CallStartTitles();
     }
     [PunRPC]
-    public async UniTaskVoid StartTitles()
+    public async UniTaskVoid CallStartTitles()
     {
+        //ステージ入場時は加算しないため1から始めている
         _currentStage = 1;
-        _currentPlayerCount = 0;
+        _currentLife = _maxLife;
         _currentEnemyCount = -1;
         _sumBreakCount = 0;
         CheckReady();
@@ -73,8 +74,9 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
         photonView.RPC(nameof(LocalGameManager.Instance.StartTitle) , RpcTarget.AllViaServer);
     }
     [PunRPC]
-    public async UniTask StartGames()
+    public async UniTask CallStartGames()
     {
+        _currentPlayerCount = PhotonNetwork.CurrentRoom.MaxPlayers;
         _currentEnemyCount = _maxEnemyCount = GameObject.FindGameObjectsWithTag("Enemy").Length;
         _sumBreakCount += _maxEnemyCount;
         CheckReady();
@@ -89,7 +91,7 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
         _currentPlayerCount--;
         if (_currentPlayerCount == 0)
         {
-            GameOver();
+            CallRoundFailed();
         }
     }
     [PunRPC]
@@ -98,36 +100,46 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
         _currentEnemyCount--;
         if (_currentEnemyCount == 0)
         {
-            RoundClear();
+            CallRoundClear();
         }
     }
     
-    public async void RoundClear()
+    public async UniTaskVoid CallRoundClear()
     {
         _currentStage += 1;
-        photonView.RPC(nameof(LocalGameManager.Instance.RoundClear) , RpcTarget.AllViaServer);
-        
+        photonView.RPC(nameof(LocalGameManager.Instance.RoundClear) , RpcTarget.Others);
+        await LocalGameManager.Instance.RoundClear();
         if (_currentStage < _maxStageCount)
-            ChangeStages($"Stage {_currentStage}");
+            _ = CallChangeStages($"Stage {_currentStage}");
         else
-            BackToTitles();
+            _ = CallBackToTitle();
     }
-
-    public void ChangeStages(string nextScene)
-    {
-        photonView.RPC(nameof(LocalGameManager.Instance.GoNextStage), RpcTarget.AllViaServer,nextScene);
-    }
-
-    public void BackToTitles()
-    {
-        photonView.RPC(nameof(LocalGameManager.Instance.BackToTitle), RpcTarget.AllViaServer , _sumBreakCount);
-    }
-
-    public async void GameOver()
+    public async UniTaskVoid CallRoundFailed()
     {
         _sumBreakCount -= _maxEnemyCount;
-        BackToTitles();
-        
+        _currentLife--;
+        photonView.RPC(nameof(LocalGameManager.Instance.RoundFailed) , RpcTarget.Others);
+        await LocalGameManager.Instance.RoundFailed();
+        if (_currentLife > 0)
+            _ = CallChangeStages($"Stage {_currentStage}");
+        else 
+            _ = CallBackToTitle();
     }
+    public async UniTaskVoid CallChangeStages(string nextScene)
+    {
+        photonView.RPC(nameof(LocalGameManager.Instance.GoNextStage), 
+            RpcTarget.Others, nextScene , _currentLife);
+        await LocalGameManager.Instance.GoNextStage(nextScene ,_currentLife);
+        _ = CallStartGames();
+    }
+
+    public async UniTaskVoid CallBackToTitle()
+    {
+        photonView.RPC(nameof(LocalGameManager.Instance.BackToTitle), RpcTarget.Others , _sumBreakCount);
+        await LocalGameManager.Instance.BackToTitle(_sumBreakCount);
+        _ = CallStartTitles();
+    }
+
+
 
 }

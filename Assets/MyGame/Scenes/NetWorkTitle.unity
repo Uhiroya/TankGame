@@ -898,7 +898,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _maxStageCount: 2
-  _maxLife: 3
+  _maxLife: 1
 --- !u!1 &915997984
 GameObject:
   m_ObjectHideFlags: 0
@@ -1905,7 +1905,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3453020409330016195, guid: 4bcda6aa4303b5f49b07ffd7199f948d, type: 3}
       propertyPath: MaxPlayer
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3453020409330016195, guid: 4bcda6aa4303b5f49b07ffd7199f948d, type: 3}
       propertyPath: _maxPlayer

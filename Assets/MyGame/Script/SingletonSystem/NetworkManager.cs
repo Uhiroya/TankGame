@@ -160,7 +160,11 @@ public class NetworkManager : MonoBehaviourPunCallbacks // Photon Realtime Áî®„Å
         //Debug.Log("OnConnectedToMaster");
         if (PhotonNetwork.OfflineMode)
         {
-            PhotonNetwork.JoinRoom("SoloRoom");
+            
+            RoomOptions roomOptions = new RoomOptions();
+            roomOptions.MaxPlayers = 1;
+            PhotonNetwork.CreateRoom("SoloRoom", roomOptions);
+            //PhotonNetwork.JoinRoom("SoloRoom");
         }
         else
         {

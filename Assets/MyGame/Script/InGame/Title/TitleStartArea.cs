@@ -49,7 +49,7 @@ public class TitleStartArea : MonoBehaviour , IStart , IPause
             if (!_done && _startSlider.value >= _startSlider.maxValue)
             {
                 if(PhotonNetwork.IsMasterClient)
-                    MasterGameManager.Instance.ChangeStages(_nextScene);
+                    MasterGameManager.Instance.CallChangeStages(_nextScene);
                 _done = true;
                 //SceneManager.LoadScene( _nextScene );
             }

@@ -58,11 +58,11 @@ public class SceneUIManager : MonoBehaviour
         _fadeImage.gameObject.SetActive(false);
     }
 
-    public async UniTask FadeInStageUI(string nextStage)
+    public async UniTask FadeInStageUI(string nextStage , int lifeCount)
     {
         _nextStageUI.gameObject.SetActive(true);
         _nextStageText.text = nextStage + "\n" ;
-        _playerCountText.text = "×" + LocalGameManager.CurrentLifeCount;
+        _playerCountText.text = "×" + lifeCount;
         await _nextStageUIgroup.DOFade(1, _startStageFade);
     }
 
