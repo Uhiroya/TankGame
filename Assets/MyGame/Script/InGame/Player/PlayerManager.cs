@@ -43,7 +43,7 @@ public class PlayerManager : MonoBehaviour , IStart , IPause , ITankData
     void OnEnable()
     {
         print("準備かんりょう");
-        LocalGameManager.Instance.OnPlayerLoaded();
+        LocalGameManager.Instance.IsLoadedObjects();
         RegisterEvent();
         MyServiceLocator.IRegister(this as IPause);
         MyServiceLocator.IRegister(this as IStart);

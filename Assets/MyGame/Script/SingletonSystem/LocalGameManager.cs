@@ -11,7 +11,6 @@ using UnityEngine.SceneManagement;
 
 public class LocalGameManager : MonoBehaviourPunCallbacks
 {
-    public static bool IsReady = false;
     private int _loadedPlayer = 0;
     public static LocalGameManager Instance;
 
@@ -22,29 +21,23 @@ public class LocalGameManager : MonoBehaviourPunCallbacks
     public static int CurrentLifeCount { get; private set; }
 
     [PunRPC]
-    public void Ready()
+    public async void Ready()
     {
-        IsReady = true;
-        _loadedPlayer = 0;
-    }
+        await UniTask.WaitUntil(
+            IsLoadedObjects
+            );
+        photonView.RPC(nameof(MasterGameManager.Instance.GetReady) , RpcTarget.MasterClient , PhotonNetwork.LocalPlayer.ActorNumber);
 
-    [PunRPC]
-    public void Wait()
-    {
-        IsReady = false;
     }
 /// <summary>
 /// 初回起動時または、シーンチェンジ後に
 /// Punで生成されているPlayerが共有された後OnEnabledが呼ばれた際にロード済みにして、
 /// 最大数になったら準備完了を伝える。
 /// </summary>
-    public void OnPlayerLoaded()
+    public bool IsLoadedObjects()
     {
-        _loadedPlayer++;
-        if (_loadedPlayer == NetworkManager.Instance.MaxPlayer)
-        {
-            photonView.RPC(nameof(MasterGameManager.Instance.CheckReady) , RpcTarget.MasterClient , PhotonNetwork.LocalPlayer.ActorNumber);
-        }
+        Debug.Log(GameObject.FindGameObjectsWithTag("Player").Length);
+        return GameObject.FindGameObjectsWithTag("Player").Length == PhotonNetwork.CurrentRoom.MaxPlayers;
     }
     private void Awake()
     {

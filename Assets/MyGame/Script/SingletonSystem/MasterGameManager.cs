@@ -8,8 +8,8 @@ using UnityEngine.Serialization;
 
 public class MasterGameManager : MonoBehaviourPunCallbacks
 {
-    [FormerlySerializedAs("StageCount")] [SerializeField] private int _maxStageCount = 2;
-    [FormerlySerializedAs("LifeCount")] [SerializeField] private int _maxLife = 3;
+    [SerializeField] private int _maxStageCount = 2;
+    [SerializeField] private int _maxLife = 3;
     private static int _sumBreakCount;
     private static int _currentStage ;
     private static int _readyFlags = 0;
@@ -32,20 +32,28 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
     }
     
     [PunRPC]
-    public void CheckReady(int actorNumber)
+    public void GetReady(int actorNumber)
     {
         _readyFlags += 1 << (actorNumber- 1);
+    }
+
+    [PunRPC]
+    public void CheckReady()
+    {
+        _readyFlags = 0;
+        photonView.RPC(nameof(LocalGameManager.Instance.Ready) , RpcTarget.All);
+    }
+    public bool IsAllPlayerReady()
+    {
         for (int i = 0; i < NetworkManager.Instance.MaxPlayer; i++)
         {
             if ((_readyFlags >> i & 1) == 0)
             {
-                return;
+                return false;
             }
         }
-        photonView.RPC(nameof(LocalGameManager.Instance.Ready) , RpcTarget.AllViaServer);
-        _readyFlags = 0;
+        return true;
     }
-
     [PunRPC]
     public void InitializeGame()
     {
@@ -59,9 +67,9 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
         _currentPlayerCount = 0;
         _currentEnemyCount = -1;
         _sumBreakCount = 0;
-        photonView.RPC(nameof(LocalGameManager.Instance.Wait) , RpcTarget.AllViaServer);
+        CheckReady();
         photonView.RPC(nameof(NetworkManager.Instance.SpawnPlayer) , RpcTarget.AllViaServer);
-        await UniTask.WaitUntil(() =>  LocalGameManager.IsReady);
+        await UniTask.WaitUntil(IsAllPlayerReady);
         photonView.RPC(nameof(LocalGameManager.Instance.StartTitle) , RpcTarget.AllViaServer);
     }
     [PunRPC]
@@ -69,9 +77,9 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
     {
         _currentEnemyCount = _maxEnemyCount = GameObject.FindGameObjectsWithTag("Enemy").Length;
         _sumBreakCount += _maxEnemyCount;
-        photonView.RPC(nameof(LocalGameManager.Instance.Wait) , RpcTarget.AllViaServer);
+        CheckReady();
         photonView.RPC(nameof(NetworkManager.Instance.SpawnPlayer) , RpcTarget.AllViaServer);
-        await UniTask.WaitUntil(() =>  LocalGameManager.IsReady);
+        await UniTask.WaitUntil(IsAllPlayerReady);
         photonView.RPC(nameof(LocalGameManager.Instance.StartGame) , RpcTarget.AllViaServer);
         
     }
