@@ -32,5 +32,5 @@ public class PhotonEventReceiver : MonoBehaviourPunCallbacks, IOnEventCallback
 public enum MyPhotonEvent
 {
     SpawnPlayer = 1,
-    Ready = 2 ,
+    ChangeImmortal = 2 ,
 }

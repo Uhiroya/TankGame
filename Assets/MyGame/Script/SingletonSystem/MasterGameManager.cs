@@ -55,10 +55,12 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
         }
         return true;
     }
-    [PunRPC]
-    public void InitializeGame()
+
+    public async UniTask SpawnPlayers()
     {
-        _ = CallStartTitles();
+        CheckReady();
+        photonView.RPC(nameof(NetworkManager.Instance.SpawnPlayer) , RpcTarget.AllViaServer);
+        await UniTask.WaitUntil(IsAllPlayerReady); 
     }
     [PunRPC]
     public async UniTaskVoid CallStartTitles()
@@ -68,9 +70,8 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
         _currentLife = _maxLife;
         _currentEnemyCount = -1;
         _sumBreakCount = 0;
-        CheckReady();
-        photonView.RPC(nameof(NetworkManager.Instance.SpawnPlayer) , RpcTarget.AllViaServer);
-        await UniTask.WaitUntil(IsAllPlayerReady);
+        
+        await SpawnPlayers();
         photonView.RPC(nameof(LocalGameManager.Instance.StartTitle) , RpcTarget.AllViaServer);
     }
     [PunRPC]
@@ -79,11 +80,9 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
         _currentPlayerCount = PhotonNetwork.CurrentRoom.MaxPlayers;
         _currentEnemyCount = _maxEnemyCount = GameObject.FindGameObjectsWithTag("Enemy").Length;
         _sumBreakCount += _maxEnemyCount;
-        CheckReady();
-        photonView.RPC(nameof(NetworkManager.Instance.SpawnPlayer) , RpcTarget.AllViaServer);
-        await UniTask.WaitUntil(IsAllPlayerReady);
-        photonView.RPC(nameof(LocalGameManager.Instance.StartGame) , RpcTarget.AllViaServer);
         
+        await SpawnPlayers();
+        photonView.RPC(nameof(LocalGameManager.Instance.StartGame) , RpcTarget.AllViaServer);
     }
     [PunRPC]
     public void OnPlayerDead()
@@ -109,7 +108,7 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
         _currentStage += 1;
         photonView.RPC(nameof(LocalGameManager.Instance.RoundClear) , RpcTarget.Others);
         await LocalGameManager.Instance.RoundClear();
-        if (_currentStage < _maxStageCount)
+        if (_currentStage <= _maxStageCount)
             _ = CallChangeStages($"Stage {_currentStage}");
         else
             _ = CallBackToTitle();

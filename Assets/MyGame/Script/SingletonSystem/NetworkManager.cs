@@ -206,7 +206,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks // Photon Realtime ç”¨ã
         
         if ( PhotonNetwork.LocalPlayer.ActorNumber > PhotonNetwork.CurrentRoom.MaxPlayers - 1)
         {
-            photonView.RPC(nameof(MasterGameManager.Instance.InitializeGame),RpcTarget.MasterClient);
+            photonView.RPC(nameof(MasterGameManager.Instance.CallStartTitles),RpcTarget.MasterClient);
             PhotonNetwork.CurrentRoom.IsOpen = false;
             //await UniTask.Delay(3000);
         }

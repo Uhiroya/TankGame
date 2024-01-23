@@ -13,7 +13,7 @@ public class EnemyManager : MonoBehaviourPunCallbacks, IStart, IPause , ITankDat
     void Awake()
     {
         _enemyController = GetComponent<EnemyController>();
-        _model = gameObject.AddComponent<TankModel>().Initialize(_destroyEffect, TankData.TankHP);
+        _model = gameObject.AddComponent<TankModel>().Initialize(TankData.TankHP);
         _model.OnDead += RegisterEvent;
         _enemyController.enabled = false;
     }
@@ -27,8 +27,11 @@ public class EnemyManager : MonoBehaviourPunCallbacks, IStart, IPause , ITankDat
     {
         if (PhotonNetwork.IsMasterClient) 
             MasterGameManager.Instance.OnDestroyEnemy();
-        if(this) 
-            Destroy(this.gameObject);
+        if (this)
+        {
+            Instantiate(_destroyEffect, transform.position , _destroyEffect.transform.rotation) ;
+            Destroy(gameObject);
+        }
     }
     void OnEnable()
     {

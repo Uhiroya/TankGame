@@ -1,12 +1,11 @@
 ﻿using Photon.Pun;
 using UnityEngine;
 
-public class PlayerManager : MonoBehaviour , IStart , IPause , ITankData 
+public class PlayerManager : MonoBehaviourPunCallbacks , IStart , IPause , ITankData 
 {
     [SerializeField] private TankAction _action;
     [SerializeField] private TankMovement _tankMovement;
     [SerializeField] GameObject _destroyEffect;
-    [SerializeField] bool _immortal = false;
     public TankData TankData;
     private TankModel _model;
     
@@ -14,8 +13,7 @@ public class PlayerManager : MonoBehaviour , IStart , IPause , ITankData
     private PhotonView _photonView;
     void Awake()
     {
-        _model = gameObject.AddComponent<TankModel>().Initialize(_destroyEffect, TankData.TankHP, _immortal);
-        
+        _model = gameObject.AddComponent<TankModel>().Initialize(TankData.TankHP);
         _playerInputManager = gameObject.AddComponent<PlayerInputManager>();
          _photonView = GetComponent<PhotonView>();
         _playerInputManager.enabled = false;
@@ -23,22 +21,36 @@ public class PlayerManager : MonoBehaviour , IStart , IPause , ITankData
 
     void RegisterEvent()
     {
-        _model.OnDead += PlayerDead;
+        _model.OnDead += CallDestroy;
         _playerInputManager.OnFire += ReadyToFire;
     }
     void UnRegisterEvent()
     {
-        _model.OnDead -= PlayerDead;
+        _model.OnDead -= CallDestroy;
         _playerInputManager.OnFire -= ReadyToFire;
     }
 
-    void PlayerDead()
+    void CallDestroy()
     {
-        if (_photonView.IsMine)
+        photonView.RPC(nameof(TryDestroy), RpcTarget.AllViaServer);
+    }
+
+    [PunRPC]
+    public void ChangeImmortal(bool flag)
+    {
+        _model.IsImmortal = flag;
+    }
+    [PunRPC]
+    void TryDestroy()
+    {
+        if (_photonView.IsMine) 
+            LocalGameManager.Instance.OnPlayerDead();
+        if (this)
         {
-            LocalGameManager.Instance?.OnPlayerDead();
+            Instantiate(_destroyEffect, transform.position , _destroyEffect.transform.rotation) ;
+            Destroy(gameObject);
         }
-    } 
+    }
     void ReadyToFire() => _action.ReadyToFire();
     void OnEnable()
     {

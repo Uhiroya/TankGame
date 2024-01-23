@@ -14,9 +14,7 @@ public class LocalGameManager : MonoBehaviourPunCallbacks
     public static LocalGameManager Instance;
     [SerializeField] private string _titleScene;
     [SerializeField] private float StartDelay = 3.0f;
-
-    public static int CurrentLifeCount { get; private set; }
-
+    private IEnumerable<PlayerManager>  _playerManagers;
     [PunRPC]
     public async void Ready()
     {
@@ -33,7 +31,14 @@ public class LocalGameManager : MonoBehaviourPunCallbacks
 /// </summary>
     public bool IsLoadedObjects()
     {
-        return GameObject.FindGameObjectsWithTag("Player").Length == PhotonNetwork.CurrentRoom.MaxPlayers;
+        var players = GameObject.FindGameObjectsWithTag("Player");
+        if (players.Length == PhotonNetwork.CurrentRoom.MaxPlayers)
+        {
+            _playerManagers = players.ToList().Select(x => x.GetComponent<PlayerManager>());
+            return true;
+        }
+
+        return false;
     }
     private void Awake()
     {
@@ -52,6 +57,8 @@ public class LocalGameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     public async UniTask StartTitle()
     {
+        foreach (var playerManager in _playerManagers)
+            playerManager.ChangeImmortal(true);
         AudioManager.Instance.PlaySE(AudioManager.TankGameSoundType.Fall);
         DeActivateObjects();
         await AnimateObjects();
@@ -62,8 +69,9 @@ public class LocalGameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     public async UniTask StartGame()
     {
-        
         //初期化・準備
+        foreach (var playerManager in _playerManagers)
+            playerManager.ChangeImmortal(false);
         DeActivateObjects();
         await AnimateObjects();
         //ゲームスタート
