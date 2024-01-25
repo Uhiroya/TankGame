@@ -1,11 +1,13 @@
 ﻿using Photon.Pun;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class PlayerManager : MonoBehaviourPunCallbacks , IStart , IPause , ITankData 
 {
     [SerializeField] private TankAction _action;
     [SerializeField] private TankMovement _tankMovement;
     [SerializeField] GameObject _destroyEffect;
+    [SerializeField] private GameObject _minePlayerText;
     public TankData TankData;
     private TankModel _model;
     
@@ -16,6 +18,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks , IStart , IPause , ITank
         _model = gameObject.AddComponent<TankModel>().Initialize(TankData.TankHP);
         _playerInputManager = gameObject.AddComponent<PlayerInputManager>();
          _photonView = GetComponent<PhotonView>();
+         if(_photonView.IsMine) _minePlayerText.SetActive(true);
         _playerInputManager.enabled = false;
     }
 
@@ -43,24 +46,25 @@ public class PlayerManager : MonoBehaviourPunCallbacks , IStart , IPause , ITank
     [PunRPC]
     void TryDestroy()
     {
-        if (_photonView.IsMine) 
+        if (_photonView.IsMine)
+        {
             LocalGameManager.Instance.OnPlayerDead();
+            PhotonNetwork.Destroy(gameObject);
+        }
         if (this)
         {
             Instantiate(_destroyEffect, transform.position , _destroyEffect.transform.rotation) ;
-            Destroy(gameObject);
         }
     }
     void ReadyToFire() => _action.ReadyToFire();
-    void OnEnable()
+    public override void OnEnable()
     {
         print("準備かんりょう");
-        LocalGameManager.Instance.IsLoadedObjects();
         RegisterEvent();
         MyServiceLocator.IRegister(this as IPause);
         MyServiceLocator.IRegister(this as IStart);
     }
-    void OnDisable()
+    public override void OnDisable()
     {
         UnRegisterEvent();
         MyServiceLocator.IUnRegister(this as IPause);

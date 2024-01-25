@@ -1,11 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
-using ExitGames.Client.Photon;
 using Photon.Pun;
-using Photon.Pun.Demo.PunBasics;
-using Photon.Realtime;
-using UniRx;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -13,33 +9,9 @@ public class LocalGameManager : MonoBehaviourPunCallbacks
 {
     public static LocalGameManager Instance;
     [SerializeField] private string _titleScene;
-    [SerializeField] private float StartDelay = 3.0f;
-    private IEnumerable<PlayerManager>  _playerManagers;
-    [PunRPC]
-    public async void Ready()
-    {
-        await UniTask.WaitUntil(
-            IsLoadedObjects
-            );
-        photonView.RPC(nameof(MasterGameManager.Instance.GetReady) , RpcTarget.MasterClient , PhotonNetwork.LocalPlayer.ActorNumber);
+    [SerializeField] private float _startDelay = 3.0f;
+    private IEnumerable<PlayerManager> _playerManagers;
 
-    }
-/// <summary>
-/// 初回起動時または、シーンチェンジ後に
-/// Punで生成されているPlayerが共有された後OnEnabledが呼ばれた際にロード済みにして、
-/// 最大数になったら準備完了を伝える。
-/// </summary>
-    public bool IsLoadedObjects()
-    {
-        var players = GameObject.FindGameObjectsWithTag("Player");
-        if (players.Length == PhotonNetwork.CurrentRoom.MaxPlayers)
-        {
-            _playerManagers = players.ToList().Select(x => x.GetComponent<PlayerManager>());
-            return true;
-        }
-
-        return false;
-    }
     private void Awake()
     {
         if (Instance == null)
@@ -52,6 +24,32 @@ public class LocalGameManager : MonoBehaviourPunCallbacks
         {
             Destroy(gameObject);
         }
+    }
+
+    [PunRPC]
+    public async void Ready(string sceneName)
+    {
+        await UniTask.WaitUntil(() => IsLoadedObjects(sceneName));
+        photonView.RPC(nameof(MasterGameManager.Instance.GetReady), RpcTarget.MasterClient,
+            PhotonNetwork.LocalPlayer.ActorNumber);
+    }
+
+    /// <summary>
+    ///     初回起動時または、シーンチェンジ後に
+    ///     Punで生成されているPlayerが共有された後OnEnabledが呼ばれた際にロード済みにして、
+    ///     最大数になったら準備完了を伝える。
+    /// </summary>
+    private bool IsLoadedObjects(string sceneName)
+    {
+        if (sceneName != SceneManager.GetActiveScene().name) return false;
+        var players = GameObject.FindGameObjectsWithTag("Player");
+        if (players.Length == PhotonNetwork.CurrentRoom.MaxPlayers)
+        {
+            _playerManagers = players.ToList().Select(x => x.GetComponent<PlayerManager>());
+            return true;
+        }
+
+        return false;
     }
 
     [PunRPC]
@@ -83,28 +81,28 @@ public class LocalGameManager : MonoBehaviourPunCallbacks
     private async UniTask AnimateObjects()
     {
         await MyServiceLocator.IResolve<IAnimAwake>().OfType<IAnimAwake>()
-                .Select(x => x.AnimAwake(StartDelay));
+            .Select(x => x.AnimAwake(_startDelay));
     }
-    
+
     public void OnPlayerDead()
     {
-        photonView.RPC(nameof(MasterGameManager.Instance.OnPlayerDead),RpcTarget.MasterClient);
+        photonView.RPC(nameof(MasterGameManager.Instance.OnPlayerDead), RpcTarget.MasterClient);
     }
 
 
     [PunRPC]
-    public async UniTask GoNextStage(string nextStage , int lifeCount)
+    public async UniTask GoNextStage(string nextStage, int lifeCount)
     {
         AudioManager.Instance.PlaySE(AudioManager.TankGameSoundType.SceneChange);
         _ = SceneUIManager.Instance.FadeIn();
-        await SceneUIManager.Instance.FadeInStageUI(nextStage , lifeCount);
-        
+        await SceneUIManager.Instance.FadeInStageUI(nextStage, lifeCount);
+
         await SceneManager.LoadSceneAsync(nextStage);
-        
+
         _ = SceneUIManager.Instance.FadeOutStageUI();
         await SceneUIManager.Instance.FadeOut();
-        
     }
+
     [PunRPC]
     public async UniTask RoundClear()
     {
@@ -112,6 +110,7 @@ public class LocalGameManager : MonoBehaviourPunCallbacks
         AudioManager.Instance.PlaySE(AudioManager.TankGameSoundType.Sucseece);
         await SceneUIManager.Instance.ShowClearText();
     }
+
     [PunRPC]
     public async UniTask RoundFailed()
     {
@@ -119,6 +118,7 @@ public class LocalGameManager : MonoBehaviourPunCallbacks
         AudioManager.Instance.PlaySE(AudioManager.TankGameSoundType.Fail);
         await SceneUIManager.Instance.ShowGameOverText();
     }
+
     [PunRPC]
     public async UniTask BackToTitle(int sumBreakCount)
     {
@@ -128,12 +128,12 @@ public class LocalGameManager : MonoBehaviourPunCallbacks
         _ = SceneUIManager.Instance.FadeOut();
     }
 
-    public void ActivateObjects()
+    private void ActivateObjects()
     {
         MyServiceLocator.IResolve<IStart>().OfType<IStart>().ToList().ForEach(x => x.Active());
     }
 
-    public void DeActivateObjects()
+    private void DeActivateObjects()
     {
         MyServiceLocator.IResolve<IStart>().OfType<IStart>().ToList().ForEach(x => x.DeActive());
     }

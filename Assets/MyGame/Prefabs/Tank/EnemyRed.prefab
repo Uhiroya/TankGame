@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 500501640}
   - component: {fileID: 500501642}
-  - component: {fileID: 500501641}
   m_Layer: 0
   m_Name: FieldDetector
   m_TagString: Untagged
@@ -46,40 +45,6 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 20
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &500501641
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 500501639}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b3a1759f59fb9b47a56b7e98c133c4a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _detectorTag: Field
-  _onhit:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: -4399299388019068585}
-        m_TargetAssemblyTypeName: EnemyController, Assembly-CSharp
-        m_MethodName: IsHitField
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  _onOut:
-    m_PersistentCalls:
-      m_Calls: []
-  _onStay:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!1 &1505011588
 GameObject:
   m_ObjectHideFlags: 0
@@ -90,7 +55,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1505011589}
   - component: {fileID: 1505011591}
-  - component: {fileID: 1505011590}
   m_Layer: 0
   m_Name: PlayerDetector
   m_TagString: Untagged
@@ -126,40 +90,6 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 20
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &1505011590
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1505011588}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b3a1759f59fb9b47a56b7e98c133c4a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _detectorTag: Player
-  _onhit:
-    m_PersistentCalls:
-      m_Calls: []
-  _onOut:
-    m_PersistentCalls:
-      m_Calls: []
-  _onStay:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: -4399299388019068585}
-        m_TargetAssemblyTypeName: EnemyController, Assembly-CSharp
-        m_MethodName: DetectPlayer
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!1 &358242425953260804
 GameObject:
   m_ObjectHideFlags: 0
@@ -179,6 +109,8 @@ GameObject:
   - component: {fileID: -613707860683070695}
   - component: {fileID: 4511576773086303523}
   - component: {fileID: 1978459458}
+  - component: {fileID: 2999978805935059583}
+  - component: {fileID: 5623044328647221163}
   m_Layer: 0
   m_Name: EnemyRed
   m_TagString: Enemy
@@ -395,10 +327,44 @@ MonoBehaviour:
   Synchronization: 1
   OwnershipTransfer: 0
   observableSearch: 2
-  ObservedComponents: []
+  ObservedComponents:
+  - {fileID: 2999978805935059583}
+  - {fileID: 5623044328647221163}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
+--- !u!114 &2999978805935059583
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 358242425953260804}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64179f3720bbfe947b7724caa67b7c1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizeVelocity: 1
+  m_SynchronizeAngularVelocity: 0
+  m_TeleportEnabled: 0
+  m_TeleportIfDistanceGreaterThan: 3
+--- !u!114 &5623044328647221163
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 358242425953260804}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
 --- !u!1 &548672796481932956
 GameObject:
   m_ObjectHideFlags: 0

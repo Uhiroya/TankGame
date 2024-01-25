@@ -120,7 +120,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1456384950
 RectTransform:
   m_ObjectHideFlags: 0
@@ -195,7 +195,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1936718050}
   - component: {fileID: 9057185702065409372}
-  - component: {fileID: 4746054116171762943}
   m_Layer: 0
   m_Name: Nozzle
   m_TagString: Untagged
@@ -231,52 +230,6 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &4746054116171762943
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1936718049}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b3a1759f59fb9b47a56b7e98c133c4a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _detectorTag: Field
-  _onhit:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 7023698139113070308}
-        m_TargetAssemblyTypeName: TankAction, Assembly-CSharp
-        m_MethodName: HitNozzleToField
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  _onOut:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 7023698139113070308}
-        m_TargetAssemblyTypeName: TankAction, Assembly-CSharp
-        m_MethodName: OutNozzleToField
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  _onStay:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!1 &1985838851183171251
 GameObject:
   m_ObjectHideFlags: 0
@@ -381,6 +334,8 @@ GameObject:
   - component: {fileID: 2049067760}
   - component: {fileID: -9219508891923812319}
   - component: {fileID: -8016641955402862827}
+  - component: {fileID: -6740897292493864044}
+  - component: {fileID: 626096540843963369}
   m_Layer: 0
   m_Name: PlayerTank
   m_TagString: Player
@@ -517,7 +472,7 @@ MonoBehaviour:
   _action: {fileID: 7023698139113070308}
   _tankMovement: {fileID: 0}
   _destroyEffect: {fileID: 1000011797152326, guid: acf39d9f4addf294d93fa56fa373961b, type: 3}
-  _immortal: 1
+  _minePlayerText: {fileID: 1456384949}
   TankData:
     TankType: 0
     TankHP: 100
@@ -788,10 +743,44 @@ MonoBehaviour:
   Synchronization: 1
   OwnershipTransfer: 0
   observableSearch: 2
-  ObservedComponents: []
+  ObservedComponents:
+  - {fileID: -6740897292493864044}
+  - {fileID: 626096540843963369}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
+--- !u!114 &-6740897292493864044
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2642512349154686061}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64179f3720bbfe947b7724caa67b7c1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizeVelocity: 1
+  m_SynchronizeAngularVelocity: 0
+  m_TeleportEnabled: 0
+  m_TeleportIfDistanceGreaterThan: 3
+--- !u!114 &626096540843963369
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2642512349154686061}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
 --- !u!1 &2867080395422199797
 GameObject:
   m_ObjectHideFlags: 0

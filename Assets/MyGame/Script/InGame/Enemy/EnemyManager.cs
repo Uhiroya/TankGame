@@ -33,13 +33,13 @@ public class EnemyManager : MonoBehaviourPunCallbacks, IStart, IPause , ITankDat
             Destroy(gameObject);
         }
     }
-    void OnEnable()
+    public override void OnEnable()
     {
         MyServiceLocator.IRegister(this as IPause);
         MyServiceLocator.IRegister(this as IStart);
     }
 
-    void OnDisable()
+    public override void OnDisable()
     {
         MyServiceLocator.IUnRegister(this as IPause);
         MyServiceLocator.IUnRegister(this as IStart);

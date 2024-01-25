@@ -94,7 +94,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks // Photon Realtime 用�
     /// <summary>
     /// ランダムな名前のルームを作って参加する
     /// </summary>
-    private async void CreateRandomRoom()
+    private void CreateRandomRoom()
     {
         if (PhotonNetwork.IsConnected)
         {
@@ -200,7 +200,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks // Photon Realtime 用�
     }
 
     /// <summary>部屋に入室した時</summary>
-    public async override void OnJoinedRoom()
+    public override void OnJoinedRoom()
     {
         //Debug.Log("OnJoinedRoom");
         

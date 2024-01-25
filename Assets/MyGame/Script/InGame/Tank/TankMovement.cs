@@ -21,12 +21,12 @@ public class TankMovement : MonoBehaviourPunCallbacks, IAnimAwake
         transform.position += Vector3.up * _startPositionY;
     }
 
-    private void OnEnable()
+    public override void OnEnable()
     {
         MyServiceLocator.IRegister(this as IAnimAwake);
     }
 
-    private void OnDisable()
+    public override void  OnDisable()
     {
         MyServiceLocator.IUnRegister(this as IAnimAwake);
     }
@@ -41,32 +41,21 @@ public class TankMovement : MonoBehaviourPunCallbacks, IAnimAwake
 
     public void Move(float inputVertical)
     {
-        photonView.RPC(nameof(PunMove), RpcTarget.All, inputVertical);
-    }
-
-    [PunRPC]
-    public void PunMove(float inputVertical)
-    {
         var movement = transform.forward * (inputVertical * _tankMoveParam._moveSpeed);
         _rb.velocity = movement;
     }
 
     public void Turn(float inputHorizontal)
     {
-        photonView.RPC(nameof(PunTurn), RpcTarget.All, inputHorizontal);
-    }
-
-    [PunRPC]
-    public void PunTurn(float inputHorizontal)
-    {
         var turn = inputHorizontal * _tankMoveParam._turnMoveSpeed;
         var turnRotation = Quaternion.Euler(0f, turn, 0f);
         transform.rotation *= turnRotation;
     }
+    
 
     public void BarrelTurn(float inputVertical)
     {
-        photonView.RPC(nameof(PunBarrelTurn), RpcTarget.All, inputVertical);
+        photonView.RPC(nameof(PunBarrelTurn), RpcTarget.AllViaServer, inputVertical);
     }
 
     [PunRPC]

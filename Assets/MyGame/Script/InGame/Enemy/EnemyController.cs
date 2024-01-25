@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 using DG.Tweening;
@@ -13,6 +15,15 @@ public class EnemyController : MonoBehaviour
     [SerializeField] SphereCollider _scanPlayerCollider;
     [SerializeField] SphereCollider _scanFieldCollider;
     [SerializeField] float _scanFieldRange = 3f;
+
+    private enum EnemyState
+    {
+        Waiting = 0,
+        Searching = 1,
+        Detected = 2,
+    }
+
+    private EnemyState _state;
     TankEnemyParam _enemyParam;
     TankMovement _tankMovement;
     TankAction _tankAction;
@@ -20,6 +31,7 @@ public class EnemyController : MonoBehaviour
     CancellationTokenSource cts;
     bool _moveFlag = false;
     bool _isNearField = false;
+    private Collider _playerCollider;
     void Awake()
     {
         _tankMovement = GetComponent<TankMovement>();
@@ -28,6 +40,35 @@ public class EnemyController : MonoBehaviour
         _scanPlayerCollider.radius = _enemyParam._enemyScanRadius;
         _scanFieldCollider.radius = _scanFieldRange;
 
+        _scanPlayerCollider
+            .OnTriggerEnterAsObservable()
+            .Where(x => x.CompareTag("Player"))
+            .Subscribe(x =>
+            {
+                if (!_playerCollider)
+                {
+                    _state = EnemyState.Detected;
+                    _playerCollider = x;
+                }
+            })
+            .AddTo(this);
+            
+        _scanPlayerCollider
+            .OnTriggerExitAsObservable()
+            .Where(x => x.CompareTag("Player"))
+            .Subscribe(x =>
+            {
+                var cols = Physics.OverlapSphere(transform.position, _enemyParam._enemyScanRadius);
+                _playerCollider = cols.FirstOrDefault(x => x.CompareTag("Player"));
+                if (_playerCollider)
+                {
+                    _state = EnemyState.Detected;
+                }
+                _state = EnemyState.Searching;
+                
+            })
+            .AddTo(this);
+        
         _scanFieldCollider
             .OnTriggerEnterAsObservable()
             .Where(x => x.CompareTag("Field"))
@@ -56,6 +97,20 @@ public class EnemyController : MonoBehaviour
     void OnDestroy()
     {
         cts?.Dispose();
+    }
+
+    private void FixedUpdate()
+    {
+        switch (_state)
+        {
+            case EnemyState.Waiting :
+                break;
+            case EnemyState.Searching :
+                break;
+            case EnemyState.Detected :
+                DetectPlayer(_playerCollider);
+                break;
+        }
     }
 
     public async UniTask AutoMover()
@@ -111,8 +166,9 @@ public class EnemyController : MonoBehaviour
     public void DetectPlayer(Collider player)
     {
         if (!_moveFlag) return;
-        Physics.Raycast(transform.position , player.transform.position - transform.position, out RaycastHit hit, _enemyParam._enemyScanRadius);
-        Debug.DrawRay(transform.position, player.transform.position - transform.position, Color.red);
+        var playerDir = player.transform.position - transform.position;
+        Physics.Raycast(transform.position ,playerDir , out RaycastHit hit, _enemyParam._enemyScanRadius);
+        Debug.DrawRay(transform.position, playerDir, Color.red);
         if (hit.collider?.gameObject.tag == "Player")
         {
             DetectedPlayer(player);

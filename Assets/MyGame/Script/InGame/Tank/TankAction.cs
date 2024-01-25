@@ -1,10 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Xml.Serialization;
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TankAction : MonoBehaviour ,IPause
+public class TankAction : MonoBehaviourPunCallbacks ,IPause
 {
     [SerializeField] GameObject _bullet;
     [SerializeField] GameObject _nozzle;
@@ -22,12 +23,13 @@ public class TankAction : MonoBehaviour ,IPause
         _fireCoolTime = GetComponent<ITankData>().GetTankData().FireCoolTime;
         _slider.maxValue = _fireCoolTime;
     }
-    void OnEnable()
+
+    public override void OnEnable()
     {
         MyServiceLocator.IRegister(this as IPause);
     }
 
-    void OnDisable()
+    public override void OnDisable()
     {
         MyServiceLocator.IUnRegister(this as IPause);
     }
@@ -52,16 +54,18 @@ public class TankAction : MonoBehaviour ,IPause
     {
         if (_fireTimer > _fireCoolTime && !_isHitNozzle)
         {
-            Fire();
+            _isReloaded = false;
+            _fireTimer = 0f;
+            photonView.RPC(nameof(Fire) , RpcTarget.AllViaServer);
         }
     }
-
+    [PunRPC]
     public void Fire()
     {
-        Instantiate(_bullet, _nozzle.transform.position, _burrelTransform.rotation);
-        AudioManager.Instance.PlaySE(AudioManager.TankGameSoundType.Fire);
         _isReloaded = false;
         _fireTimer = 0f;
+        Instantiate(_bullet, _nozzle.transform.position, _burrelTransform.rotation);
+        AudioManager.Instance.PlaySE(AudioManager.TankGameSoundType.Fire);
     }
     public void UpdateReloadUI()
     {
