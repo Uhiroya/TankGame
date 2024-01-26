@@ -130,11 +130,11 @@ public class LocalGameManager : MonoBehaviourPunCallbacks
 
     private void ActivateObjects()
     {
-        MyServiceLocator.IResolve<IStart>().OfType<IStart>().ToList().ForEach(x => x.Active());
+        MyServiceLocator.IResolve<IActivatable>().OfType<IActivatable>().ToList().ForEach(x => x.Active());
     }
 
     private void DeActivateObjects()
     {
-        MyServiceLocator.IResolve<IStart>().OfType<IStart>().ToList().ForEach(x => x.DeActive());
+        MyServiceLocator.IResolve<IActivatable>().OfType<IActivatable>().ToList().ForEach(x => x.DeActive());
     }
 }

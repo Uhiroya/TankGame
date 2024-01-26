@@ -452,7 +452,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61ae46b7ee3b4a44c991fe6a975039f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _bullet: {fileID: 5634639283650341757, guid: adf5fc27cc229744db5d37b1f584e5e5, type: 3}
+  BulletType: 0
   _nozzle: {fileID: 1936718049}
   _burrelTransform: {fileID: 618895634568474580}
   _slider: {fileID: 2072660019}
@@ -772,7 +772,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2642512349154686061}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
   m_Name: 

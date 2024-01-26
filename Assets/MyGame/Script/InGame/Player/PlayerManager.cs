@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class PlayerManager : MonoBehaviourPunCallbacks , IStart , IPause , ITankData 
+public class PlayerManager : MonoBehaviourPunCallbacks , IActivatable , IPause , ITankData 
 {
     [SerializeField] private TankAction _action;
     [SerializeField] private TankMovement _tankMovement;
@@ -62,13 +62,13 @@ public class PlayerManager : MonoBehaviourPunCallbacks , IStart , IPause , ITank
         print("準備かんりょう");
         RegisterEvent();
         MyServiceLocator.IRegister(this as IPause);
-        MyServiceLocator.IRegister(this as IStart);
+        MyServiceLocator.IRegister(this as IActivatable);
     }
     public override void OnDisable()
     {
         UnRegisterEvent();
         MyServiceLocator.IUnRegister(this as IPause);
-        MyServiceLocator.IUnRegister(this as IStart);
+        MyServiceLocator.IUnRegister(this as IActivatable);
     }
     public TankData GetTankData() => TankData;
     public void Active()

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DestroyEffectByLifeTIme : MonoBehaviour , IPause
+public class DestroyEffectByLifeTime : MonoBehaviour , IPause
 {
     [SerializeField] float _lifeTime = 1.5f;
     float _timer = 0f ;

@@ -1,33 +1,53 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using MyGame.Script.SingletonSystem;
+using Photon.Pun;
 using Unity.VisualScripting;
 using UnityEngine;
 [RequireComponent (typeof (Rigidbody))]
-public class BulletController : MonoBehaviour , IPause , IStart
+public class BulletController : MonoBehaviourPunCallbacks , IPause , IActivatable
 {
-    [SerializeField] int _reflectCount = 1;
+    [SerializeField] private BulletType _bulletType;
+    [SerializeField] int _maxReflectCount = 1;
     [SerializeField] float _bulletSpeed = 1.0f;
-    [SerializeField] int _bulletDamege = 30;
+    [SerializeField] int _bulletDamage = 30;
     [SerializeField] float _lifeTime = 5f;
     [SerializeField] ParticleSystem _trailParticleSystem;
-    Rigidbody _bulletRigidbody;
+    [SerializeField] Rigidbody _bulletRigidBody;
+    int _reflectCount = 1;
     float _myBulletSpeed;
     float _timer = 0;
-    void Awake()
+    private int _ID;
+    private static int _nextID;
+    public void OnHit()
     {
-        _bulletRigidbody = GetComponent<Rigidbody> ();
+        if(PhotonNetwork.IsMasterClient)
+            photonView.RPC(nameof(BulletManager.Instance.ReleaseBullet) , RpcTarget.All , _bulletType , _ID );
     }
-    void OnEnable()
+    
+    public int Initialize(Vector3 position , Quaternion rotation)
+    {
+        _timer = 0f;
+        _reflectCount = _maxReflectCount;
+        _ID = _nextID;
+        _nextID++;
+        var transform1 = this.transform;
+        transform1.position = position;
+        transform1.rotation = rotation;
+        return _ID;
+    }
+    void OnEnable()  
     {
         _myBulletSpeed = _bulletSpeed;
         MyServiceLocator.IRegister<IPause>(this);
-        MyServiceLocator.IRegister<IStart>(this);
+        MyServiceLocator.IRegister<IActivatable>(this);
     }
 
     void OnDisable()
     {
         MyServiceLocator.IUnRegister<IPause>(this);
-        MyServiceLocator.IUnRegister<IStart>(this);
+        MyServiceLocator.IUnRegister<IActivatable>(this);
     }
     void Update()
     {
@@ -36,13 +56,13 @@ public class BulletController : MonoBehaviour , IPause , IStart
             _timer += Time.deltaTime;
             if( _timer > _lifeTime)
             {
-                Destroy(gameObject);
+                OnHit();
             }
         }
     }
     private void FixedUpdate()
     {
-        _bulletRigidbody.MovePosition(_bulletRigidbody.position + transform.forward * _bulletSpeed * Time.deltaTime);
+        _bulletRigidBody.MovePosition(_bulletRigidBody.position + transform.forward * _bulletSpeed * Time.deltaTime);
     }
     void OnCollisionEnter(Collision collision)
     {
@@ -58,31 +78,31 @@ public class BulletController : MonoBehaviour , IPause , IStart
             }
             else
             {
-                Destroy(gameObject);
+                OnHit();
             }
         }
         if (collision.transform.tag == "Enemy" || collision.transform.tag == "Player")
         {
-            collision.transform.gameObject.GetComponent<TankModel>()?.TakeDamage(_bulletDamege);
-            Destroy(gameObject);
+            collision.transform.gameObject.GetComponent<TankModel>()?.TakeDamage(_bulletDamage);
+            OnHit();
         }
     }
     void OnCollisionStay(Collision collision)
     {
         if (collision.transform.tag == "Field")
         {
-            Destroy(gameObject);
+            OnHit();
         }
     }
     public void Pause()
     {
         _bulletSpeed = 0;
-        _bulletRigidbody.Sleep();
+        _bulletRigidBody.Sleep();
         _trailParticleSystem.Pause();
     }
     public void Resume()
     {
-        _bulletRigidbody.WakeUp(); 
+        _bulletRigidBody.WakeUp(); 
         _bulletSpeed = _myBulletSpeed;
         _trailParticleSystem.Play();
     }
@@ -91,6 +111,6 @@ public class BulletController : MonoBehaviour , IPause , IStart
     }
     public void DeActive()
     {
-        Destroy(gameObject);
+        OnHit();
     }
 }

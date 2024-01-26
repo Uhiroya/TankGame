@@ -26,16 +26,16 @@ public class PlayerInputManager : MonoBehaviour
 
     private void FixedUpdate()
     {
-        _tankMovement.Move(_inputMoveVertical);
+        _tankMovement.InputMove(_inputMoveVertical);
         if(_inputMoveVertical >= 0)
         {
-            _tankMovement.Turn(_inputMoveHorizontal);
+            _tankMovement.InputTurn(_inputMoveHorizontal);
         }
         else
         {
-            _tankMovement.Turn(-_inputMoveHorizontal);
+            _tankMovement.InputTurn(-_inputMoveHorizontal);
         }
-        _tankMovement.BarrelTurn(_inputHorizontal);
+        _tankMovement.InputBarrelTurn(_inputHorizontal);
     }
     void OnEnable()
     {

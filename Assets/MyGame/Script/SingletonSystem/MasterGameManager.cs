@@ -35,14 +35,14 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     public void GetReady(int actorNumber)
     {
-        _readyFlags += 1 << (actorNumber - 1);
+        _readyFlags |= 1 << (actorNumber - 1);
     }
 
     [PunRPC]
     private void CheckReady()
     {
         _readyFlags = 0;
-        photonView.RPC(nameof(LocalGameManager.Instance.Ready), RpcTarget.All , SceneManager.GetActiveScene().name);
+        photonView.RPC(nameof(LocalGameManager.Instance.Ready), RpcTarget.AllViaServer , SceneManager.GetActiveScene().name);
     }
 
     private bool IsAllPlayerReady()

@@ -1,7 +1,7 @@
 ﻿/// <summary>
 /// ステージのスタート後に呼ばれるインターフェース
 /// </summary>
-interface IStart 
+interface IActivatable 
 {
     void Active();
     void DeActive();

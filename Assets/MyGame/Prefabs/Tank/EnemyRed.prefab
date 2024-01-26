@@ -250,6 +250,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e25d85e5897a4245a662a397af6473d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _tankMovement: {fileID: 4340692467272015649}
+  _tankAction: {fileID: 4340692467272015652}
   _scanPlayerCollider: {fileID: 1505011591}
   _scanFieldCollider: {fileID: 500501642}
   _scanFieldRange: 2
@@ -272,7 +274,7 @@ MonoBehaviour:
     FireCoolTime: 1.5
     TankMoveParam:
       _turnBarrelSpeed: 1
-      _moveSpeed: 2
+      _moveSpeed: 5
       _turnMoveSpeed: 1
     TankEnemyParam:
       _targetSpeed: 1
@@ -356,7 +358,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 358242425953260804}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
   m_Name: 

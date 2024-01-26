@@ -1,13 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Xml.Serialization;
+using MyGame.Script.SingletonSystem;
 using Photon.Pun;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class TankAction : MonoBehaviourPunCallbacks ,IPause
 {
-    [SerializeField] GameObject _bullet;
+    public BulletType BulletType;
     [SerializeField] GameObject _nozzle;
     [SerializeField] Transform _burrelTransform;
     [SerializeField] Slider _slider;
@@ -57,14 +58,16 @@ public class TankAction : MonoBehaviourPunCallbacks ,IPause
             _isReloaded = false;
             _fireTimer = 0f;
             photonView.RPC(nameof(Fire) , RpcTarget.AllViaServer);
-        }
+    }
     }
     [PunRPC]
     public void Fire()
     {
         _isReloaded = false;
         _fireTimer = 0f;
-        Instantiate(_bullet, _nozzle.transform.position, _burrelTransform.rotation);
+        if(PhotonNetwork.IsMasterClient)
+            BulletManager.Instance.CallMadeBullet(BulletType, _nozzle.transform.position, _burrelTransform.rotation);
+
         AudioManager.Instance.PlaySE(AudioManager.TankGameSoundType.Fire);
     }
     public void UpdateReloadUI()

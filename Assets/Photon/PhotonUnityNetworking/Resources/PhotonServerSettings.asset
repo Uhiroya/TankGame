@@ -73,6 +73,13 @@ MonoBehaviour:
   - CallStartTitles
   - RoundFailed
   - ChangeImmortal
+  - InputBarrelTurn
+  - InputMove
+  - InputTurn
+  - MakeBullet
+  - ReleaseBullet
+  - MadeBullet
+  - Making
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

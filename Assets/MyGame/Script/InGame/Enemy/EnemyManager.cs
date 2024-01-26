@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Photon.Pun;
 using UnityEngine;
 
-public class EnemyManager : MonoBehaviourPunCallbacks, IStart, IPause , ITankData
+public class EnemyManager : MonoBehaviourPunCallbacks, IActivatable, IPause , ITankData
 {
     [SerializeField] private GameObject _destroyEffect;
     public TankData TankData;
@@ -36,13 +36,13 @@ public class EnemyManager : MonoBehaviourPunCallbacks, IStart, IPause , ITankDat
     public override void OnEnable()
     {
         MyServiceLocator.IRegister(this as IPause);
-        MyServiceLocator.IRegister(this as IStart);
+        MyServiceLocator.IRegister(this as IActivatable);
     }
 
     public override void OnDisable()
     {
         MyServiceLocator.IUnRegister(this as IPause);
-        MyServiceLocator.IUnRegister(this as IStart);
+        MyServiceLocator.IUnRegister(this as IActivatable);
     }
     public void Active()
     {

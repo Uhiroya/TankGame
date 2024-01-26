@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class PlayerSystemInputManager : MonoBehaviour , IStart
+public class PlayerSystemInputManager : MonoBehaviour , IActivatable
 {
     private static PlayerSystemInputManager instance = null;
     bool _isActive = false;
@@ -20,12 +20,12 @@ public class PlayerSystemInputManager : MonoBehaviour , IStart
     }
     void OnEnable()
     {
-        MyServiceLocator.IRegister(this as IStart);
+        MyServiceLocator.IRegister(this as IActivatable);
     }
 
     void OnDisable()
     {
-        MyServiceLocator.IUnRegister(this as IStart);
+        MyServiceLocator.IUnRegister(this as IActivatable);
     }
     void Update()
     {

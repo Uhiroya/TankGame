@@ -115,11 +115,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32252b2c48957844f87efdb2f0b3e387, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _bulletType: 0
   _reflectCount: 1
   _bulletSpeed: 10
-  _bulletDamege: 100
+  _bulletDamage: 100
   _lifeTime: 5
   _trailParticleSystem: {fileID: 8225393408373870282}
+  _bulletRigidBody: {fileID: 3194461542087283252}
 --- !u!136 &1807844209980892987
 CapsuleCollider:
   m_ObjectHideFlags: 0

@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TitleStartArea : MonoBehaviour , IStart , IPause
+public class TitleStartArea : MonoBehaviour , IActivatable , IPause
 {
     [SerializeField] private Collider _startCollider;
     [SerializeField] private Slider _startSlider;
@@ -11,12 +11,12 @@ public class TitleStartArea : MonoBehaviour , IStart , IPause
     void OnEnable()
     {
         MyServiceLocator.IRegister(this as IPause);
-        MyServiceLocator.IRegister(this as IStart);
+        MyServiceLocator.IRegister(this as IActivatable);
     }
     void OnDisable()
     {
         MyServiceLocator.IUnRegister(this as IPause);
-        MyServiceLocator.IUnRegister(this as IStart);
+        MyServiceLocator.IUnRegister(this as IActivatable);
     }
     public void Active()
     {

@@ -1,41 +1,34 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-using UnityEngine.UIElements;
-using DG.Tweening;
-using Cysharp.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Threading;
+using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using UniRx;
 using UniRx.Triggers;
+using UnityEngine;
 
 public class EnemyController : MonoBehaviour
 {
-    [SerializeField] SphereCollider _scanPlayerCollider;
-    [SerializeField] SphereCollider _scanFieldCollider;
-    [SerializeField] float _scanFieldRange = 3f;
+    [SerializeField] private TankMovement _tankMovement;
+    [SerializeField] private TankAction _tankAction;
+    [SerializeField] private SphereCollider _scanPlayerCollider;
+    [SerializeField] private SphereCollider _scanFieldCollider;
+    [SerializeField] private float _scanFieldRange = 3f;
+    private Collider _currentTargetPlayer;
+    private TankEnemyParam _enemyParam;
+    private bool _isNearField;
 
-    private enum EnemyState
-    {
-        Waiting = 0,
-        Searching = 1,
-        Detected = 2,
-    }
+    private Vector3 _moveDir;
+    private bool _moveFlag;
+    private List<Collider> _playerColliderList = new();
 
     private EnemyState _state;
-    TankEnemyParam _enemyParam;
-    TankMovement _tankMovement;
-    TankAction _tankAction;
-    Vector3 _moveDir;
-    CancellationTokenSource cts;
-    bool _moveFlag = false;
-    bool _isNearField = false;
-    private Collider _playerCollider;
-    void Awake()
+    private CancellationTokenSource cts;
+
+    private float _rotateBarrelByMove;
+    private float _rotateBarrelBySearch;
+    
+    private void Awake()
     {
-        _tankMovement = GetComponent<TankMovement>();
-        _tankAction = GetComponent<TankAction>();
         _enemyParam = GetComponent<ITankData>().GetTankData().TankEnemyParam;
         _scanPlayerCollider.radius = _enemyParam._enemyScanRadius;
         _scanFieldCollider.radius = _scanFieldRange;
@@ -45,88 +38,127 @@ public class EnemyController : MonoBehaviour
             .Where(x => x.CompareTag("Player"))
             .Subscribe(x =>
             {
-                if (!_playerCollider)
-                {
-                    _state = EnemyState.Detected;
-                    _playerCollider = x;
-                }
+                _state = EnemyState.Detected;
+                _playerColliderList.Add(x);
             })
             .AddTo(this);
-            
+
         _scanPlayerCollider
             .OnTriggerExitAsObservable()
             .Where(x => x.CompareTag("Player"))
             .Subscribe(x =>
             {
-                var cols = Physics.OverlapSphere(transform.position, _enemyParam._enemyScanRadius);
-                _playerCollider = cols.FirstOrDefault(x => x.CompareTag("Player"));
-                if (_playerCollider)
-                {
-                    _state = EnemyState.Detected;
-                }
-                _state = EnemyState.Searching;
-                
+                MissTarget();
+                _playerColliderList.Remove(x);
+                if (_playerColliderList.Count == 0) _state = EnemyState.Searching;
             })
             .AddTo(this);
-        
+
         _scanFieldCollider
             .OnTriggerEnterAsObservable()
             .Where(x => x.CompareTag("Field"))
             .Subscribe(_ => _isNearField = true)
             .AddTo(this);
+
         _scanFieldCollider
             .OnTriggerExitAsObservable()
             .Where(x => x.CompareTag("Field"))
             .Subscribe(_ => _isNearField = false)
             .AddTo(this);
-        
     }
-    void OnEnable()
+
+    private void FixedUpdate()
+    {
+        if (!_moveFlag) return;
+        switch (_state)
+        {
+            case EnemyState.Waiting:
+                return;
+            case EnemyState.Searching:
+                ResetRotation();
+                break;
+            case EnemyState.Detected:
+                //TODO プレイヤーのターゲットリストから現在のターゲットを一つに決めたい。
+                if (!_currentTargetPlayer)
+                {
+                    FindTarget();
+                }
+                else
+                {
+                    ChaseTarget();
+                }
+                break;
+        }
+        _tankMovement.InputBarrelTurn(_rotateBarrelByMove + _rotateBarrelBySearch);
+    }
+    
+    private void FindTarget()
+    {
+        foreach (var playerCollider in _playerColliderList)
+        {
+            var playerDir = playerCollider.transform.position - transform.position;
+            Debug.DrawRay(transform.position, playerDir, Color.red);
+            if (Physics.Raycast(transform.position, playerDir, out var hit, playerDir.magnitude))
+                if (hit.collider.gameObject.CompareTag("Player"))
+                {
+                    _currentTargetPlayer = hit.collider;
+                    break;
+                }
+        }
+    }
+    private void ChaseTarget()
+    {
+        var targetDir = _currentTargetPlayer.transform.position - transform.position;
+        Debug.DrawRay(transform.position, targetDir, Color.red);
+        if (Physics.Raycast(transform.position, targetDir, out var hit, targetDir.magnitude))
+            if (hit.collider.gameObject.CompareTag("Player"))
+                DetectedPlayer(_currentTargetPlayer);
+            else
+                MissTarget();
+        else
+            MissTarget();
+    }
+    private void OnEnable()
     {
         cts?.Dispose();
         cts = new CancellationTokenSource();
         _moveFlag = true;
         _ = AutoMover();
     }
-    void OnDisable()
+
+    private void OnDisable()
     {
         _moveFlag = false;
         transform.DOKill();
         cts?.Cancel();
     }
-    void OnDestroy()
+
+    private void OnDestroy()
     {
         cts?.Dispose();
     }
 
-    private void FixedUpdate()
+    private void MissTarget()
     {
-        switch (_state)
-        {
-            case EnemyState.Waiting :
-                break;
-            case EnemyState.Searching :
-                break;
-            case EnemyState.Detected :
-                DetectPlayer(_playerCollider);
-                break;
-        }
+        _currentTargetPlayer = null;
     }
 
     public async UniTask AutoMover()
-    { 
+    {
         while (_moveFlag)
         {
             await Move().SuppressCancellationThrow();
             await UniTask.Delay((int)(_enemyParam._moveDelay * 1000));
         }
     }
+
     public async UniTask Move()
     {
-        var randomQua = Quaternion.Euler(0f, UnityEngine.Random.Range(0, 360f), 0f);
+        var randomQua = Quaternion.Euler(0f, Random.Range(0, 360f), 0f);
         _moveDir = randomQua * transform.forward * _enemyParam._scanMoveRange;
-        Debug.DrawRay(transform.position, _moveDir, Color.green , 5f);
-        Physics.BoxCast(transform.position, Vector3.one * transform.lossyScale.x, _moveDir, out RaycastHit hit , Quaternion.identity , _enemyParam._scanMoveRange);
+        Debug.DrawRay(transform.position, _moveDir, Color.green, 5f);
+        Physics.BoxCast(transform.position, Vector3.one * transform.lossyScale.x, _moveDir, out var hit,
+            Quaternion.identity, _enemyParam._scanMoveRange);
         try
         {
             if (hit.collider?.gameObject.tag != "Field" && hit.collider?.gameObject.tag != "Player")
@@ -134,21 +166,26 @@ public class EnemyController : MonoBehaviour
                 var previousPosition = transform.position;
                 while ((transform.position - previousPosition).magnitude < _moveDir.magnitude)
                 {
-                    if(Vector3.Angle(transform.forward, _moveDir) >= 1f)
+                    if (Vector3.Angle(transform.forward, _moveDir) >= 1f)
                     {
                         if (IsInferiorAngle(transform.forward, _moveDir))
                         {
-                            _tankMovement?.Turn(-1.0f);
-                            _tankMovement.BarrelTurn(1.0f);
+                            _tankMovement?.InputTurn(-1.0f);
+                            _rotateBarrelByMove = 1.0f;
                         }
                         else
                         {
-                            _tankMovement?.Turn(1.0f);
-                            _tankMovement.BarrelTurn(-1.0f);
+                            _tankMovement?.InputTurn(1.0f);
+                            _rotateBarrelByMove = -1.0f;
                         }
                     }
-                    _tankMovement.Move(1.0f);
-                    await UniTask.Yield(cancellationToken: cts.Token);
+                    else
+                    {
+                        _rotateBarrelByMove = 0f;
+                    }
+
+                    _tankMovement.InputMove(1.0f);
+                    await UniTask.Yield(cts.Token);
                     if (_isNearField)
                     {
                         _isNearField = false;
@@ -162,22 +199,12 @@ public class EnemyController : MonoBehaviour
             Debug.Log("Stop");
         }
     }
+
     //Detectorにプレイヤーが振れている間呼ばれる。
     public void DetectPlayer(Collider player)
     {
-        if (!_moveFlag) return;
-        var playerDir = player.transform.position - transform.position;
-        Physics.Raycast(transform.position ,playerDir , out RaycastHit hit, _enemyParam._enemyScanRadius);
-        Debug.DrawRay(transform.position, playerDir, Color.red);
-        if (hit.collider?.gameObject.tag == "Player")
-        {
-            DetectedPlayer(player);
-        }
-        else
-        {
-            ResetRotation();
-        }
     }
+
     public void DetectedPlayer(Collider player)
     {
         //円でサーチ
@@ -185,57 +212,58 @@ public class EnemyController : MonoBehaviour
         var toPlayerVec = player.gameObject.transform.position - transform.position;
         //外積を利用して最速方向に回転する
         if (IsInferiorAngle(bullelTransform.forward, toPlayerVec))
-        {
             //左回り
             _enemyParam._targetSpeed = -Mathf.Abs(_enemyParam._targetSpeed);
-        }
         else
-        {
             //右回り
             _enemyParam._targetSpeed = Mathf.Abs(_enemyParam._targetSpeed);
-        }
         var angleToPlayer = Vector3.Angle(bullelTransform.forward, toPlayerVec);
         if (angleToPlayer < 5f)
         {
             _tankAction.ReadyToFire();
-            if (angleToPlayer > 2f)
-            {
-                _tankMovement.BarrelTurn(_enemyParam._targetSpeed);
-            }
+            if (angleToPlayer > 2f) _rotateBarrelBySearch = _enemyParam._targetSpeed;
+            else _rotateBarrelBySearch = 0f;
         }
         else
         {
-            _tankMovement.BarrelTurn(_enemyParam._targetSpeed);
-        }
-    }
-    //二つのベクトルのなす角が時計回りか反時計かを判定　trueが反時計
-    public bool IsInferiorAngle(Vector3 vecA , Vector3 vecB)
-    {
-        if(Vector3.Cross(vecA , vecB).y < 0)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
+            _rotateBarrelBySearch = _enemyParam._targetSpeed;
         }
     }
 
-    void ResetRotation()
+    //二つのベクトルのなす角が時計回りか反時計かを判定　trueが反時計
+    public bool IsInferiorAngle(Vector3 vecA, Vector3 vecB)
     {
-        if(IsInferiorAngle( _tankMovement.BrrelTransform.forward , transform.forward) )
+        if (Vector3.Cross(vecA, vecB).y < 0)
+            return true;
+        return false;
+    }
+
+    private void ResetRotation()
+    {
+        if (IsInferiorAngle(_tankMovement.BrrelTransform.forward, transform.forward))
         {
-            if(Vector3.Angle(transform.forward, _tankMovement.BrrelTransform.forward) > 2f)
+            if (Vector3.Angle(transform.forward, _tankMovement.BrrelTransform.forward) > 2f)
+                _rotateBarrelBySearch =-1.0f;
+            else
             {
-                _tankMovement.BarrelTurn(-1.0f);
+                _rotateBarrelBySearch = 0f;
             }
         }
         else
         {
             if (Vector3.Angle(transform.forward, _tankMovement.BrrelTransform.forward) > 2f)
+                _rotateBarrelBySearch = 1.0f;
+            else
             {
-                _tankMovement.BarrelTurn(1.0f);
+                _rotateBarrelBySearch = 0f;
             }
         }
+    }
+
+    private enum EnemyState
+    {
+        Waiting = 0,
+        Searching = 1,
+        Detected = 2
     }
 }

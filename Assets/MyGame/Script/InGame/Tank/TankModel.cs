@@ -22,6 +22,7 @@ public class TankModel : MonoBehaviour
     {
         if (IsImmortal) return;
         _currentHP -= damage;
+        Debug.Log(_currentHP);
         if (_currentHP <= 0)
         {
             AudioManager.Instance.PlaySE(AudioManager.TankGameSoundType.explotion);
