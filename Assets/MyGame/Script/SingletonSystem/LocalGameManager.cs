@@ -27,10 +27,18 @@ public class LocalGameManager : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    public async void Ready(string sceneName)
+    public async void ReadyToSceneChange(string sceneName)
     {
-        await UniTask.WaitUntil(() => IsLoadedObjects(sceneName));
-        photonView.RPC(nameof(MasterGameManager.Instance.GetReady), RpcTarget.MasterClient,
+        await UniTask.WaitUntil(() => sceneName == SceneManager.GetActiveScene().name);
+        photonView.RPC(nameof(MasterGameManager.Instance.CompleteLocalActions), RpcTarget.MasterClient,
+            PhotonNetwork.LocalPlayer.ActorNumber);
+    }
+
+    [PunRPC]
+    public async void ReadyToSpawnPlayer()
+    {
+        await UniTask.WaitUntil(IsLoadedObjects);
+        photonView.RPC(nameof(MasterGameManager.Instance.CompleteLocalActions), RpcTarget.MasterClient,
             PhotonNetwork.LocalPlayer.ActorNumber);
     }
 
@@ -39,9 +47,8 @@ public class LocalGameManager : MonoBehaviourPunCallbacks
     ///     Punで生成されているPlayerが共有された後OnEnabledが呼ばれた際にロード済みにして、
     ///     最大数になったら準備完了を伝える。
     /// </summary>
-    private bool IsLoadedObjects(string sceneName)
+    private bool IsLoadedObjects()
     {
-        if (sceneName != SceneManager.GetActiveScene().name) return false;
         var players = GameObject.FindGameObjectsWithTag("Player");
         if (players.Length == PhotonNetwork.CurrentRoom.MaxPlayers)
         {
@@ -80,7 +87,7 @@ public class LocalGameManager : MonoBehaviourPunCallbacks
 
     private async UniTask AnimateObjects()
     {
-        await MyServiceLocator.IResolve<IAnimAwake>().OfType<IAnimAwake>()
+        await MyServiceLocator.IResolve<IAwakeAnim>().OfType<IAwakeAnim>()
             .Select(x => x.AnimAwake(_startDelay));
     }
 

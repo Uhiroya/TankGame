@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-interface IAnimAwake 
+interface IAwakeAnim 
 {
     UniTask AnimAwake(float time);
 }

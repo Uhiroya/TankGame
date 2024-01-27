@@ -1,71 +1,42 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class PlayerInputManager : MonoBehaviour
 {
-    private TankMovement _tankMovement;
-    private TankAction _tankAction;
-
-    public event Action OnFire;
-    //input
-    private float _inputMoveVertical;
-    private float _inputMoveHorizontal;
-    //BarrelRotation
-    private float _inputVertical;
+    [SerializeField] private TankController _tankController;
+    [SerializeField] private AudioSource _audioSource;
     private float _inputHorizontal;
+    private float _inputMoveHorizontal;
 
-    AudioSource _audioSource;
-    void Awake()
-    {
-        _audioSource = GetComponent<AudioSource>();
-        _tankMovement = GetComponent<TankMovement>();
-        _tankAction = GetComponent<TankAction>();
-    }
+    private float _inputMoveVertical;
+    
 
-    private void FixedUpdate()
-    {
-        _tankMovement.InputMove(_inputMoveVertical);
-        if(_inputMoveVertical >= 0)
-        {
-            _tankMovement.InputTurn(_inputMoveHorizontal);
-        }
-        else
-        {
-            _tankMovement.InputTurn(-_inputMoveHorizontal);
-        }
-        _tankMovement.InputBarrelTurn(_inputHorizontal);
-    }
-    void OnEnable()
-    {
-        
-    }
-    void Update()
+    private void Update()
     {
         _inputMoveVertical = Input.GetAxis("Vertical");
         _inputMoveHorizontal = Input.GetAxis("Horizontal");
-        _inputVertical = Input.GetAxis("Vertical2");
         _inputHorizontal = Input.GetAxis("Horizontal2");
-        if (Input.GetButtonDown("Fire1"))
-        {
-            OnFire?.Invoke();
-            
-        }
+        if (Input.GetButtonDown("Fire1")) _tankController.InputFire();
         if (_inputMoveVertical == 0f)
         {
             _audioSource.Pause();
         }
         else
         {
-            if (!_audioSource.isPlaying)
-            {
-                _audioSource.Play();
-            }
-            
+            if (!_audioSource.isPlaying) _audioSource.Play();
         }
     }
-   public void StopTankAudio()
+
+    private void FixedUpdate()
+    {
+        _tankController.InputMove(_inputMoveVertical);
+        if (_inputMoveVertical >= 0)
+            _tankController.InputTurn(_inputMoveHorizontal);
+        else
+            _tankController.InputTurn(-_inputMoveHorizontal);
+        _tankController.InputBarrelTurn(_inputHorizontal);
+    }
+
+    public void StopTankAudio()
     {
         _audioSource.Pause();
     }

@@ -2,7 +2,9 @@ using Cysharp.Threading.Tasks;
 using Photon.Pun;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-
+/// <summary>
+/// ルームのオーナーが他参加者に通知を送るクラス。
+/// </summary>
 public class MasterGameManager : MonoBehaviourPunCallbacks
 {
     public static MasterGameManager Instance;
@@ -31,23 +33,36 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
             Destroy(this);
         }
     }
-
+    /// <summary>
+    /// 準備完了を受け取る
+    /// </summary>
+    /// <param name="actorNumber"></param>
     [PunRPC]
-    public void GetReady(int actorNumber)
+    public void CompleteLocalActions(int actorNumber)
     {
         _readyFlags |= 1 << (actorNumber - 1);
     }
-
+    /// <summary>
+    /// 準備待機コール
+    /// </summary>
     [PunRPC]
-    private void CheckReady()
+    private void CheckCompleteToSceneChange()
     {
         _readyFlags = 0;
-        photonView.RPC(nameof(LocalGameManager.Instance.Ready), RpcTarget.AllViaServer , SceneManager.GetActiveScene().name);
+        photonView.RPC(nameof(LocalGameManager.Instance.ReadyToSceneChange), RpcTarget.AllViaServer , SceneManager.GetActiveScene().name);
     }
-
+    [PunRPC]
+    private void CheckCompleteToSpawnPlayer()
+    {
+        _readyFlags = 0;
+        photonView.RPC(nameof(LocalGameManager.Instance.ReadyToSpawnPlayer), RpcTarget.AllViaServer);
+    }
+    /// <summary>
+    /// ルームの全てのプレイヤーが準備できているか判定。
+    /// </summary>
     private bool IsAllPlayerReady()
     {
-        for (var i = 0; i < NetworkManager.Instance.MaxPlayer; i++)
+        for (var i = 0; i < PhotonNetwork.CurrentRoom.PlayerCount; i++)
             if (((_readyFlags >> i) & 1) == 0)
                 return false;
         return true;
@@ -55,7 +70,9 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
 
     private async UniTask SpawnPlayers()
     {
-        CheckReady();
+        CheckCompleteToSceneChange();
+        await UniTask.WaitUntil(IsAllPlayerReady);
+        CheckCompleteToSpawnPlayer();
         photonView.RPC(nameof(NetworkManager.Instance.SpawnPlayer), RpcTarget.AllBufferedViaServer);
         await UniTask.WaitUntil(IsAllPlayerReady);
     }
@@ -76,7 +93,7 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     private async UniTask CallStartGames()
     {
-        _currentPlayerCount = PhotonNetwork.CurrentRoom.MaxPlayers;
+        _currentPlayerCount = PhotonNetwork.CurrentRoom.PlayerCount;
         _currentEnemyCount = _maxEnemyCount = GameObject.FindGameObjectsWithTag("Enemy").Length;
         _sumBreakCount += _maxEnemyCount;
 

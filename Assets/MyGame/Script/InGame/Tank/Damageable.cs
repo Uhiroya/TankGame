@@ -4,28 +4,23 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
-public class TankModel : MonoBehaviour
+
+public class Damageable : MonoBehaviour
 {
-    
-    GameObject _destroyEffect;
     public event Action OnDead;
     public bool IsImmortal { get; set; } = false;
-    int _maxHP;
-    int _currentHP;
-    public TankModel Initialize(int maxHP)
+    int _currentHp;
+    public Damageable Initialize(int maxHp)
     {
-        _maxHP = maxHP;
-        _currentHP = maxHP;
+        _currentHp = maxHp;
         return this;
     }
     public void TakeDamage(int damage)
     {
         if (IsImmortal) return;
-        _currentHP -= damage;
-        Debug.Log(_currentHP);
-        if (_currentHP <= 0)
+        _currentHp -= damage;
+        if (_currentHp <= 0)
         {
-            AudioManager.Instance.PlaySE(AudioManager.TankGameSoundType.explotion);
             OnDead?.Invoke();
         }
     }

@@ -101,16 +101,14 @@ GameObject:
   - component: {fileID: 2138103694057824949}
   - component: {fileID: 5414236790721998404}
   - component: {fileID: 7981757442653421215}
-  - component: {fileID: 4340692467272015650}
   - component: {fileID: 4340692467272015649}
-  - component: {fileID: 4340692467272015652}
   - component: {fileID: -4399299388019068585}
   - component: {fileID: 3168279919712731350}
   - component: {fileID: -613707860683070695}
+  - component: {fileID: 4340692467272015650}
   - component: {fileID: 4511576773086303523}
   - component: {fileID: 1978459458}
   - component: {fileID: 2999978805935059583}
-  - component: {fileID: 5623044328647221163}
   m_Layer: 0
   m_Name: EnemyRed
   m_TagString: Enemy
@@ -191,6 +189,81 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &4340692467272015649
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 358242425953260804}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bfd3ef245221fa34ca582c592b281066, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rigidBody: {fileID: 4340692467272015650}
+  _slider: {fileID: 416109169077700528}
+  _nozzle: {fileID: 6720510785836136737}
+  _burrelTransform: {fileID: 6184232559994482196}
+  _tankData:
+    BulletType: 0
+    TankHP: 100
+    FireCoolTime: 1.5
+    MoveSpeed: 3
+    RotateSpeed: 2
+    TurnBarrelSpeed: 1
+--- !u!114 &-4399299388019068585
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 358242425953260804}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e25d85e5897a4245a662a397af6473d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _tankController: {fileID: 4340692467272015649}
+  _scanPlayerCollider: {fileID: 1505011591}
+  _scanFieldCollider: {fileID: 500501642}
+  _enemyScanRadius: 20
+  _scanMoveRadius: 3
+  _moveDelay: 1
+--- !u!114 &3168279919712731350
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 358242425953260804}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea4d6fb4a28d98045952535486b13421, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _destroyEffect: {fileID: 1000011797152326, guid: acf39d9f4addf294d93fa56fa373961b, type: 3}
+  TankData:
+    BulletType: 0
+    TankHP: 100
+    FireCoolTime: 1.5
+    MoveSpeed: 1
+    RotateSpeed: 1
+    TurnBarrelSpeed: 1
+--- !u!136 &-613707860683070695
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 358242425953260804}
+  m_Material: {fileID: 13400000, guid: c9b686cdcc533e84abddc144b855aeb8, type: 2}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 1.3321018
+  m_Height: 1.125915
+  m_Direction: 1
+  m_Center: {x: 0.0000003874302, y: 0.06295732, z: -0.038929284}
 --- !u!54 &4340692467272015650
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -207,94 +280,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 80
   m_CollisionDetection: 0
---- !u!114 &4340692467272015649
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 358242425953260804}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bfd3ef245221fa34ca582c592b281066, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _startPositionY: 50
-  BrrelTransform: {fileID: 6184232559994482196}
---- !u!114 &4340692467272015652
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 358242425953260804}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 61ae46b7ee3b4a44c991fe6a975039f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _bullet: {fileID: 5634639283650341757, guid: adf5fc27cc229744db5d37b1f584e5e5, type: 3}
-  _nozzle: {fileID: 6720510785836136737}
-  _burrelTransform: {fileID: 6184232559994482196}
-  _slider: {fileID: 416109169077700528}
-  _isHitNozzle: 0
---- !u!114 &-4399299388019068585
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 358242425953260804}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9e25d85e5897a4245a662a397af6473d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _tankMovement: {fileID: 4340692467272015649}
-  _tankAction: {fileID: 4340692467272015652}
-  _scanPlayerCollider: {fileID: 1505011591}
-  _scanFieldCollider: {fileID: 500501642}
-  _scanFieldRange: 2
---- !u!114 &3168279919712731350
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 358242425953260804}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea4d6fb4a28d98045952535486b13421, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _destroyEffect: {fileID: 1000011797152326, guid: acf39d9f4addf294d93fa56fa373961b, type: 3}
-  TankData:
-    TankType: 3
-    TankHP: 100
-    FireCoolTime: 1.5
-    TankMoveParam:
-      _turnBarrelSpeed: 1
-      _moveSpeed: 5
-      _turnMoveSpeed: 1
-    TankEnemyParam:
-      _targetSpeed: 1
-      _enemyScanRadius: 20
-      _scanMoveRange: 3
-      _moveDelay: 0.3
---- !u!136 &-613707860683070695
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 358242425953260804}
-  m_Material: {fileID: 13400000, guid: c9b686cdcc533e84abddc144b855aeb8, type: 2}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 1.3321018
-  m_Height: 1.125915
-  m_Direction: 1
-  m_Center: {x: 0.0000003874302, y: 0.06295732, z: -0.038929284}
 --- !u!114 &4511576773086303523
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -331,7 +316,6 @@ MonoBehaviour:
   observableSearch: 2
   ObservedComponents:
   - {fileID: 2999978805935059583}
-  - {fileID: 5623044328647221163}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -351,22 +335,6 @@ MonoBehaviour:
   m_SynchronizeAngularVelocity: 0
   m_TeleportEnabled: 0
   m_TeleportIfDistanceGreaterThan: 3
---- !u!114 &5623044328647221163
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 358242425953260804}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SynchronizePosition: 1
-  m_SynchronizeRotation: 1
-  m_SynchronizeScale: 0
-  m_UseLocal: 1
 --- !u!1 &548672796481932956
 GameObject:
   m_ObjectHideFlags: 0

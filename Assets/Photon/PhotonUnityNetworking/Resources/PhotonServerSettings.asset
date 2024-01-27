@@ -80,6 +80,14 @@ MonoBehaviour:
   - ReleaseBullet
   - MadeBullet
   - Making
+  - CheckCompleteToSceneChange
+  - CheckCompleteToSpawnPlayer
+  - CompleteLocalActions
+  - ReadyToSceneChange
+  - ReadyToSpawnPlayer
+  - GetInputBarrelTurn
+  - GetInputMove
+  - GetInputTurn
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

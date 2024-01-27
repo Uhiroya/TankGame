@@ -2,37 +2,35 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
 [System.Serializable]
-public class TankData 
+public enum BulletType
 {
-    public TankType TankType;
+    Normal = 0,
+    Speed = 1,
+}
+[System.Serializable]
+public class TankData
+{
+    [SerializeField , Header("発射する弾の種類")]
+    public BulletType BulletType;
+    [SerializeField , Header("初期HP")]
     public int TankHP;
+    [SerializeField , Header("射撃クールタイム")]
     public float FireCoolTime = 1.5f;
-    public TankMoveParam TankMoveParam;
-    public TankEnemyParam TankEnemyParam;
-}
-[System.Serializable]
-public enum TankType 
-{ 
-    Player,
-    EnemyYellow,
-    EnemyBlue,
-    EnemyRed,
-    EnemyGreen,
-}
-[System.Serializable]
-public class TankMoveParam
-{
-    public float _turnBarrelSpeed = 1f;
-    public float _moveSpeed = 1f;
-    public float _turnMoveSpeed = 1f;
+    [SerializeField , Header("前後移動速度")]
+    
+    public float MoveSpeed = 1f;
+    [SerializeField , Header("履帯の回転速度")]
+    public float RotateSpeed = 1f;
+    
+    [SerializeField , Header("砲台の回転速度")]
+    public float TurnBarrelSpeed = 1f;
 }
 [System.Serializable]
 public class TankEnemyParam
 {
-    public float _targetSpeed = 1f;
-    public float _enemyScanRadius = 20f;
-    public float _scanMoveRange = 1.0f;
-    public float _moveDelay = 1.0f;
+    public float TargetSpeed = 1f;
+    public float EnemyScanRadius = 20f;
+    public float ScanMoveRange = 1.0f;
+    public float MoveDelay = 1.0f;
 }

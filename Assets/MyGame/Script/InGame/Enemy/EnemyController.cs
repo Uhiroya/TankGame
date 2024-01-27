@@ -8,30 +8,29 @@ using UnityEngine;
 
 public class EnemyController : MonoBehaviour
 {
-    [SerializeField] private TankMovement _tankMovement;
-    [SerializeField] private TankAction _tankAction;
+    [SerializeField] private TankController _tankController;
     [SerializeField] private SphereCollider _scanPlayerCollider;
     [SerializeField] private SphereCollider _scanFieldCollider;
-    [SerializeField] private float _scanFieldRange = 3f;
+    [SerializeField] private float _playerScanRadius = 20f;
+    [SerializeField] private float _scanMoveRadius = 3f;
+    [SerializeField] private float _moveDelay = 1f;
+    
     private Collider _currentTargetPlayer;
     private TankEnemyParam _enemyParam;
-    private bool _isNearField;
-
     private Vector3 _moveDir;
     private bool _moveFlag;
     private List<Collider> _playerColliderList = new();
 
     private EnemyState _state;
-    private CancellationTokenSource cts;
+    private CancellationTokenSource _cts;
 
     private float _rotateBarrelByMove;
     private float _rotateBarrelBySearch;
-    
+    private bool _isNearField = false;
     private void Awake()
     {
-        _enemyParam = GetComponent<ITankData>().GetTankData().TankEnemyParam;
-        _scanPlayerCollider.radius = _enemyParam._enemyScanRadius;
-        _scanFieldCollider.radius = _scanFieldRange;
+        _scanPlayerCollider.radius = _playerScanRadius;
+        _scanFieldCollider.radius = _scanMoveRadius;
 
         _scanPlayerCollider
             .OnTriggerEnterAsObservable()
@@ -76,6 +75,7 @@ public class EnemyController : MonoBehaviour
                 return;
             case EnemyState.Searching:
                 ResetRotation();
+                
                 break;
             case EnemyState.Detected:
                 //TODO プレイヤーのターゲットリストから現在のターゲットを一つに決めたい。
@@ -89,13 +89,14 @@ public class EnemyController : MonoBehaviour
                 }
                 break;
         }
-        _tankMovement.InputBarrelTurn(_rotateBarrelByMove + _rotateBarrelBySearch);
+        _tankController.InputBarrelTurn(_rotateBarrelByMove + _rotateBarrelBySearch);
     }
     
     private void FindTarget()
     {
         foreach (var playerCollider in _playerColliderList)
         {
+            if (!playerCollider) continue;
             var playerDir = playerCollider.transform.position - transform.position;
             Debug.DrawRay(transform.position, playerDir, Color.red);
             if (Physics.Raycast(transform.position, playerDir, out var hit, playerDir.magnitude))
@@ -120,8 +121,8 @@ public class EnemyController : MonoBehaviour
     }
     private void OnEnable()
     {
-        cts?.Dispose();
-        cts = new CancellationTokenSource();
+        _cts?.Dispose();
+        _cts = new CancellationTokenSource();
         _moveFlag = true;
         _ = AutoMover();
     }
@@ -130,12 +131,12 @@ public class EnemyController : MonoBehaviour
     {
         _moveFlag = false;
         transform.DOKill();
-        cts?.Cancel();
+        _cts?.Cancel();
     }
 
     private void OnDestroy()
     {
-        cts?.Dispose();
+        _cts?.Dispose();
     }
 
     private void MissTarget()
@@ -148,44 +149,47 @@ public class EnemyController : MonoBehaviour
         while (_moveFlag)
         {
             await Move().SuppressCancellationThrow();
-            await UniTask.Delay((int)(_enemyParam._moveDelay * 1000));
+            await UniTask.Delay((int)(_moveDelay * 1000));
         }
     }
 
     public async UniTask Move()
     {
         var randomQua = Quaternion.Euler(0f, Random.Range(0, 360f), 0f);
-        _moveDir = randomQua * transform.forward * _enemyParam._scanMoveRange;
+        _moveDir = randomQua * transform.forward * _scanMoveRadius;
         Debug.DrawRay(transform.position, _moveDir, Color.green, 5f);
         Physics.BoxCast(transform.position, Vector3.one * transform.lossyScale.x, _moveDir, out var hit,
-            Quaternion.identity, _enemyParam._scanMoveRange);
+            Quaternion.identity,_scanMoveRadius);
         try
         {
             if (hit.collider?.gameObject.tag != "Field" && hit.collider?.gameObject.tag != "Player")
             {
                 var previousPosition = transform.position;
+                //ゴール地点まで動く
                 while ((transform.position - previousPosition).magnitude < _moveDir.magnitude)
                 {
+                    //Rayが飛ばされた向きまで履帯を回転させる
                     if (Vector3.Angle(transform.forward, _moveDir) >= 1f)
                     {
                         if (IsInferiorAngle(transform.forward, _moveDir))
                         {
-                            _tankMovement?.InputTurn(-1.0f);
+                            _tankController.InputTurn(-1.0f);
                             _rotateBarrelByMove = 1.0f;
                         }
                         else
                         {
-                            _tankMovement?.InputTurn(1.0f);
+                            _tankController.InputTurn(1.0f);
                             _rotateBarrelByMove = -1.0f;
                         }
                     }
                     else
                     {
+                        _tankController.InputTurn(0f);
                         _rotateBarrelByMove = 0f;
                     }
 
-                    _tankMovement.InputMove(1.0f);
-                    await UniTask.Yield(cts.Token);
+                    _tankController.InputMove(1.0f);
+                    await UniTask.Yield(_cts.Token);
                     if (_isNearField)
                     {
                         _isNearField = false;
@@ -198,35 +202,30 @@ public class EnemyController : MonoBehaviour
         {
             Debug.Log("Stop");
         }
-    }
-
-    //Detectorにプレイヤーが振れている間呼ばれる。
-    public void DetectPlayer(Collider player)
-    {
+        finally
+        {
+            _tankController.InputTurn(0f);
+            _tankController.InputMove(0f);
+        }
     }
 
     public void DetectedPlayer(Collider player)
     {
         //円でサーチ
-        var bullelTransform = _tankMovement.BrrelTransform;
+        var bullelTransform = _tankController.BurrelTransform;
         var toPlayerVec = player.gameObject.transform.position - transform.position;
         //外積を利用して最速方向に回転する
         if (IsInferiorAngle(bullelTransform.forward, toPlayerVec))
             //左回り
-            _enemyParam._targetSpeed = -Mathf.Abs(_enemyParam._targetSpeed);
+            _rotateBarrelBySearch = -1.0f;
         else
             //右回り
-            _enemyParam._targetSpeed = Mathf.Abs(_enemyParam._targetSpeed);
+            _rotateBarrelBySearch = 1.0f;
         var angleToPlayer = Vector3.Angle(bullelTransform.forward, toPlayerVec);
         if (angleToPlayer < 5f)
         {
-            _tankAction.ReadyToFire();
-            if (angleToPlayer > 2f) _rotateBarrelBySearch = _enemyParam._targetSpeed;
-            else _rotateBarrelBySearch = 0f;
-        }
-        else
-        {
-            _rotateBarrelBySearch = _enemyParam._targetSpeed;
+            _tankController.InputFire();
+            if (angleToPlayer < 2f) _rotateBarrelBySearch = 0f;
         }
     }
 
@@ -240,9 +239,9 @@ public class EnemyController : MonoBehaviour
 
     private void ResetRotation()
     {
-        if (IsInferiorAngle(_tankMovement.BrrelTransform.forward, transform.forward))
+        if (IsInferiorAngle(_tankController.BurrelTransform.forward, transform.forward))
         {
-            if (Vector3.Angle(transform.forward, _tankMovement.BrrelTransform.forward) > 2f)
+            if (Vector3.Angle(transform.forward, _tankController.BurrelTransform.forward) > 2f)
                 _rotateBarrelBySearch =-1.0f;
             else
             {
@@ -251,7 +250,7 @@ public class EnemyController : MonoBehaviour
         }
         else
         {
-            if (Vector3.Angle(transform.forward, _tankMovement.BrrelTransform.forward) > 2f)
+            if (Vector3.Angle(transform.forward, _tankController.BurrelTransform.forward) > 2f)
                 _rotateBarrelBySearch = 1.0f;
             else
             {

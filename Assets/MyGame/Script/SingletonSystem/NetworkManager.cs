@@ -273,34 +273,4 @@ public class NetworkManager : MonoBehaviourPunCallbacks // Photon Realtime 用�
     {
         //Debug.Log("OnPlayerPropertiesUpdate");
     }
-
-    /// <summary>フレンドリストに更新があった時</summary>
-    public override void OnFriendListUpdate(List<FriendInfo> friendList)
-    {
-        //Debug.Log("OnFriendListUpdate");
-    }
-
-    /// <summary>地域リストを受け取った時</summary>
-    public override void OnRegionListReceived(RegionHandler regionHandler)
-    {
-        //Debug.Log("OnRegionListReceived");
-    }
-
-    /// <summary>WebRpcのレスポンスがあった時</summary>
-    public override void OnWebRpcResponse(OperationResponse response)
-    {
-        //Debug.Log("OnWebRpcResponse");
-    }
-
-    /// <summary>カスタム認証のレスポンスがあった時</summary>
-    public override void OnCustomAuthenticationResponse(Dictionary<string, object> data)
-    {
-        //Debug.Log("OnCustomAuthenticationResponse");
-    }
-
-    /// <summary>カスタム認証が失敗した時</summary>
-    public override void OnCustomAuthenticationFailed(string debugMessage)
-    {
-        //Debug.Log("OnCustomAuthenticationFailed");
-    }
 }

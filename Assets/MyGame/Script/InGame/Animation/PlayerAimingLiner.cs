@@ -5,17 +5,17 @@ using UnityEngine;
 public class PlayerAimingLiner : MonoBehaviour
 {
     [SerializeField] float _cursorRange = 20f;
-    private TankMovement _tankMovement;
+    private TankController _tankController;
     private LineRenderer _lineRenderer;
     void Start()
     {
-        _tankMovement = GetComponentInParent<TankMovement>();
+        _tankController = GetComponentInParent<TankController>();
         _lineRenderer = GetComponent<LineRenderer>();
     }
     void Update()
     {
         _lineRenderer.SetPosition(0, transform.position);
-        var dir = _tankMovement.BrrelTransform.forward;
+        var dir = _tankController.BurrelTransform.forward;
         Ray ray = new Ray(transform.position, dir);
         Debug.DrawRay(transform.position, dir * _cursorRange, Color.green , 1f);
         if(Physics.Raycast(ray,  out RaycastHit hit , _cursorRange) && hit.transform?.gameObject.tag == "Field")

@@ -83,7 +83,7 @@ public class BulletController : MonoBehaviourPunCallbacks , IPause , IActivatabl
         }
         if (collision.transform.tag == "Enemy" || collision.transform.tag == "Player")
         {
-            collision.transform.gameObject.GetComponent<TankModel>()?.TakeDamage(_bulletDamage);
+            collision.transform.gameObject.GetComponent<Damageable>()?.TakeDamage(_bulletDamage);
             OnHit();
         }
     }

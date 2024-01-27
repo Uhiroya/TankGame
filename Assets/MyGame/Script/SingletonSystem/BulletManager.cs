@@ -3,11 +3,7 @@ using Photon.Pun;
 using UnityEngine;
 using UnityEngine.Pool;
 
-public enum BulletType
-{
-    Normal = 0,
-    Speed = 1,
-}
+
 namespace MyGame.Script.SingletonSystem
 {
     public class BulletManager : MonoBehaviourPunCallbacks , IActivatable
@@ -55,7 +51,7 @@ namespace MyGame.Script.SingletonSystem
                 target => { target.SetActive(false); },
                 target =>
                 {
-                    PhotonNetwork.Destroy(target);
+                    Destroy(target);
                 } ,
                 false
             );

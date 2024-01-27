@@ -8,13 +8,13 @@ public class EnemyManager : MonoBehaviourPunCallbacks, IActivatable, IPause , IT
     [SerializeField] private GameObject _destroyEffect;
     public TankData TankData;
     EnemyController _enemyController;
-    private TankModel _model;
+    private Damageable _helth;
 
     void Awake()
     {
         _enemyController = GetComponent<EnemyController>();
-        _model = gameObject.AddComponent<TankModel>().Initialize(TankData.TankHP);
-        _model.OnDead += RegisterEvent;
+        _helth = gameObject.AddComponent<Damageable>().Initialize(TankData.TankHP);
+        _helth.OnDead += RegisterEvent;
         _enemyController.enabled = false;
     }
     
