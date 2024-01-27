@@ -17,6 +17,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IActivatable, IPause
 
     public override void OnEnable()
     {
+        base.OnEnable();
         _tankController.DeadEvent += CallDestroy;
         MyServiceLocator.IRegister(this as IPause);
         MyServiceLocator.IRegister(this as IActivatable);
@@ -24,6 +25,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IActivatable, IPause
 
     public override void OnDisable()
     {
+        base.OnDisable();
         _tankController.DeadEvent -= CallDestroy;
         MyServiceLocator.IUnRegister(this as IPause);
         MyServiceLocator.IUnRegister(this as IActivatable);
@@ -36,6 +38,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IActivatable, IPause
 
     public void DeActive()
     {
+        _playerInputManager.StopTankAudio();
         _playerInputManager.enabled = false;
     }
 

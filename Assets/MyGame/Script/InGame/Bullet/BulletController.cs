@@ -37,15 +37,18 @@ public class BulletController : MonoBehaviourPunCallbacks , IPause , IActivatabl
         transform1.rotation = rotation;
         return _ID;
     }
-    void OnEnable()  
+    public override void OnEnable()  
     {
+        base.OnEnable();
         _myBulletSpeed = _bulletSpeed;
+        
         MyServiceLocator.IRegister<IPause>(this);
         MyServiceLocator.IRegister<IActivatable>(this);
     }
 
-    void OnDisable()
+    public override void OnDisable()
     {
+        base.OnDisable();
         MyServiceLocator.IUnRegister<IPause>(this);
         MyServiceLocator.IUnRegister<IActivatable>(this);
     }

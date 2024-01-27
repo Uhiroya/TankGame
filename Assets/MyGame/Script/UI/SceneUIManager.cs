@@ -19,7 +19,6 @@ public class SceneUIManager : MonoBehaviour
     [SerializeField] Image _gameOverImage;
     [SerializeField] Image _pauseImage;
     [SerializeField] GameObject _resultUI;
-    [SerializeField] Image _resultImage;
     [SerializeField] Text _resultCountText;
     [SerializeField] float _fadeTime = 0.5f;
     [SerializeField] float _startStageFade = 1.5f;
@@ -75,7 +74,6 @@ public class SceneUIManager : MonoBehaviour
     {
         _resultUI.gameObject.SetActive(true);
         await _resultCountText.DOCounter(0 , enemyCount ,1f);
-        //await UniTask.WaitUntil(() => Input.anyKey);
         await UniTask.WaitForSeconds(2f);
         _resultUI.GetComponent<Animator>().Play("PauseEnd");
         await UniTask.WaitForSeconds(0.2f);

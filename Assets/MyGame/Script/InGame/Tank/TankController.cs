@@ -32,7 +32,6 @@ public class TankController : MonoBehaviourPunCallbacks, IAwakeAnim ,IActivatabl
     private float _inputMoveHorizontal;
     private float _inputVertical;
     
-    float _fireCoolTime = 0f;
     private float _fireTimer;
     bool _isReloaded = true;
     public event Action DeadEvent;
@@ -49,8 +48,7 @@ public class TankController : MonoBehaviourPunCallbacks, IAwakeAnim ,IActivatabl
         _rigidBody = GetComponent<Rigidbody>();
         transform.position += Vector3.up * StartPositionY;
         
-        _fireCoolTime = _tankData.FireCoolTime;
-        _slider.maxValue = _fireCoolTime;
+        _slider.maxValue = _tankData.FireCoolTime;
         
          _damageable = gameObject.AddComponent<Damageable>().Initialize(_tankData.TankHP);
     }
@@ -69,7 +67,7 @@ public class TankController : MonoBehaviourPunCallbacks, IAwakeAnim ,IActivatabl
         //Fire準備
         _fireTimer += Time.deltaTime;
         _slider.value = _fireTimer;
-        if (_fireTimer > _fireCoolTime -0.5f)
+        if (_fireTimer > _tankData.FireCoolTime -0.5f)
         {
             if (!_isReloaded)
             {
@@ -122,7 +120,7 @@ public class TankController : MonoBehaviourPunCallbacks, IAwakeAnim ,IActivatabl
     #region アクション関係共有のメソッド
     public void InputFire()
     {
-        if (_fireTimer > _fireCoolTime)
+        if (_fireTimer > _tankData.FireCoolTime)
         {
             _isReloaded = false;
             _fireTimer = 0f;
@@ -147,6 +145,7 @@ public class TankController : MonoBehaviourPunCallbacks, IAwakeAnim ,IActivatabl
     public override void OnEnable()
     {
         _damageable.OnDead += OnDead;
+        base.OnEnable();
         MyServiceLocator.IRegister(this as IActivatable);
         MyServiceLocator.IRegister(this as IAwakeAnim);
         MyServiceLocator.IRegister(this as IPause);
@@ -154,6 +153,7 @@ public class TankController : MonoBehaviourPunCallbacks, IAwakeAnim ,IActivatabl
 
     public override void  OnDisable()
     {
+        base.OnDisable();
         _damageable.OnDead -= OnDead;
         _cts?.Cancel(); 
         MyServiceLocator.IUnRegister(this as IActivatable);

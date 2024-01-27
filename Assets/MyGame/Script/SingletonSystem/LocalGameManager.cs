@@ -8,10 +8,9 @@ using UnityEngine.SceneManagement;
 public class LocalGameManager : MonoBehaviourPunCallbacks
 {
     public static LocalGameManager Instance;
-    [SerializeField] private string _titleScene;
+    
     [SerializeField] private float _startDelay = 3.0f;
     private IEnumerable<PlayerManager> _playerManagers;
-
     private void Awake()
     {
         if (Instance == null)
@@ -78,6 +77,7 @@ public class LocalGameManager : MonoBehaviourPunCallbacks
         foreach (var playerManager in _playerManagers)
             playerManager.ChangeImmortal(false);
         DeActivateObjects();
+        AudioManager.Instance.PlaySE(AudioManager.TankGameSoundType.Fall);
         await AnimateObjects();
         //ゲームスタート
         AudioManager.Instance.PlaySE(AudioManager.TankGameSoundType.Start);
@@ -95,21 +95,7 @@ public class LocalGameManager : MonoBehaviourPunCallbacks
     {
         photonView.RPC(nameof(MasterGameManager.Instance.OnPlayerDead), RpcTarget.MasterClient);
     }
-
-
-    [PunRPC]
-    public async UniTask GoNextStage(string nextStage, int lifeCount)
-    {
-        AudioManager.Instance.PlaySE(AudioManager.TankGameSoundType.SceneChange);
-        _ = SceneUIManager.Instance.FadeIn();
-        await SceneUIManager.Instance.FadeInStageUI(nextStage, lifeCount);
-
-        await SceneManager.LoadSceneAsync(nextStage);
-
-        _ = SceneUIManager.Instance.FadeOutStageUI();
-        await SceneUIManager.Instance.FadeOut();
-    }
-
+    
     [PunRPC]
     public async UniTask RoundClear()
     {
@@ -127,11 +113,26 @@ public class LocalGameManager : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    public async UniTask BackToTitle(int sumBreakCount)
+    public async UniTask GoNextStage(string nextStage, int lifeCount)
+    {
+        AudioManager.Instance.PlaySE(AudioManager.TankGameSoundType.SceneChange);
+        _ = SceneUIManager.Instance.FadeIn();
+        await SceneUIManager.Instance.FadeInStageUI(nextStage, lifeCount);
+
+        await SceneManager.LoadSceneAsync(nextStage);
+
+        _ = SceneUIManager.Instance.FadeOutStageUI();
+        await SceneUIManager.Instance.FadeOut();
+    }
+
+
+
+    [PunRPC]
+    public async UniTask BackToTitle(string titleScene, int sumBreakCount)
     {
         await SceneUIManager.Instance.ShowUpResult(sumBreakCount);
         await SceneUIManager.Instance.FadeIn();
-        await SceneManager.LoadSceneAsync(_titleScene);
+        await SceneManager.LoadSceneAsync(titleScene);
         _ = SceneUIManager.Instance.FadeOut();
     }
 

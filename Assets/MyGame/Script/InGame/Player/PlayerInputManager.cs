@@ -12,9 +12,9 @@ public class PlayerInputManager : MonoBehaviour
 
     private void Update()
     {
-        _inputMoveVertical = Input.GetAxis("Vertical");
-        _inputMoveHorizontal = Input.GetAxis("Horizontal");
-        _inputHorizontal = Input.GetAxis("Horizontal2");
+        _inputMoveVertical = Input.GetAxisRaw("Vertical");
+        _inputMoveHorizontal = Input.GetAxisRaw("Horizontal");
+        _inputHorizontal = Input.GetAxisRaw("Horizontal2");
         if (Input.GetButtonDown("Fire1")) _tankController.InputFire();
         if (_inputMoveVertical == 0f)
         {

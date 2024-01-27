@@ -14,6 +14,7 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
     private static int _readyFlags;
     private static int _currentPlayerCount;
     private static int _currentLife;
+    [SerializeField] private string _titleScene;
     [SerializeField] private int _maxStageCount = 2;
     [SerializeField] private int _maxLife = 3;
 
@@ -142,8 +143,8 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
 
     private async UniTaskVoid CallBackToTitle()
     {
-        photonView.RPC(nameof(LocalGameManager.Instance.BackToTitle), RpcTarget.Others, _sumBreakCount);
-        await LocalGameManager.Instance.BackToTitle(_sumBreakCount);
+        photonView.RPC(nameof(LocalGameManager.Instance.BackToTitle), RpcTarget.Others, _titleScene, _sumBreakCount);
+        await LocalGameManager.Instance.BackToTitle(_titleScene ,_sumBreakCount);
         _ = CallStartTitles();
     }
 }
