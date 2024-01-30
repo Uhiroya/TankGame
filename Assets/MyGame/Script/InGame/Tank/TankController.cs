@@ -77,41 +77,49 @@ public class TankController : MonoBehaviourPunCallbacks, IAwakeAnim ,IActivatabl
         }
     }
     #region 移動関係共有メソッド
-    void SendInputMove(float input) =>
-        photonView.RPC(nameof(GetInputMove) , RpcTarget.AllViaServer, input);
+
+    void SendInputMove(float input)=>
+        photonView.RPC(nameof(GetInputMove) , RpcTarget.AllViaServer, input , transform.position);
+        
     
     void SendInputTurn(float input) =>
-        photonView.RPC(nameof(GetInputTurn) , RpcTarget.AllViaServer, input);
+        photonView.RPC(nameof(GetInputTurn) , RpcTarget.AllViaServer, input , transform.rotation);
     
     void SendInputBarrelTurn(float input) =>
-        photonView.RPC(nameof(GetInputBarrelTurn) , RpcTarget.AllViaServer, input);
+        photonView.RPC(nameof(GetInputBarrelTurn) , RpcTarget.AllViaServer, input , _burrelTransform.rotation);
     
-    public void InputMove(float inputVertical)
+    public void InputMove(float inputVertical )
     {
+        
         _nextInputMoveVertical.Value = inputVertical;
     }
-    public void InputTurn(float inputHorizontal)
+    public void InputTurn(float inputHorizontal )
     {
+        
         _nextInputMoveHorizontal.Value = inputHorizontal;
     }
-    public void InputBarrelTurn(float inputVertical)
+    public void InputBarrelTurn(float inputVertical )
     {
+        
         _nextInputVertical.Value = inputVertical;
     }
     
     [PunRPC]
-    public void GetInputMove(float inputVertical)
+    public void GetInputMove(float inputVertical, Vector3 position)
     {
+        //transform.position = position;
         _inputMoveVertical = inputVertical;
     }
     [PunRPC]
-    public void GetInputTurn(float inputHorizontal)
+    public void GetInputTurn(float inputHorizontal, Quaternion rotation)
     {
+        //transform.rotation = rotation;
         _inputMoveHorizontal = inputHorizontal;
     }
     [PunRPC]
-    public void GetInputBarrelTurn(float inputVertical)
+    public void GetInputBarrelTurn(float inputVertical, Quaternion rotation)
     {
+        //_burrelTransform.rotation = rotation;
         _inputVertical = inputVertical;
     }
     

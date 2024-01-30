@@ -6,27 +6,36 @@ using UnityEngine.Pool;
 
 namespace MyGame.Script.SingletonSystem
 {
+    //TODO オブジェクトプールがオンライン上で同期できていない
     public class BulletManager : MonoBehaviourPunCallbacks , IActivatable
     {
         [SerializeField] private List<GameObject> _bulletList = new();
+        [SerializeField] private Transform _bulletParentTransform;
+        private static int _bulletID = 0;
         public static BulletManager Instance;
         private Dictionary<int , ObjectPool<GameObject>> _objectPools = new ();
         private Dictionary<int, GameObject> _bulletIDReference = new();
         
+        
+        public void CallReleaseBullet(BulletType bulletType ,int bulletID)
+        {
+            photonView.RPC(nameof(ReleaseBullet), RpcTarget.AllViaServer, bulletType, bulletID);
+        }
         [PunRPC]
         public void ReleaseBullet(BulletType bulletType ,int bulletID)
         {
             _objectPools[(int)bulletType].Release(_bulletIDReference[bulletID]);
         }
         
-        
         public void CallMadeBullet(BulletType bulletType , Vector3 position , Quaternion rotation )
         {
-            photonView.RPC(nameof(MadeBullet), RpcTarget.All ,bulletType,position,rotation);
+            _bulletID += 1;
+            Debug.Log("CallMadeBullet" + _bulletID);
+            photonView.RPC(nameof(MadeBullet), RpcTarget.AllViaServer , bulletType,position, rotation , _bulletID);
         }
 
         [PunRPC]
-        public void MadeBullet(BulletType bulletType , Vector3 position , Quaternion rotation )
+        public void MadeBullet(BulletType bulletType , Vector3 position , Quaternion rotation , int bulletID )
         {
             int bulletIndex = (int)bulletType;
             GameObject obj;
@@ -39,14 +48,16 @@ namespace MyGame.Script.SingletonSystem
                 _objectPools.Add(bulletIndex, InitializeObjectPool(bulletIndex));
                 _objectPools[bulletIndex].Get(out obj);
             }
-
-            var bulletController = obj.GetComponent<BulletController>();
-            _bulletIDReference.Add(bulletController.Initialize(position , rotation) , obj);
+            
+            obj.GetComponent<BulletController>().Initialize(position, rotation , bulletID);
+            _bulletIDReference.Add(_bulletID , obj);
+            
         }
         private ObjectPool<GameObject> InitializeObjectPool(int bulletIndex)
         {
+           
             var obstaclePool = new ObjectPool<GameObject>(
-                () => Instantiate(_bulletList[bulletIndex], transform), // プールが空のときに新しいインスタンスを生成する処理
+                () => Instantiate(_bulletList[bulletIndex], _bulletParentTransform), // プールが空のときに新しいインスタンスを生成する処理
                 target => { target.SetActive(true); }, // プールから取り出されたときの処理 
                 target => { target.SetActive(false); },
                 target =>
@@ -71,7 +82,17 @@ namespace MyGame.Script.SingletonSystem
                 Destroy(this);
             }
         }
-        
+        public override void OnEnable()  
+        {
+            base.OnEnable();
+            MyServiceLocator.IRegister<IActivatable>(this);
+        }
+
+        public override void OnDisable()
+        {
+            base.OnDisable();
+            MyServiceLocator.IUnRegister<IActivatable>(this);
+        }
         
 
         public void Active()
@@ -81,7 +102,14 @@ namespace MyGame.Script.SingletonSystem
 
         public void DeActive()
         {
-            
+            foreach (Transform bullet in _bulletParentTransform)
+            {
+                Debug.Log("弾を戻しました");
+                _objectPools[(int)bullet.GetComponent<BulletController>().BulletType].Release(bullet.gameObject);
+                    
+            }
+            _bulletIDReference.Clear();
+            _bulletID = 0;
         }
     }
 }

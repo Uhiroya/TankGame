@@ -4,9 +4,16 @@ using UnityEngine.UI;
 
 public class TitleStartArea : MonoBehaviour , IActivatable , IPause
 {
+    [SerializeField] private StartAreaSetting _areaSetting;
     [SerializeField] private Collider _startCollider;
     [SerializeField] private Slider _startSlider;
-    [SerializeField] private string _nextScene;
+
+    public enum StartAreaSetting
+    {
+        StartGame,
+        MultiMode,
+        LeaveRoom,
+    }
     private bool _done;
     void OnEnable()
     {
@@ -48,8 +55,22 @@ public class TitleStartArea : MonoBehaviour , IActivatable , IPause
             _startSlider.value += Time.deltaTime;
             if (!_done && _startSlider.value >= _startSlider.maxValue)
             {
-                if(PhotonNetwork.IsMasterClient)
-                    _ = MasterGameManager.Instance.CallChangeStages(_nextScene);
+                if (PhotonNetwork.IsMasterClient)
+                {
+                    switch (_areaSetting)
+                    {
+                        case StartAreaSetting.StartGame:
+                            MasterGameManager.Instance.CallGameStart();
+                            break;
+                        case StartAreaSetting.MultiMode:
+                            MasterGameManager.Instance.JoinMultiGame();
+                            break;
+                        case StartAreaSetting.LeaveRoom:
+                            MasterGameManager.Instance.LeaveRoom();
+                            break;
+                    }
+                }
+                    
                 _done = true;
                 //SceneManager.LoadScene( _nextScene );
             }

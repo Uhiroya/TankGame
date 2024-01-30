@@ -49,7 +49,7 @@ public class LocalGameManager : MonoBehaviourPunCallbacks
     private bool IsLoadedObjects()
     {
         var players = GameObject.FindGameObjectsWithTag("Player");
-        if (players.Length == PhotonNetwork.CurrentRoom.MaxPlayers)
+        if (players.Length == PhotonNetwork.CurrentRoom.PlayerCount)
         {
             _playerManagers = players.ToList().Select(x => x.GetComponent<PlayerManager>());
             return true;
@@ -131,11 +131,16 @@ public class LocalGameManager : MonoBehaviourPunCallbacks
     public async UniTask BackToTitle(string titleScene, int sumBreakCount)
     {
         await SceneUIManager.Instance.ShowUpResult(sumBreakCount);
+        await LoadTitle(titleScene);
+    }
+    [PunRPC]
+    public async UniTask LoadTitle(string titleScene)
+    {
+        DeActivateObjects();
         await SceneUIManager.Instance.FadeIn();
         await SceneManager.LoadSceneAsync(titleScene);
         _ = SceneUIManager.Instance.FadeOut();
     }
-
     private void ActivateObjects()
     {
         MyServiceLocator.IResolve<IActivatable>().OfType<IActivatable>().ToList().ForEach(x => x.Active());

@@ -1,3 +1,5 @@
+using System;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using Photon.Pun;
 using UnityEngine;
@@ -14,13 +16,19 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
     private static int _readyFlags;
     private static int _currentPlayerCount;
     private static int _currentLife;
-    [SerializeField] private string _titleScene;
+    [SerializeField] private int _maxPlayers;
+    [SerializeField] private int _timeOutMiliSecond;
+    [SerializeField] private string _soloScene;
+    [SerializeField] private string _multiScene;
+    
     [SerializeField] private int _maxStageCount = 2;
     [SerializeField] private int _maxLife = 3;
 
+    private string _titleScene;
     private int _currentEnemyCount;
     private int _maxEnemyCount;
-
+    private int _currentMaxPlayers;
+    
     private void Awake()
     {
         if (Instance == null)
@@ -33,6 +41,51 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
         {
             Destroy(this);
         }
+    }
+    /// <summary>
+    /// OffLineModeでスタートする。
+    /// </summary>
+    private void Start()
+    {
+        JoinSoloGame();
+    }
+
+    public async void JoinMultiGame()
+    {
+        _titleScene = _multiScene;
+        _currentMaxPlayers = _maxPlayers;
+        await NetworkManager.Instance.Connect("1.0" , _currentMaxPlayers);
+        await CallLoadTitle();
+        await UniTask.WaitUntil(() => PhotonNetwork.InRoom);
+        Debug.Log(PhotonNetwork.IsMasterClient + "オーナです");
+        if (PhotonNetwork.IsMasterClient)
+        {
+            _ = CallStartTitles();
+        }
+        
+        //
+        //NetWorkManager側から最大人数入室時にスタートコールされる。
+    }
+    [PunRPC]
+    public async void JoinSoloGame()
+    {
+        _currentMaxPlayers = 1;
+        _titleScene = _soloScene;
+        await NetworkManager.Instance.Connect("1.0" , _currentMaxPlayers);
+        await CallLoadTitle();
+        _ = CallStartTitles();
+    }
+
+    public void LeaveRoom()
+    {
+        photonView.RPC(nameof(JoinSoloGame) , RpcTarget.AllViaServer);
+    }
+    
+    public async UniTask CallLoadTitle()
+    {
+        photonView.RPC(nameof(LocalGameManager.Instance.LoadTitle), RpcTarget.Others, _titleScene);
+        await LocalGameManager.Instance.LoadTitle(_titleScene);
+        //await UniTask.WaitUntil(() => PhotonNetwork.CurrentRoom.IsOpen) ;
     }
     /// <summary>
     /// 準備完了を受け取る
@@ -63,21 +116,25 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
     /// </summary>
     private bool IsAllPlayerReady()
     {
-        for (var i = 0; i < PhotonNetwork.CurrentRoom.PlayerCount; i++)
+        for (var i = 0; i < _currentMaxPlayers; i++)
             if (((_readyFlags >> i) & 1) == 0)
                 return false;
         return true;
     }
 
-    private async UniTask SpawnPlayers()
+    private async UniTask SpawnPlayers(CancellationToken token)
     {
-        CheckCompleteToSceneChange();
-        await UniTask.WaitUntil(IsAllPlayerReady);
+        do
+        {
+            CheckCompleteToSceneChange();
+            await UniTask.Delay(100 , DelayType.DeltaTime , PlayerLoopTiming.Update , token );
+        } while (!IsAllPlayerReady());
         CheckCompleteToSpawnPlayer();
         photonView.RPC(nameof(NetworkManager.Instance.SpawnPlayer), RpcTarget.AllBufferedViaServer);
-        await UniTask.WaitUntil(IsAllPlayerReady);
+        await UniTask.WaitUntil(IsAllPlayerReady, PlayerLoopTiming.FixedUpdate , token);
     }
 
+    private TimeoutController _timeoutController = new TimeoutController();
     [PunRPC]
     public async UniTaskVoid CallStartTitles()
     {
@@ -86,19 +143,47 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
         _currentLife = _maxLife;
         _currentEnemyCount = -1;
         _sumBreakCount = 0;
-
-        await SpawnPlayers();
+        
+        var timeoutController = _timeoutController.Timeout(_timeOutMiliSecond);
+        
+        try
+        {
+            await SpawnPlayers(timeoutController);
+        }
+        catch
+        {
+            Debug.Log("TimeOut！！");
+            photonView.RPC(nameof(JoinSoloGame), RpcTarget.All);
+        }
+        finally
+        {
+            Debug.Log("Reset！！");
+            _timeoutController.Reset();
+        }
         photonView.RPC(nameof(LocalGameManager.Instance.StartTitle), RpcTarget.AllViaServer);
     }
+    
+
 
     [PunRPC]
-    private async UniTask CallStartGames()
+    private async UniTask CallStartRound()
     {
         _currentPlayerCount = PhotonNetwork.CurrentRoom.PlayerCount;
         _currentEnemyCount = _maxEnemyCount = GameObject.FindGameObjectsWithTag("Enemy").Length;
         _sumBreakCount += _maxEnemyCount;
-
-        await SpawnPlayers();
+        var timeoutController = _timeoutController.Timeout(_timeOutMiliSecond);
+        try
+        {
+            await SpawnPlayers(timeoutController);
+        }
+        catch
+        {
+            photonView.RPC(nameof(JoinSoloGame), RpcTarget.All);
+        }
+        finally
+        {
+            _timeoutController.Reset();
+        }
         photonView.RPC(nameof(LocalGameManager.Instance.StartGame), RpcTarget.AllViaServer);
     }
 
@@ -138,7 +223,7 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
         photonView.RPC(nameof(LocalGameManager.Instance.GoNextStage),
             RpcTarget.Others, nextScene, _currentLife);
         await LocalGameManager.Instance.GoNextStage(nextScene, _currentLife);
-        _ = CallStartGames();
+        _ = CallStartRound();
     }
 
     private async UniTaskVoid CallBackToTitle()
@@ -146,5 +231,9 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
         photonView.RPC(nameof(LocalGameManager.Instance.BackToTitle), RpcTarget.Others, _titleScene, _sumBreakCount);
         await LocalGameManager.Instance.BackToTitle(_titleScene ,_sumBreakCount);
         _ = CallStartTitles();
+    }
+    public void CallGameStart()
+    {
+        _ = CallChangeStages("Stage 1");
     }
 }

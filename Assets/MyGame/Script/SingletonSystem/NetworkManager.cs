@@ -13,7 +13,8 @@ using UnityEngine.Serialization;
 
 public class NetworkManager : MonoBehaviourPunCallbacks // Photon Realtime 用のクラスを継承する
 {
-    public int MaxPlayer = 2;
+    public int MaxPlayer { get; set; }  = 1;
+
     /// <summary>プレイヤーのプレハブの名前</summary>
     [SerializeField] string _playerPrefabName = "Prefab";
     /// <summary>プレイヤーを生成する場所を示すアンカーのオブジェクト</summary>
@@ -36,25 +37,29 @@ public class NetworkManager : MonoBehaviourPunCallbacks // Photon Realtime 用�
     {
         // Photon に接続する
 
-        Connect("1.0"); // 1.0 はバージョン番号（同じバージョンを指定したクライアント同士が接続できる）
+        //Connect("1.0"); // 1.0 はバージョン番号（同じバージョンを指定したクライアント同士が接続できる）
     }
 
     /// <summary>
     /// Photonに接続する
     /// </summary>
-    private void Connect(string gameVersion)
+    public async UniTask Connect(string gameVersion , int maxPlayer)
     {
-        if (PhotonNetwork.IsConnected == false)
+        MaxPlayer = maxPlayer;
+        PhotonNetwork.Disconnect();
+        await UniTask.WaitUntil(() => PhotonNetwork.IsConnected == false);
+        if (maxPlayer == 1)
         {
-            if (MaxPlayer == 1)
-            {
-                PhotonNetwork.Disconnect();
-                PhotonNetwork.OfflineMode = true;
-                return;
-            }
+            PhotonNetwork.OfflineMode = true;
+        }
+        else
+        {
+            Debug.Log("MultiPlayStart!!");
+            PhotonNetwork.OfflineMode = false;
             PhotonNetwork.GameVersion = gameVersion;    // 同じバージョンを指定したもの同士が接続できる
             PhotonNetwork.ConnectUsingSettings();
         }
+
     }
 
     /// <summary>
@@ -68,17 +73,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks // Photon Realtime 用�
             PhotonNetwork.LocalPlayer.NickName = nickName;
         }
     }
-
-    /// <summary>
-    /// ロビーに入る
-    /// </summary>
-    private void JoinLobby()
-    {
-        if (PhotonNetwork.IsConnected)
-        {
-            PhotonNetwork.JoinLobby();
-        }
-    }
+    
 
     /// <summary>
     /// 既に存在する部屋に参加する
@@ -90,7 +85,11 @@ public class NetworkManager : MonoBehaviourPunCallbacks // Photon Realtime 用�
             PhotonNetwork.JoinRandomRoom();
         }
     }
-
+    /// <summary>ランダムな部屋への入室に失敗した時</summary>
+    public override void OnJoinRandomFailed(short returnCode, string message)
+    {
+        CreateRandomRoom();
+    }
     /// <summary>
     /// ランダムな名前のルームを作って参加する
     /// </summary>
@@ -98,18 +97,14 @@ public class NetworkManager : MonoBehaviourPunCallbacks // Photon Realtime 用�
     {
         if (PhotonNetwork.IsConnected)
         {
+            Debug.Log("CreateRandomRoom");
             RoomOptions roomOptions = new RoomOptions();
             roomOptions.IsVisible = true;   // 誰でも参加できるようにする
-            /* **************************************************
-             * spawPositions の配列長を最大プレイ人数とする。
-             * 無料版では最大20まで指定できる。
-             * MaxPlayers の型は byte なのでキャストしている。
-             * MaxPlayers の型が byte である理由はおそらく1ルームのプレイ人数を255人に制限したいため
-             * **************************************************/
             roomOptions.MaxPlayers = MaxPlayer;
-            PhotonNetwork.CreateRoom(null, roomOptions); // ルーム名に null を指定するとランダムなルーム名を付ける
+            PhotonNetwork.CreateRoom(null, roomOptions); 
         }
     }
+    
 
     /// <summary>
     /// プレイヤーを生成する
@@ -120,55 +115,42 @@ public class NetworkManager : MonoBehaviourPunCallbacks // Photon Realtime 用�
         _spawnPositions = GameObject.FindGameObjectWithTag("SpawnPoint").GetComponentsInChildren<Transform>();
         // プレイヤーをどこに spawn させるか決める
         int actorNumber = PhotonNetwork.LocalPlayer.ActorNumber;    // 自分の ActorNumber を取得する。なお ActorNumber は「1から」入室順に振られる。
-
         if (_playerPrefabName.Length > 0)
         {
-            if (PhotonNetwork.OfflineMode)
-            {
-                actorNumber = 1;
-            }//ソロモード
             Transform spawnPoint = _spawnPositions[actorNumber];
-            PhotonNetwork.Instantiate(_playerPrefabName, spawnPoint.position, spawnPoint.rotation);
+            PhotonNetwork.Instantiate(_playerPrefabName +" " + actorNumber, spawnPoint.position, spawnPoint.rotation);
         }   
     }
-
-    public bool IsRoomPlayerAllConnected()
-        => PhotonNetwork.CurrentRoom.PlayerCount == PhotonNetwork.CurrentRoom.MaxPlayers;
-    /* ***********************************************
-     * 
-     * これ以降は Photon の Callback メソッド
-     * 
-     * ***********************************************/
 
     /// <summary>Photon に接続した時</summary>
     public override void OnConnected()
     {
-        //Debug.Log("OnConnected");
         SetMyNickName(System.Environment.UserName + "@" + System.Environment.MachineName);
-        
     }
 
     /// <summary>Photon との接続が切れた時</summary>
     public override void OnDisconnected(DisconnectCause cause)
     {
-        //Debug.Log("OnDisconnected");
+        Debug.Log("OnDisconnected");
     }
 
     /// <summary>マスターサーバーに接続した時</summary>
     public override void OnConnectedToMaster()
     {
-        //Debug.Log("OnConnectedToMaster");
+        Debug.Log("Connect TO Master");
         if (PhotonNetwork.OfflineMode)
         {
-            
+            Debug.Log("CreateSoloRoom");
             RoomOptions roomOptions = new RoomOptions();
             roomOptions.MaxPlayers = 1;
             PhotonNetwork.CreateRoom("SoloRoom", roomOptions);
-            //PhotonNetwork.JoinRoom("SoloRoom");
         }
         else
         {
-            JoinLobby();
+            if (PhotonNetwork.IsConnected)
+            {
+                PhotonNetwork.JoinLobby();
+            }
         }
         
     }
@@ -176,9 +158,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks // Photon Realtime 用�
     /// <summary>ロビーに参加した時</summary>
     public override void OnJoinedLobby()
     {
-        //Debug.Log("OnJoinedLobby");
+        Debug.Log("OnJoinRoom");
         JoinExistingRoom();
-        
     }
 
     /// <summary>ロビーから出た時</summary>
@@ -190,41 +171,38 @@ public class NetworkManager : MonoBehaviourPunCallbacks // Photon Realtime 用�
     /// <summary>部屋を作成した時</summary>
     public override void OnCreatedRoom()
     {
+        //true
         //Debug.Log("OnCreatedRoom");
+        // if (PhotonNetwork.OfflineMode) return;
+        // if ( PhotonNetwork.LocalPlayer.ActorNumber > PhotonNetwork.CurrentRoom.MaxPlayers - 1)
+        // {
+        //     photonView.RPC(nameof(MasterGameManager.Instance.CallStartTitles),RpcTarget.MasterClient);
+        //     PhotonNetwork.CurrentRoom.IsOpen = false;
+        // }
     }
 
     /// <summary>部屋の作成に失敗した時</summary>
     public override void OnCreateRoomFailed(short returnCode, string message)
     {
+        
         //Debug.Log("OnCreateRoomFailed: " + message);
     }
 
     /// <summary>部屋に入室した時</summary>
     public override void OnJoinedRoom()
     {
-        //Debug.Log("OnJoinedRoom");
-        
-        if ( PhotonNetwork.LocalPlayer.ActorNumber > PhotonNetwork.CurrentRoom.MaxPlayers - 1)
-        {
-            photonView.RPC(nameof(MasterGameManager.Instance.CallStartTitles),RpcTarget.MasterClient);
-            PhotonNetwork.CurrentRoom.IsOpen = false;
-            //await UniTask.Delay(3000);
-        }
+        Debug.Log("OnJoinedRoom");
+
         
     }
-
-    /// <summary>指定した部屋への入室に失敗した時</summary>
+#region 未使用
+ /// <summary>指定した部屋への入室に失敗した時</summary>
     public override void OnJoinRoomFailed(short returnCode, string message)
     {
         //Debug.Log("OnJoinRoomFailed: " + message);
     }
 
-    /// <summary>ランダムな部屋への入室に失敗した時</summary>
-    public override void OnJoinRandomFailed(short returnCode, string message)
-    {
-        //Debug.Log("OnJoinRandomFailed: " + message);
-        CreateRandomRoom();
-    }
+
 
     /// <summary>部屋から退室した時</summary>
     public override void OnLeftRoom()
@@ -273,4 +251,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks // Photon Realtime 用�
     {
         //Debug.Log("OnPlayerPropertiesUpdate");
     }
+#endregion
+   
 }

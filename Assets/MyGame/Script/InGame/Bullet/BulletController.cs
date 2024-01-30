@@ -15,27 +15,29 @@ public class BulletController : MonoBehaviourPunCallbacks , IPause , IActivatabl
     [SerializeField] float _lifeTime = 5f;
     [SerializeField] ParticleSystem _trailParticleSystem;
     [SerializeField] Rigidbody _bulletRigidBody;
+
+    public BulletType BulletType => _bulletType;
     int _reflectCount = 1;
     float _myBulletSpeed;
     float _timer = 0;
     private int _ID;
-    private static int _nextID;
     public void OnHit()
     {
-        if(PhotonNetwork.IsMasterClient)
-            photonView.RPC(nameof(BulletManager.Instance.ReleaseBullet) , RpcTarget.All , _bulletType , _ID );
+        if (PhotonNetwork.IsMasterClient)
+        {
+            BulletManager.Instance.CallReleaseBullet( _bulletType , _ID );
+        }
+            
     }
     
-    public int Initialize(Vector3 position , Quaternion rotation)
+    public void Initialize(Vector3 position , Quaternion rotation , int bulletID)
     {
         _timer = 0f;
         _reflectCount = _maxReflectCount;
-        _ID = _nextID;
-        _nextID++;
+        _ID = bulletID;
         var transform1 = this.transform;
         transform1.position = position;
         transform1.rotation = rotation;
-        return _ID;
     }
     public override void OnEnable()  
     {
