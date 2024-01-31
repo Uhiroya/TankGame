@@ -101,16 +101,16 @@ GameObject:
   - component: {fileID: 2138103694057824949}
   - component: {fileID: 5414236790721998404}
   - component: {fileID: 7981757442653421215}
+  - component: {fileID: 1978459458}
   - component: {fileID: 4340692467272015649}
   - component: {fileID: -4399299388019068585}
   - component: {fileID: 3168279919712731350}
   - component: {fileID: -613707860683070695}
   - component: {fileID: 4340692467272015650}
   - component: {fileID: 4511576773086303523}
-  - component: {fileID: 1978459458}
   - component: {fileID: 2999978805935059583}
   m_Layer: 0
-  m_Name: EnemyNormal
+  m_Name: EnemyHard
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -167,7 +167,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 546738ce5c5f3484bb590ed3d3f696ee, type: 2}
+  - {fileID: 2100000, guid: 36797ffef13d2934b9df4b1eee1d60ad, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -189,6 +189,29 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &1978459458
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 358242425953260804}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 1
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents:
+  - {fileID: 2999978805935059583}
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!114 &4340692467272015649
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -206,12 +229,12 @@ MonoBehaviour:
   _nozzle: {fileID: 6720510785836136737}
   _burrelTransform: {fileID: 6184232559994482196}
   _tankData:
-    BulletType: 0
+    BulletType: 1
     TankHP: 100
-    FireCoolTime: 1.5
+    FireCoolTime: 3
     MoveSpeed: 3
-    RotateSpeed: 2
-    TurnBarrelSpeed: 1
+    RotateSpeed: 3
+    TurnBarrelSpeed: 2
 --- !u!114 &-4399299388019068585
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -227,7 +250,7 @@ MonoBehaviour:
   _tankController: {fileID: 4340692467272015649}
   _scanPlayerCollider: {fileID: 1505011591}
   _scanFieldCollider: {fileID: 500501642}
-  _playerScanRadius: 20
+  _playerScanRadius: 30
   _scanMoveRadius: 7
 --- !u!114 &3168279919712731350
 MonoBehaviour:
@@ -290,29 +313,6 @@ MonoBehaviour:
   _rightBackWheel: {fileID: 8941419961818861956}
   _trailObject: {fileID: 7094270856313174126, guid: 01a7aeab98b4b5b4aa06d8a347285207, type: 3}
   _makeTrailDistance: 0.35
---- !u!114 &1978459458
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 358242425953260804}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 1
-  OwnershipTransfer: 0
-  observableSearch: 2
-  ObservedComponents:
-  - {fileID: 2999978805935059583}
-  sceneViewId: 0
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
 --- !u!114 &2999978805935059583
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -474,7 +474,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 546738ce5c5f3484bb590ed3d3f696ee, type: 2}
+  - {fileID: 2100000, guid: 36797ffef13d2934b9df4b1eee1d60ad, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -856,7 +856,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 546738ce5c5f3484bb590ed3d3f696ee, type: 2}
+  - {fileID: 2100000, guid: 36797ffef13d2934b9df4b1eee1d60ad, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

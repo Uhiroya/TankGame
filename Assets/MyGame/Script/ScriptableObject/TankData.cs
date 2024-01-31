@@ -7,6 +7,8 @@ public enum BulletType
 {
     Normal = 0,
     Speed = 1,
+    SlowBullet = 2,
+    
 }
 [System.Serializable]
 public class TankData

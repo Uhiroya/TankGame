@@ -16,11 +16,11 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
     private static int _readyFlags;
     private static int _currentPlayerCount;
     private static int _currentLife;
-    [SerializeField] private int _maxPlayers;
-    [SerializeField] private int _timeOutMiliSecond;
+    [SerializeField] private int _maxMultiGamePlayers;
+    [SerializeField] private int _timeOutMilliSecond;
     [SerializeField] private string _soloScene;
     [SerializeField] private string _multiScene;
-    
+    [SerializeField] private string _startStageScene;
     [SerializeField] private int _maxStageCount = 2;
     [SerializeField] private int _maxLife = 3;
 
@@ -53,7 +53,7 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
     public async void JoinMultiGame()
     {
         _titleScene = _multiScene;
-        _currentMaxPlayers = _maxPlayers;
+        _currentMaxPlayers = _maxMultiGamePlayers;
         await NetworkManager.Instance.Connect("1.0" , _currentMaxPlayers);
         await CallLoadTitle();
         await UniTask.WaitUntil(() => PhotonNetwork.InRoom);
@@ -127,8 +127,12 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
         do
         {
             CheckCompleteToSceneChange();
-            await UniTask.Delay(100 , DelayType.DeltaTime , PlayerLoopTiming.Update , token );
+            int waitTime = 200;
+            if(!PhotonNetwork.OfflineMode)
+                SceneUIManager.Instance.UpdateWaitingUI(waitTime);
+            await UniTask.Delay(waitTime , DelayType.DeltaTime , PlayerLoopTiming.Update , token );
         } while (!IsAllPlayerReady());
+        SceneUIManager.Instance.StopWaitingUI();
         CheckCompleteToSpawnPlayer();
         photonView.RPC(nameof(NetworkManager.Instance.SpawnPlayer), RpcTarget.AllViaServer);
         await UniTask.WaitUntil(IsAllPlayerReady, PlayerLoopTiming.FixedUpdate , token);
@@ -144,7 +148,7 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
         _currentEnemyCount = -1;
         _sumBreakCount = 0;
         
-        var timeoutController = _timeoutController.Timeout(_timeOutMiliSecond);
+        var timeoutController = _timeoutController.Timeout(_timeOutMilliSecond);
         
         try
         {
@@ -158,6 +162,7 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
         finally
         {
             Debug.Log("Reset！！");
+            SceneUIManager.Instance.StopWaitingUI();
             _timeoutController.Reset();
         }
         photonView.RPC(nameof(LocalGameManager.Instance.StartTitle), RpcTarget.AllViaServer);
@@ -171,7 +176,7 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
         _currentPlayerCount = PhotonNetwork.CurrentRoom.PlayerCount;
         _currentEnemyCount = _maxEnemyCount = GameObject.FindGameObjectsWithTag("Enemy").Length;
         _sumBreakCount += _maxEnemyCount;
-        var timeoutController = _timeoutController.Timeout(_timeOutMiliSecond);
+        var timeoutController = _timeoutController.Timeout(_timeOutMilliSecond);
         try
         {
             await SpawnPlayers(timeoutController);
@@ -198,6 +203,7 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
     public void OnDestroyEnemy()
     {
         _currentEnemyCount--;
+        Debug.Log("_currentEnemyCount : " + _currentEnemyCount);
         if (_currentEnemyCount == 0) _ = CallRoundClear();
     }
 
@@ -234,6 +240,6 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
     }
     public void CallGameStart()
     {
-        _ = CallChangeStages("Stage 1");
+        _ = CallChangeStages(_startStageScene);
     }
 }

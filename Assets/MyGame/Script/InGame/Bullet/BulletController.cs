@@ -12,7 +12,7 @@ public class BulletController : MonoBehaviourPunCallbacks , IPause , IActivatabl
     [SerializeField] int _maxReflectCount = 1;
     [SerializeField] float _bulletSpeed = 1.0f;
     [SerializeField] int _bulletDamage = 30;
-    [SerializeField] float _lifeTime = 5f;
+    [SerializeField] float _maxLifeTime = 5f;
     [SerializeField] ParticleSystem _trailParticleSystem;
     [SerializeField] Rigidbody _bulletRigidBody;
 
@@ -34,7 +34,7 @@ public class BulletController : MonoBehaviourPunCallbacks , IPause , IActivatabl
     {
         _myBulletSpeed = _bulletSpeed;
         _reflectCount = _maxReflectCount;
-        _lifeTimer = _lifeTime;
+        _lifeTimer = _maxLifeTime;
         _isActive = true;
         _id = bulletID;
         transform.position = position;

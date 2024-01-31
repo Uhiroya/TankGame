@@ -195,7 +195,25 @@ public class EnemyController : MonoBehaviour
         else
             MissTarget();
     }
-
+    public void DetectedPlayer(Collider player)
+    {
+        //円でサーチ
+        var bullelTransform = _tankController.BurrelTransform;
+        var toPlayerVec = player.gameObject.transform.position - transform.position;
+        //外積を利用して最速方向に回転する
+        if (IsInferiorAngle(bullelTransform.forward, toPlayerVec))
+            //左回り
+            _rotateBarrelBySearch = -1.0f;
+        else
+            //右回り
+            _rotateBarrelBySearch = 1.0f;
+        var angleToPlayer = Vector3.Angle(bullelTransform.forward, toPlayerVec);
+        if (angleToPlayer < 5f)
+        {
+            _tankController.InputFire();
+            if (angleToPlayer < 2f) _rotateBarrelBySearch = 0f;
+        }
+    }
 
     #endregion
 
@@ -226,25 +244,7 @@ public class EnemyController : MonoBehaviour
 
 
 
-    public void DetectedPlayer(Collider player)
-    {
-        //円でサーチ
-        var bullelTransform = _tankController.BurrelTransform;
-        var toPlayerVec = player.gameObject.transform.position - transform.position;
-        //外積を利用して最速方向に回転する
-        if (IsInferiorAngle(bullelTransform.forward, toPlayerVec))
-            //左回り
-            _rotateBarrelBySearch = -1.0f;
-        else
-            //右回り
-            _rotateBarrelBySearch = 1.0f;
-        var angleToPlayer = Vector3.Angle(bullelTransform.forward, toPlayerVec);
-        if (angleToPlayer < 5f)
-        {
-            _tankController.InputFire();
-            if (angleToPlayer < 2f) _rotateBarrelBySearch = 0f;
-        }
-    }
+
 
     //二つのベクトルのなす角が時計回りか反時計かを判定　trueが反時計
     public bool IsInferiorAngle(Vector3 vecA, Vector3 vecB)

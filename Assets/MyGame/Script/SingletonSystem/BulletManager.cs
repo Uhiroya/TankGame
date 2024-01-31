@@ -7,6 +7,7 @@ using UnityEngine.Pool;
 namespace MyGame.Script.SingletonSystem
 {
     //TODO オブジェクトプールがオンライン上で同期できていない
+    //TODO オブジェクトプールからゲットした弾の奪い合いが起きている。
     public class BulletManager : MonoBehaviourPunCallbacks , IActivatable
     {
         [SerializeField] private List<GameObject> _bulletList = new();
@@ -107,7 +108,8 @@ namespace MyGame.Script.SingletonSystem
 
         public void Active()
         {
-            
+            _bulletIDReference.Clear();
+            _bulletID = 0;
         }
 
         public void DeActive()
@@ -118,8 +120,7 @@ namespace MyGame.Script.SingletonSystem
                 _objectPools[(int)bullet.GetComponent<BulletController>().BulletType].Release(bullet.gameObject);
                     
             }
-            _bulletIDReference.Clear();
-            _bulletID = 0;
+
         }
     }
 }

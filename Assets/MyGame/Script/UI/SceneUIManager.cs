@@ -24,7 +24,11 @@ public class SceneUIManager : MonoBehaviour
     [SerializeField] float _startStageFade = 1.5f;
     [SerializeField] float _fadeUpTime = 0.7f;
     [SerializeField] float _fadeUpSize = 1.2f;
-
+    
+    [SerializeField] private GameObject _waitingUI;
+    [SerializeField] private Text _waitingText;
+    [SerializeField] private Text _remainWaitingTimeText;
+    
     CanvasGroup _nextStageUIgroup;
 
     Animator _pauseAnim;
@@ -44,6 +48,36 @@ public class SceneUIManager : MonoBehaviour
     {
         _pauseAnim = _pauseImage.GetComponent<Animator>();
         _nextStageUIgroup = _nextStageUI.gameObject.GetComponent<CanvasGroup>();
+    }
+
+    private int _callWaitCount;
+    private float _remainWaitingTime;
+    public void UpdateWaitingUI(int waitTime)
+    {
+        if (!_waitingUI.activeSelf)
+        {
+            if (_callWaitCount > 5)
+            {
+                _remainWaitingTime = 9f;
+                _waitingUI.SetActive(true);
+            }
+        }
+
+        _remainWaitingTime -= (float)waitTime / 1000;
+        _callWaitCount++;
+        string dot = "";
+        for (int i = 0; i < _callWaitCount % 4; i++)
+        {
+            dot += ".";
+        }
+        _waitingText.text = dot;
+        _remainWaitingTimeText.text = _remainWaitingTime.ToString("0");
+    }
+
+    public void StopWaitingUI()
+    {
+        _waitingUI.SetActive(false);
+        _callWaitCount = 0;
     }
     public async UniTask FadeIn()
     {
