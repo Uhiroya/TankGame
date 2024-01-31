@@ -130,7 +130,7 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
             await UniTask.Delay(100 , DelayType.DeltaTime , PlayerLoopTiming.Update , token );
         } while (!IsAllPlayerReady());
         CheckCompleteToSpawnPlayer();
-        photonView.RPC(nameof(NetworkManager.Instance.SpawnPlayer), RpcTarget.AllBufferedViaServer);
+        photonView.RPC(nameof(NetworkManager.Instance.SpawnPlayer), RpcTarget.AllViaServer);
         await UniTask.WaitUntil(IsAllPlayerReady, PlayerLoopTiming.FixedUpdate , token);
     }
 

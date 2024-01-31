@@ -141,7 +141,7 @@ public class TankController : MonoBehaviourPunCallbacks, IAwakeAnim ,IActivatabl
         _isReloaded = false;
         _fireTimer = 0f;
         if(PhotonNetwork.IsMasterClient)
-            BulletManager.Instance.CallMadeBullet(BulletType.Normal , _nozzle.transform.position, _burrelTransform.rotation);
+            BulletManager.Instance.CallMadeBullet(_tankData.BulletType , _nozzle.transform.position, _burrelTransform.rotation);
 
         AudioManager.Instance.PlaySE(AudioManager.TankGameSoundType.Fire);
     }

@@ -19,59 +19,56 @@ public class BulletController : MonoBehaviourPunCallbacks , IPause , IActivatabl
     public BulletType BulletType => _bulletType;
     int _reflectCount = 1;
     float _myBulletSpeed;
-    float _timer = 0;
-    private int _ID;
-    public void OnHit()
+    float _lifeTimer = 0;
+    private int _id;
+    private bool _isActive;
+    public void OnRelease()
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            BulletManager.Instance.CallReleaseBullet( _bulletType , _ID );
+            BulletManager.Instance.CallReleaseBullet( _bulletType , _id );
         }
-            
     }
     
     public void Initialize(Vector3 position , Quaternion rotation , int bulletID)
     {
-        _timer = 0f;
+        _myBulletSpeed = _bulletSpeed;
         _reflectCount = _maxReflectCount;
-        _ID = bulletID;
-        var transform1 = this.transform;
-        transform1.position = position;
-        transform1.rotation = rotation;
+        _lifeTimer = _lifeTime;
+        _isActive = true;
+        _id = bulletID;
+        transform.position = position;
+        transform.rotation = rotation;
     }
     public override void OnEnable()  
     {
         base.OnEnable();
-        _myBulletSpeed = _bulletSpeed;
-        
         MyServiceLocator.IRegister<IPause>(this);
         MyServiceLocator.IRegister<IActivatable>(this);
     }
 
     public override void OnDisable()
     {
+        _isActive = false;
         base.OnDisable();
         MyServiceLocator.IUnRegister<IPause>(this);
         MyServiceLocator.IUnRegister<IActivatable>(this);
     }
-    void Update()
-    {
-        if (!PauseManager.IsPause)
-        {
-            _timer += Time.deltaTime;
-            if( _timer > _lifeTime)
-            {
-                OnHit();
-            }
-        }
-    }
     private void FixedUpdate()
     {
-        _bulletRigidBody.MovePosition(_bulletRigidBody.position + transform.forward * _bulletSpeed * Time.deltaTime);
+        if (!_isActive) return;
+        _lifeTimer -= Time.fixedDeltaTime;
+        if( _lifeTimer < 0f)
+        {
+            OnRelease();
+        }
+        //ミサイルを飛ばす
+        transform.position +=  transform.forward * (_bulletSpeed * Time.fixedDeltaTime);
     }
     void OnCollisionEnter(Collision collision)
     {
-        if(collision.transform.tag == "Field")
+        if (!_isActive) return;
+        if(collision.transform.CompareTag("Field"))
         {
             if(_reflectCount > 0)
             {
@@ -83,20 +80,24 @@ public class BulletController : MonoBehaviourPunCallbacks , IPause , IActivatabl
             }
             else
             {
-                OnHit();
+                OnRelease();
             }
         }
-        if (collision.transform.tag == "Enemy" || collision.transform.tag == "Player")
+        if (collision.transform.CompareTag("Enemy") || collision.transform.CompareTag("Player"))
         {
             collision.transform.gameObject.GetComponent<Damageable>()?.TakeDamage(_bulletDamage);
-            OnHit();
+            OnRelease();
         }
     }
+    /// <summary>
+    /// 埋まったとき
+    /// </summary>
     void OnCollisionStay(Collision collision)
     {
-        if (collision.transform.tag == "Field")
+        if (!_isActive) return;
+        if (collision.transform.CompareTag("Field"))
         {
-            OnHit();
+            OnRelease();
         }
     }
     public void Pause()
@@ -116,6 +117,6 @@ public class BulletController : MonoBehaviourPunCallbacks , IPause , IActivatabl
     }
     public void DeActive()
     {
-        OnHit();
+        //BulletManager側でリリースする
     }
 }

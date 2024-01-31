@@ -15,18 +15,13 @@ namespace MyGame.Script.SingletonSystem
         public static BulletManager Instance;
         private Dictionary<int , ObjectPool<GameObject>> _objectPools = new ();
         private Dictionary<int, GameObject> _bulletIDReference = new();
-        
-        
+
+        #region MasterOnly
+
         public void CallReleaseBullet(BulletType bulletType ,int bulletID)
         {
             photonView.RPC(nameof(ReleaseBullet), RpcTarget.AllViaServer, bulletType, bulletID);
         }
-        [PunRPC]
-        public void ReleaseBullet(BulletType bulletType ,int bulletID)
-        {
-            _objectPools[(int)bulletType].Release(_bulletIDReference[bulletID]);
-        }
-        
         public void CallMadeBullet(BulletType bulletType , Vector3 position , Quaternion rotation )
         {
             _bulletID += 1;
@@ -34,6 +29,16 @@ namespace MyGame.Script.SingletonSystem
             photonView.RPC(nameof(MadeBullet), RpcTarget.AllViaServer , bulletType,position, rotation , _bulletID);
         }
 
+        #endregion
+
+        #region synchronize
+        
+        [PunRPC]
+        public void ReleaseBullet(BulletType bulletType ,int bulletID)
+        {
+            _objectPools[(int)bulletType].Release(_bulletIDReference[bulletID]);
+        }
+        
         [PunRPC]
         public void MadeBullet(BulletType bulletType , Vector3 position , Quaternion rotation , int bulletID )
         {
@@ -48,11 +53,16 @@ namespace MyGame.Script.SingletonSystem
                 _objectPools.Add(bulletIndex, InitializeObjectPool(bulletIndex));
                 _objectPools[bulletIndex].Get(out obj);
             }
-            
+            //弾の初期化
             obj.GetComponent<BulletController>().Initialize(position, rotation , bulletID);
-            _bulletIDReference.Add(_bulletID , obj);
+            _bulletIDReference.Add(bulletID , obj);
             
         }
+
+        #endregion
+
+
+
         private ObjectPool<GameObject> InitializeObjectPool(int bulletIndex)
         {
            

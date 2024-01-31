@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 7854717043754451133}
   - component: {fileID: 3720369112249426550}
   - component: {fileID: 4653516455073703327}
-  - component: {fileID: 3194461542087283252}
-  - component: {fileID: 3194461542087283253}
   - component: {fileID: 1807844209980892987}
+  - component: {fileID: 5794515309080821721}
+  - component: {fileID: 1286549273285276971}
   m_Layer: 0
   m_Name: Bullet
   m_TagString: Bullet
@@ -87,41 +87,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!54 &3194461542087283252
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5634639283650341757}
-  serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0
-  m_UseGravity: 0
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 116
-  m_CollisionDetection: 0
---- !u!114 &3194461542087283253
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5634639283650341757}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 32252b2c48957844f87efdb2f0b3e387, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _bulletType: 0
-  _reflectCount: 1
-  _bulletSpeed: 10
-  _bulletDamage: 100
-  _lifeTime: 5
-  _trailParticleSystem: {fileID: 8225393408373870282}
-  _bulletRigidBody: {fileID: 3194461542087283252}
 --- !u!136 &1807844209980892987
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -136,6 +101,41 @@ CapsuleCollider:
   m_Height: 0.32
   m_Direction: 2
   m_Center: {x: -0.001567012, y: -0.000000017881394, z: 0.13787118}
+--- !u!54 &5794515309080821721
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5634639283650341757}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 126
+  m_CollisionDetection: 1
+--- !u!114 &1286549273285276971
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5634639283650341757}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32252b2c48957844f87efdb2f0b3e387, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _bulletType: 0
+  _maxReflectCount: 1
+  _bulletSpeed: 15
+  _bulletDamage: 100
+  _lifeTime: 5
+  _trailParticleSystem: {fileID: 8225393408373870282}
+  _bulletRigidBody: {fileID: 5794515309080821721}
 --- !u!1 &8969699059392585249
 GameObject:
   m_ObjectHideFlags: 0
