@@ -138,7 +138,7 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
         await UniTask.WaitUntil(IsAllPlayerReady, PlayerLoopTiming.FixedUpdate , token);
     }
 
-    private TimeoutController _timeoutController = new TimeoutController();
+    private readonly TimeoutController _timeoutController = new TimeoutController();
     [PunRPC]
     public async UniTaskVoid CallStartTitles()
     {
