@@ -531,6 +531,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 693086115}
     m_Modifications:
+    - target: {fileID: 1978459458, guid: 701cb9e513f49d54cb7c9f72cdda7d4a, type: 3}
+      propertyPath: sceneViewId
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 358242425953260804, guid: 701cb9e513f49d54cb7c9f72cdda7d4a, type: 3}
       propertyPath: m_Name
       value: EnemyTankNormal
@@ -743,6 +747,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 693086115}
     m_Modifications:
+    - target: {fileID: 1978459458, guid: 701cb9e513f49d54cb7c9f72cdda7d4a, type: 3}
+      propertyPath: sceneViewId
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 358242425953260804, guid: 701cb9e513f49d54cb7c9f72cdda7d4a, type: 3}
       propertyPath: m_Name
       value: EnemyTankNormal
@@ -1587,6 +1595,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1556807338}
     m_Modifications:
+    - target: {fileID: -8016641955402862827, guid: 38592906e0be04d4687d913584775a65, type: 3}
+      propertyPath: sceneViewId
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 70858601, guid: 38592906e0be04d4687d913584775a65, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0

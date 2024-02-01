@@ -33,13 +33,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks // Photon Realtime 用�
         }
     }
 
-    private void Start()
-    {
-        // Photon に接続する
-
-        //Connect("1.0"); // 1.0 はバージョン番号（同じバージョンを指定したクライアント同士が接続できる）
-    }
-
     /// <summary>
     /// Photonに接続する
     /// </summary>
@@ -219,7 +212,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks // Photon Realtime 用�
     /// <summary>自分のいる部屋から他のプレイヤーが退室した時</summary>
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
-        //Debug.Log("OnPlayerLeftRoom: " + otherPlayer.NickName);
+        photonView.RPC(nameof(MasterGameManager.Instance.JoinSoloGame), RpcTarget.All);
+        _ = SceneUIManager.Instance.ShowPlayerLeftText(3000);
     }
 
     /// <summary>マスタークライアントが変わった時</summary>

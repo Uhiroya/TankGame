@@ -16,8 +16,8 @@ public class EnemyManager : MonoBehaviourPunCallbacks, IActivatable, IPause
     
     void DeadEvent()
     { 
-        if (PhotonNetwork.IsMasterClient)
-             photonView.RPC(nameof(TryDestroy) , RpcTarget.AllViaServer);
+        if (PhotonNetwork.IsMasterClient) 
+            photonView.RPC(nameof(TryDestroy) , RpcTarget.AllViaServer);
     }
     [PunRPC]
     void TryDestroy()

@@ -15,9 +15,9 @@ public class CreateTankTrali : MonoBehaviour
         if (_animflag && new Vector2(transform.position.x - _prevPos.x, transform.position.z - _prevPos.z).magnitude > _makeTrailDistance)
         {
             _prevPos = transform.position;
-            var obj =Instantiate(_trailObject, _trailObject.transform.position + _leftBackWheel.transform.position, Quaternion.Euler(_trailObject.transform.localEulerAngles.x, transform.localEulerAngles.y, 0));
+            var obj = Instantiate(_trailObject, _trailObject.transform.position + _leftBackWheel.transform.position, Quaternion.Euler(_trailObject.transform.localEulerAngles.x, transform.localEulerAngles.y, 0));
             obj.gameObject.hideFlags = HideFlags.HideInHierarchy;
-            var obj2 =Instantiate(_trailObject, _trailObject.transform.position + _rightBackWheel.transform.position, Quaternion.Euler(_trailObject.transform.localEulerAngles.x, transform.localEulerAngles.y, 0));
+            var obj2 = Instantiate(_trailObject, _trailObject.transform.position + _rightBackWheel.transform.position, Quaternion.Euler(_trailObject.transform.localEulerAngles.x, transform.localEulerAngles.y, 0));
             obj2.gameObject.hideFlags = HideFlags.HideInHierarchy;
 
         }

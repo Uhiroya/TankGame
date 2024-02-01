@@ -275,11 +275,7 @@ public class EnemyController : MonoBehaviour
     {
         _currentTargetPlayer = null;
     }
-
-
-
-
-
+    
     //二つのベクトルのなす角が時計回りか反時計かを判定　trueが反時計
     public bool IsInferiorAngle(Vector3 vecA, Vector3 vecB)
     {

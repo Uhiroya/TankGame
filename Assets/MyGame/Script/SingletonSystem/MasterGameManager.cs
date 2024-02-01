@@ -184,6 +184,7 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
         catch
         {
             photonView.RPC(nameof(JoinSoloGame), RpcTarget.All);
+            
         }
         finally
         {

@@ -28,6 +28,8 @@ public class SceneUIManager : MonoBehaviour
     [SerializeField] private GameObject _waitingUI;
     [SerializeField] private Text _waitingText;
     [SerializeField] private Text _remainWaitingTimeText;
+    [SerializeField] private GameObject _playerLeftText;
+    
     
     CanvasGroup _nextStageUIgroup;
 
@@ -73,11 +75,17 @@ public class SceneUIManager : MonoBehaviour
         _waitingText.text = dot;
         _remainWaitingTimeText.text = _remainWaitingTime.ToString("0");
     }
-
     public void StopWaitingUI()
     {
         _waitingUI.SetActive(false);
         _callWaitCount = 0;
+    }
+
+    public async UniTaskVoid ShowPlayerLeftText(int milliSecond)
+    {
+        _playerLeftText.SetActive(true);
+        await UniTask.Delay(milliSecond);
+        _playerLeftText.SetActive(false);
     }
     public async UniTask FadeIn()
     {

@@ -374,12 +374,12 @@ MonoBehaviour:
   _nozzle: {fileID: 1936718049}
   _burrelTransform: {fileID: 618895634568474580}
   _tankData:
-    BulletType: 0
-    TankHP: 100
-    FireCoolTime: 1.5
-    MoveSpeed: 8
-    RotateSpeed: 4
-    TurnBarrelSpeed: 2
+    _bulletType: 0
+    _tankHp: 100
+    _fireCoolTime: 1.5
+    _moveSpeed: 8
+    _rotateSpeed: 4
+    _turnBarrelSpeed: 2
 --- !u!114 &-4621837695347990387
 MonoBehaviour:
   m_ObjectHideFlags: 0
