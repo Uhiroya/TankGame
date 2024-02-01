@@ -41,7 +41,7 @@ namespace MyGame.Script.SingletonSystem
             bullet.GetComponent<BulletController>().Release();
             _objectPools[(int)bulletType].Release(bullet);
         }
-        
+        //TODO マルチプレイ時に再利用のタイミングがずれるバグがある。
         [PunRPC]
         public void MadeBullet(BulletType bulletType , Vector3 position , Quaternion rotation , int bulletID )
         {
