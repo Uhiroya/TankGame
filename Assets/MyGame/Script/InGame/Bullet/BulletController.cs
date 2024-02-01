@@ -6,7 +6,7 @@ using Photon.Pun;
 using Unity.VisualScripting;
 using UnityEngine;
 [RequireComponent (typeof (Rigidbody))]
-public class BulletController : MonoBehaviourPunCallbacks , IPause , IActivatable
+public class BulletController : MonoBehaviourPunCallbacks
 {
     [SerializeField] private BulletType _bulletType;
     [SerializeField] int _maxReflectCount = 1;
@@ -40,20 +40,13 @@ public class BulletController : MonoBehaviourPunCallbacks , IPause , IActivatabl
         transform.position = position;
         transform.rotation = rotation;
     }
-    public override void OnEnable()  
-    {
-        base.OnEnable();
-        MyServiceLocator.IRegister<IPause>(this);
-        MyServiceLocator.IRegister<IActivatable>(this);
-    }
 
-    public override void OnDisable()
+    public void Release()
     {
         _isActive = false;
-        base.OnDisable();
-        MyServiceLocator.IUnRegister<IPause>(this);
-        MyServiceLocator.IUnRegister<IActivatable>(this);
+        Destroy(gameObject);
     }
+
     private void FixedUpdate()
     {
         if (!_isActive) return;
@@ -72,7 +65,7 @@ public class BulletController : MonoBehaviourPunCallbacks , IPause , IActivatabl
         {
             if(_reflectCount > 0)
             {
-                //Debug.Log("ぶつかった");
+                //反射処理
                 AudioManager.Instance.PlaySE(AudioManager.TankGameSoundType.reflectBullet);
                 _reflectCount -= 1;
                 Vector3 dir = Vector3.Reflect(transform.forward, collision.contacts[0].normal);
@@ -99,24 +92,5 @@ public class BulletController : MonoBehaviourPunCallbacks , IPause , IActivatabl
         {
             OnRelease();
         }
-    }
-    public void Pause()
-    {
-        _bulletSpeed = 0;
-        _bulletRigidBody.Sleep();
-        _trailParticleSystem.Pause();
-    }
-    public void Resume()
-    {
-        _bulletRigidBody.WakeUp(); 
-        _bulletSpeed = _myBulletSpeed;
-        _trailParticleSystem.Play();
-    }
-    public void Active()
-    {
-    }
-    public void DeActive()
-    {
-        //BulletManager側でリリースする
     }
 }

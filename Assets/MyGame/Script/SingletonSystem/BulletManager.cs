@@ -14,8 +14,8 @@ namespace MyGame.Script.SingletonSystem
         [SerializeField] private Transform _bulletParentTransform;
         private static int _bulletID = 0;
         public static BulletManager Instance;
-        private Dictionary<int , ObjectPool<GameObject>> _objectPools = new ();
-        private Dictionary<int, GameObject> _bulletIDReference = new();
+        private readonly Dictionary<int , ObjectPool<GameObject>> _objectPools = new ();
+        private readonly Dictionary<int, GameObject> _bulletIDReference = new();
 
         #region MasterOnly
 
@@ -37,26 +37,34 @@ namespace MyGame.Script.SingletonSystem
         [PunRPC]
         public void ReleaseBullet(BulletType bulletType ,int bulletID)
         {
-            _objectPools[(int)bulletType].Release(_bulletIDReference[bulletID]);
+            GameObject bullet = _bulletIDReference[bulletID];
+            bullet.GetComponent<BulletController>().Release();
+            //_objectPools[(int)bulletType].Release(bullet);
         }
         
         [PunRPC]
         public void MadeBullet(BulletType bulletType , Vector3 position , Quaternion rotation , int bulletID )
         {
-            int bulletIndex = (int)bulletType;
-            GameObject obj;
-            if (_objectPools.TryGetValue(bulletIndex, out var value))
-            {
-                value.Get(out obj);
-            }
-            else
-            {
-                _objectPools.Add(bulletIndex, InitializeObjectPool(bulletIndex));
-                _objectPools[bulletIndex].Get(out obj);
-            }
-            //弾の初期化
+            GameObject obj = Instantiate(_bulletList[(int)bulletType], _bulletParentTransform);
             obj.GetComponent<BulletController>().Initialize(position, rotation , bulletID);
             _bulletIDReference.Add(bulletID , obj);
+            return;
+            
+            
+            // int bulletIndex = (int)bulletType;
+            // GameObject obj;
+            // if (_objectPools.TryGetValue(bulletIndex, out var value))
+            // {
+            //     value.Get(out obj);
+            // }
+            // else
+            // {
+            //     _objectPools.Add(bulletIndex, InitializeObjectPool(bulletIndex));
+            //     _objectPools[bulletIndex].Get(out obj);
+            // }
+            // //弾の初期化
+            // obj.GetComponent<BulletController>().Initialize(position, rotation , bulletID);
+            // _bulletIDReference.Add(bulletID , obj);
             
         }
 
@@ -71,10 +79,7 @@ namespace MyGame.Script.SingletonSystem
                 () => Instantiate(_bulletList[bulletIndex], _bulletParentTransform), // プールが空のときに新しいインスタンスを生成する処理
                 target => { target.SetActive(true); }, // プールから取り出されたときの処理 
                 target => { target.SetActive(false); },
-                target =>
-                {
-                    Destroy(target);
-                } ,
+                target => { Destroy(target); } ,
                 false
             );
             //一つ目を作っておかないと初回生成が重い
@@ -117,7 +122,8 @@ namespace MyGame.Script.SingletonSystem
             foreach (Transform bullet in _bulletParentTransform)
             {
                 Debug.Log("弾を戻しました");
-                _objectPools[(int)bullet.GetComponent<BulletController>().BulletType].Release(bullet.gameObject);
+                bullet.GetComponent<BulletController>().Release();
+                //_objectPools[(int)bullet.GetComponent<BulletController>().BulletType].Release(bullet.gameObject);
                     
             }
 
