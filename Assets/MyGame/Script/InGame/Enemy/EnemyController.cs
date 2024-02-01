@@ -24,11 +24,16 @@ public class EnemyController : MonoBehaviour
     private EnemyState _state;
     private CancellationTokenSource _cts;
 
+    private readonly ReactiveProperty<float> _barrelInput = new();
     private float _rotateBarrelByMove;
     private float _rotateBarrelBySearch;
     private bool _isNearField = false;
     private void Awake()
     {
+        _barrelInput
+            .DistinctUntilChanged()
+            .Subscribe( x => _tankController.InputBarrelTurn(x));
+        
         _scanPlayerCollider.radius = _playerScanRadius;
         _scanFieldCollider.radius = _currentScanMoveRadius =  _scanMoveRadius;
 
@@ -80,31 +85,46 @@ public class EnemyController : MonoBehaviour
     }
     public async UniTask Move(CancellationToken cts)
     {
-        
+        RaycastHit[] hits = new RaycastHit[100];
         var previousPosition = transform.position;
-        var boxCastScale = Vector3.one * transform.lossyScale.x;
-        
-        var randomDirection = Quaternion.Euler(0f, Random.Range(0, 360f), 0f) * transform.forward * _currentScanMoveRadius;
+        var boxCastScale = Vector3.one * transform.lossyScale.x / 2;
+        Vector3 randomDirection;
         
         _scanFieldCollider.radius = _currentScanMoveRadius = _scanMoveRadius;
-        var serchCount = 0;
+        var searchCount = 0;
         while(true)
         {
-            if (Physics.BoxCast(previousPosition, boxCastScale, randomDirection, out var hit, Quaternion.identity, _currentScanMoveRadius))
+            var isMovable = true;
+            randomDirection = Quaternion.Euler(0f, Random.Range(0, 360f), 0f) * transform.forward ;
+            var size = Physics.BoxCastNonAlloc(previousPosition, boxCastScale, randomDirection, hits, Quaternion.identity, _currentScanMoveRadius);
+            if(hits.Length != 0)
             {
-                Debug.DrawRay(previousPosition, randomDirection, Color.green, 5f);
-                if (hit.collider.gameObject.CompareTag("Field") || hit.collider.gameObject.CompareTag("Player"))
+                Debug.DrawRay(previousPosition, randomDirection * _currentScanMoveRadius, Color.green, 5f);
+                
+                for (int i = 0; i < size; i++)
                 {
-                    serchCount++;
-                    if (serchCount % 5 == 0)
+                    var hit = hits[i];
+                    if (hit.collider.gameObject.CompareTag("Field") || hit.collider.gameObject.CompareTag("Player"))
+                    {
+                        isMovable = false;
+                        break;
+                    }
+                }
+
+                if (!isMovable)
+                {
+                    searchCount++;
+                    //Debug.Log(searchCount); 
+                    if (searchCount % 5 == 0)
                     {
                         _currentScanMoveRadius /= 2f;
-                        _scanFieldCollider.radius =　_currentScanMoveRadius;   
+                        _scanFieldCollider.radius =　_currentScanMoveRadius;
                     }
 
                     continue;
                 }
             }
+
             break;
         }
         try
@@ -122,7 +142,7 @@ public class EnemyController : MonoBehaviour
             }
             _tankController.InputMove(1.0f);
             //ゴール地点まで動く
-            while ((transform.position - previousPosition).magnitude < randomDirection.magnitude)
+            while ((transform.position - previousPosition).magnitude < (randomDirection * _currentScanMoveRadius).magnitude)
             {
                 //Rayが飛ばされた向きまで履帯を回転させる
                 if (isTurn && Vector3.Angle(transform.forward, randomDirection) < 1f)
@@ -141,8 +161,7 @@ public class EnemyController : MonoBehaviour
         }
         catch
         {
-            
-            Debug.Log("Stop");
+            //Debug.Log("Stop");
         }
         finally
         {
@@ -178,7 +197,9 @@ public class EnemyController : MonoBehaviour
                 }
                 break;
         }
-        _tankController.InputBarrelTurn(_rotateBarrelByMove + _rotateBarrelBySearch);
+
+        _barrelInput.Value = _rotateBarrelByMove + _rotateBarrelBySearch;
+        
     }
     
     private void FindTarget()

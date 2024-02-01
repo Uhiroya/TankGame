@@ -26,7 +26,6 @@ public class BulletController : MonoBehaviourPunCallbacks
     {
         if (_isActive && PhotonNetwork.IsMasterClient)
         {
-            Debug.Log("呼び出し");
             BulletManager.Instance.CallReleaseBullet( _bulletType , _id );
             _isActive = false;
         }
