@@ -26,7 +26,7 @@ namespace MyGame.Script.SingletonSystem
         public void CallMadeBullet(BulletType bulletType , Vector3 position , Quaternion rotation )
         {
             _bulletID += 1;
-            Debug.Log("CallMadeBullet" + _bulletID);
+            //Debug.Log("CallMadeBullet" + _bulletID);
             photonView.RPC(nameof(MadeBullet), RpcTarget.AllViaServer , bulletType,position, rotation , _bulletID);
         }
 

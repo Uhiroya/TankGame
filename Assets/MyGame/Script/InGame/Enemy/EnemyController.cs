@@ -67,68 +67,81 @@ public class EnemyController : MonoBehaviour
     }
 
     #region 自動移動
-
-        public async UniTask AutoMover()
+    private readonly TimeoutController _timeoutController = new TimeoutController();
+    public async UniTask AutoMover(CancellationToken cts)
     {
         while (_moveFlag)
         {
-            await Move().SuppressCancellationThrow();
-            //await UniTask.Delay((int)(_moveDelay * 1000));
+            var timeoutController = _timeoutController.Timeout(3000);
+            var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cts ,timeoutController);
+            await Move(linkedCts.Token).SuppressCancellationThrow();
+            _timeoutController.Reset();
         }
     }
-    public async UniTask Move()
+    public async UniTask Move(CancellationToken cts)
     {
-        var randomQua = Quaternion.Euler(0f, Random.Range(0, 360f), 0f);
-        var moveDir = randomQua * transform.forward * _currentScanMoveRadius;
-        var pos = transform.position;
+        
+        var previousPosition = transform.position;
         var boxCastScale = Vector3.one * transform.lossyScale.x;
-        Debug.DrawRay(pos, moveDir, Color.green, 5f);
-        Physics.BoxCast(pos, boxCastScale, moveDir, out var hit,  Quaternion.identity, _currentScanMoveRadius);
-        try
+        
+        var randomDirection = Quaternion.Euler(0f, Random.Range(0, 360f), 0f) * transform.forward * _currentScanMoveRadius;
+        
+        _scanFieldCollider.radius = _currentScanMoveRadius = _scanMoveRadius;
+        var serchCount = 0;
+        while(true)
         {
-            if (hit.collider?.gameObject.tag != "Field" && hit.collider?.gameObject.tag != "Player")
+            if (Physics.BoxCast(previousPosition, boxCastScale, randomDirection, out var hit, Quaternion.identity, _currentScanMoveRadius))
             {
-                _scanFieldCollider.radius = _currentScanMoveRadius = _scanMoveRadius;
-                var previousPosition = transform.position;
-                //ゴール地点まで動く
-                while ((transform.position - previousPosition).magnitude < moveDir.magnitude)
+                Debug.DrawRay(previousPosition, randomDirection, Color.green, 5f);
+                if (hit.collider.gameObject.CompareTag("Field") || hit.collider.gameObject.CompareTag("Player"))
                 {
-                    //Rayが飛ばされた向きまで履帯を回転させる
-                    if (Vector3.Angle(transform.forward, moveDir) >= 1f)
+                    serchCount++;
+                    if (serchCount % 5 == 0)
                     {
-                        if (IsInferiorAngle(transform.forward, moveDir))
-                        {
-                            _tankController.InputTurn(-1.0f);
-                            _rotateBarrelByMove = 1.0f;
-                        }
-                        else
-                        {
-                            _tankController.InputTurn(1.0f);
-                            _rotateBarrelByMove = -1.0f;
-                        }
-                    }
-                    else
-                    {
-                        _tankController.InputTurn(0f);
-                        _rotateBarrelByMove = 0f;
+                        _currentScanMoveRadius /= 2f;
+                        _scanFieldCollider.radius =　_currentScanMoveRadius;   
                     }
 
-                    _tankController.InputMove(1.0f);
-                    await UniTask.Yield(_cts.Token);
-                    if (_isNearField)
-                    {
-                        _isNearField = false;
-                        break;
-                    }
+                    continue;
                 }
+            }
+            break;
+        }
+        try
+        {
+            bool isTurn = true;
+            if (IsInferiorAngle(transform.forward, randomDirection))
+            {
+                _tankController.InputTurn(-1.0f);
+                _rotateBarrelByMove = 1.0f;
             }
             else
             {
-                _currentScanMoveRadius--;
+                _tankController.InputTurn(1.0f);
+                _rotateBarrelByMove = -1.0f;
+            }
+            _tankController.InputMove(1.0f);
+            //ゴール地点まで動く
+            while ((transform.position - previousPosition).magnitude < randomDirection.magnitude)
+            {
+                //Rayが飛ばされた向きまで履帯を回転させる
+                if (isTurn && Vector3.Angle(transform.forward, randomDirection) < 1f)
+                {
+                    _tankController.InputTurn(0f);
+                    _rotateBarrelByMove = 0f;
+                    isTurn = false;
+                }
+                await UniTask.Yield(cts);
+                if (_isNearField)
+                {
+                    _isNearField = false;
+                    break;
+                }
             }
         }
         catch
         {
+            
             Debug.Log("Stop");
         }
         finally
@@ -222,7 +235,7 @@ public class EnemyController : MonoBehaviour
         _cts?.Dispose();
         _cts = new CancellationTokenSource();
         _moveFlag = true;
-        _ = AutoMover();
+        _ = AutoMover(_cts.Token);
     }
 
     private void OnDisable()
