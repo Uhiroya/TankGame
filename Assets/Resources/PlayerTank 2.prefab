@@ -374,12 +374,12 @@ MonoBehaviour:
   _nozzle: {fileID: 1936718049}
   _burrelTransform: {fileID: 618895634568474580}
   _tankData:
-    BulletType: 0
-    TankHP: 100
-    FireCoolTime: 1.5
-    MoveSpeed: 8
-    RotateSpeed: 4
-    TurnBarrelSpeed: 2
+    _bulletType: 0
+    _tankHp: 100
+    _fireCoolTime: 1.5
+    _moveSpeed: 8
+    _rotateSpeed: 4
+    _turnBarrelSpeed: 2
 --- !u!114 &-4621837695347990387
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -433,7 +433,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2642512349154686061}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a751901b80339854b84af79ab82143f0, type: 3}
   m_Name: 
@@ -459,7 +459,6 @@ MonoBehaviour:
   observableSearch: 2
   ObservedComponents:
   - {fileID: -6740897292493864044}
-  - {fileID: 0}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0

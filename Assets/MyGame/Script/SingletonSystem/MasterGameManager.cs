@@ -127,10 +127,10 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
         do
         {
             CheckCompleteToSceneChange();
-            int waitTime = 200;
+            int updateTime = 200;
             if(!PhotonNetwork.OfflineMode)
-                SceneUIManager.Instance.UpdateWaitingUI(waitTime);
-            await UniTask.Delay(waitTime , DelayType.DeltaTime , PlayerLoopTiming.Update , token );
+                SceneUIManager.Instance.UpdateWaitingUI(_timeOutMilliSecond , updateTime);
+            await UniTask.Delay(updateTime , DelayType.DeltaTime , PlayerLoopTiming.Update , token );
         } while (!IsAllPlayerReady());
         SceneUIManager.Instance.StopWaitingUI();
         CheckCompleteToSpawnPlayer();

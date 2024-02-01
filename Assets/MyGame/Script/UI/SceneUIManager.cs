@@ -53,19 +53,19 @@ public class SceneUIManager : MonoBehaviour
     }
 
     private int _callWaitCount;
-    private float _remainWaitingTime;
-    public void UpdateWaitingUI(int waitTime)
+    private int _remainWaitingTime;
+    public void UpdateWaitingUI(int waitTime , int deltaTime)
     {
         if (!_waitingUI.activeSelf)
         {
             if (_callWaitCount > 5)
             {
-                _remainWaitingTime = 9f;
+                _remainWaitingTime = waitTime - _callWaitCount * deltaTime ;
                 _waitingUI.SetActive(true);
             }
         }
 
-        _remainWaitingTime -= (float)waitTime / 1000;
+        _remainWaitingTime -= deltaTime;
         _callWaitCount++;
         string dot = "";
         for (int i = 0; i < _callWaitCount % 4; i++)
@@ -73,7 +73,7 @@ public class SceneUIManager : MonoBehaviour
             dot += ".";
         }
         _waitingText.text = dot;
-        _remainWaitingTimeText.text = _remainWaitingTime.ToString("0");
+        _remainWaitingTimeText.text = (_remainWaitingTime / 1000).ToString("0");
     }
     public void StopWaitingUI()
     {
