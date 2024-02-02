@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 
-public class PlayerInputManager : MonoBehaviour
+public class PlayerInput : MonoBehaviour
 {
-    [SerializeField] private TankController _tankController;
+    [SerializeField] private InputReceiver _inputReceiver;
     [SerializeField] private AudioSource _audioSource;
     private float _inputHorizontal;
     private float _inputMoveHorizontal;
@@ -15,7 +15,7 @@ public class PlayerInputManager : MonoBehaviour
         _inputMoveVertical = Input.GetAxisRaw("Vertical");
         _inputMoveHorizontal = Input.GetAxisRaw("Horizontal");
         _inputHorizontal = Input.GetAxisRaw("Horizontal2");
-        if (Input.GetButtonDown("Fire1")) _tankController.InputFire();
+        if (Input.GetButtonDown("Fire1")) _inputReceiver.InputFire();
         if (_inputMoveVertical == 0f)
         {
             _audioSource.Pause();
@@ -28,12 +28,12 @@ public class PlayerInputManager : MonoBehaviour
 
     private void FixedUpdate()
     {
-        _tankController.InputMove(_inputMoveVertical);
+        _inputReceiver.InputMove(_inputMoveVertical);
         if (_inputMoveVertical >= 0)
-            _tankController.InputTurn(_inputMoveHorizontal);
+            _inputReceiver.InputTurn(_inputMoveHorizontal);
         else
-            _tankController.InputTurn(-_inputMoveHorizontal);
-        _tankController.InputBarrelTurn(_inputHorizontal);
+            _inputReceiver.InputTurn(-_inputMoveHorizontal);
+        _inputReceiver.InputBarrelTurn(_inputHorizontal);
     }
 
     public void StopTankAudio()

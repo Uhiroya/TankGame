@@ -8,7 +8,7 @@ using Cysharp.Threading.Tasks;
 using System.Threading;
 using UnityEngine.SceneManagement;
 
-public class SceneUIManager : MonoBehaviour 
+public class UIManager : MonoBehaviour 
 {
     [SerializeField] Image _fadeImage ;
     [SerializeField] GameObject _nextStageUI;
@@ -34,7 +34,7 @@ public class SceneUIManager : MonoBehaviour
     CanvasGroup _nextStageUIgroup;
 
     Animator _pauseAnim;
-    public static SceneUIManager Instance;
+    public static UIManager Instance;
     void Awake()
     {
         if (!Instance)

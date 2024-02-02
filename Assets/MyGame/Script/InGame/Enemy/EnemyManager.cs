@@ -3,21 +3,23 @@ using System.Collections.Generic;
 using Photon.Pun;
 using UnityEngine;
 
-public class EnemyManager : MonoBehaviourPunCallbacks, IActivatable, IPause
+public class EnemyManager : MonoBehaviourPunCallbacks, IActivatable
 {
     [SerializeField] private GameObject _destroyEffect;
-    [SerializeField] private EnemyController _enemyController;
+    [SerializeField] private EnemyAutoInput _enemyAutoInput;
     [SerializeField] private TankController _tankController;
 
     void Awake()
     {
-        _enemyController.enabled = false;
+        _enemyAutoInput.enabled = false;
     }
     
     void DeadEvent()
-    { 
-        if (PhotonNetwork.IsMasterClient) 
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
             photonView.RPC(nameof(TryDestroy) , RpcTarget.AllViaServer);
+        }
     }
     [PunRPC]
     void TryDestroy()
@@ -50,21 +52,14 @@ public class EnemyManager : MonoBehaviourPunCallbacks, IActivatable, IPause
     }
     public void Active()
     {
-        if(PhotonNetwork.IsMasterClient)
-            _enemyController.enabled = true;
-        
+        if (PhotonNetwork.IsMasterClient)
+        {
+            _enemyAutoInput.enabled = true;
+        }
     }
     public void DeActive()
     {
-        _enemyController.enabled = false;
+        _enemyAutoInput.enabled = false;
     }
-
-    public void Pause()
-    {
-        _enemyController.enabled = false;
-    }
-    public void Resume()
-    {
-        _enemyController.enabled = true;
-    }
+    
 }

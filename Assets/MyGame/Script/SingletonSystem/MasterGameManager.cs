@@ -129,10 +129,10 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
             CheckCompleteToSceneChange();
             int updateTime = 200;
             if(!PhotonNetwork.OfflineMode)
-                SceneUIManager.Instance.UpdateWaitingUI(_timeOutMilliSecond , updateTime);
+                UIManager.Instance.UpdateWaitingUI(_timeOutMilliSecond , updateTime);
             await UniTask.Delay(updateTime , DelayType.DeltaTime , PlayerLoopTiming.Update , token );
         } while (!IsAllPlayerReady());
-        SceneUIManager.Instance.StopWaitingUI();
+        UIManager.Instance.StopWaitingUI();
         CheckCompleteToSpawnPlayer();
         photonView.RPC(nameof(NetworkManager.Instance.SpawnPlayer), RpcTarget.AllViaServer);
         await UniTask.WaitUntil(IsAllPlayerReady, PlayerLoopTiming.FixedUpdate , token);
@@ -162,7 +162,7 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
         finally
         {
             Debug.Log("Reset！！");
-            SceneUIManager.Instance.StopWaitingUI();
+            UIManager.Instance.StopWaitingUI();
             _timeoutController.Reset();
         }
         photonView.RPC(nameof(LocalGameManager.Instance.StartTitle), RpcTarget.AllViaServer);

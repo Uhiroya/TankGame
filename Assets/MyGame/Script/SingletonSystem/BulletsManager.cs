@@ -8,12 +8,12 @@ namespace MyGame.Script.SingletonSystem
 {
     //TODO オブジェクトプールがオンライン上で同期できていない
     //TODO オブジェクトプールからゲットした弾の奪い合いが起きている。
-    public class BulletManager : MonoBehaviourPunCallbacks , IActivatable
+    public class BulletsManager : MonoBehaviourPunCallbacks , IActivatable
     {
         [SerializeField] private List<GameObject> _bulletList = new();
         [SerializeField] private Transform _bulletParentTransform;
         private static int _bulletID = 0;
-        public static BulletManager Instance;
+        public static BulletsManager Instance;
         private readonly Dictionary<int , ObjectPool<GameObject>> _objectPools = new ();
         private readonly Dictionary<int, GameObject> _bulletIDReference = new();
 
@@ -45,6 +45,7 @@ namespace MyGame.Script.SingletonSystem
         [PunRPC]
         public void MadeBullet(BulletType bulletType , Vector3 position , Quaternion rotation , int bulletID )
         {
+            AudioManager.Instance.PlaySE(AudioManager.TankGameSoundType.Fire);
             GameObject obj = Instantiate(_bulletList[(int)bulletType], _bulletParentTransform);
             obj.GetComponent<BulletController>().Initialize(position, rotation , bulletID);
             _bulletIDReference.Add(bulletID , obj);

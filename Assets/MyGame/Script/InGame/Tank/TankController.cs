@@ -9,31 +9,29 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
+
 [RequireComponent(typeof(Rigidbody))]
 public class TankController : MonoBehaviourPunCallbacks, IAwakeAnim ,IActivatable ,IPause
 {
     [SerializeField] private Rigidbody _rigidBody;
-    [SerializeField] Slider _slider;
-    [SerializeField] GameObject _nozzle;
     [SerializeField] Transform _burrelTransform;
     [SerializeField] private TankData _tankData;
     const float StartPositionY = 50f;
 
     public Transform BurrelTransform => _burrelTransform;
+    public TankData TankData => _tankData;
+
     private bool _active;
     private Damageable _damageable;
     
-    private CancellationTokenSource _cts = new();
-    private ReactiveProperty<float> _nextInputMoveVertical = new();
-    private ReactiveProperty<float> _nextInputMoveHorizontal= new();
-    private ReactiveProperty<float> _nextInputVertical= new();
     
     private float _inputMoveVertical ;
     private float _inputMoveHorizontal;
     private float _inputVertical;
     
-    private float _fireTimer;
-    bool _isReloaded = true;
+
+    private readonly InputReceiver _inputReceiver;
+    
     public event Action DeadEvent;
 
     public void OnDead() => DeadEvent?.Invoke();
@@ -48,7 +46,7 @@ public class TankController : MonoBehaviourPunCallbacks, IAwakeAnim ,IActivatabl
         _rigidBody = GetComponent<Rigidbody>();
         transform.position += Vector3.up * StartPositionY;
         
-        _slider.maxValue = _tankData.FireCoolTime;
+        
         
          _damageable = gameObject.AddComponent<Damageable>().Initialize(_tankData.TankHP);
     }
@@ -65,90 +63,28 @@ public class TankController : MonoBehaviourPunCallbacks, IAwakeAnim ,IActivatabl
         _burrelTransform.rotation *= Quaternion.Euler(0f, _inputVertical * _tankData.TurnBarrelSpeed, 0f);
         
         //Fire準備
-        _fireTimer += Time.deltaTime;
-        _slider.value = _fireTimer;
-        if (_fireTimer > _tankData.FireCoolTime -0.5f)
-        {
-            if (!_isReloaded)
-            {
-                AudioManager.Instance.PlaySE(AudioManager.TankGameSoundType.reload);
-                _isReloaded = true;
-            }
-        }
-    }
-    #region 移動関係共有メソッド
 
-    void SendInputMove(float input)=>
-        photonView.RPC(nameof(GetInputMove) , RpcTarget.AllViaServer, input , transform.position);
-        
-    
-    void SendInputTurn(float input) =>
-        photonView.RPC(nameof(GetInputTurn) , RpcTarget.AllViaServer, input , transform.rotation);
-    
-    void SendInputBarrelTurn(float input) =>
-        photonView.RPC(nameof(GetInputBarrelTurn) , RpcTarget.AllViaServer, input , _burrelTransform.rotation);
-    
-    public void InputMove(float inputVertical )
-    {
-        
-        _nextInputMoveVertical.Value = inputVertical;
     }
-    public void InputTurn(float inputHorizontal )
-    {
-        
-        _nextInputMoveHorizontal.Value = inputHorizontal;
-    }
-    public void InputBarrelTurn(float inputVertical )
-    {
-        
-        _nextInputVertical.Value = inputVertical;
-    }
-    
     [PunRPC]
     public void GetInputMove(float inputVertical, Vector3 position)
     {
         //transform.position = position;
         _inputMoveVertical = inputVertical;
     }
+
     [PunRPC]
     public void GetInputTurn(float inputHorizontal, Quaternion rotation)
     {
         //transform.rotation = rotation;
         _inputMoveHorizontal = inputHorizontal;
     }
+
     [PunRPC]
     public void GetInputBarrelTurn(float inputVertical, Quaternion rotation)
     {
         //_burrelTransform.rotation = rotation;
         _inputVertical = inputVertical;
     }
-    
-    #endregion
-
-    #region アクション関係共有のメソッド
-    public void InputFire()
-    {
-        if (_fireTimer > _tankData.FireCoolTime)
-        {
-            _isReloaded = false;
-            _fireTimer = 0f;
-            photonView.RPC(nameof(Fire), RpcTarget.AllViaServer);
-        }
-    }
-    [PunRPC]
-    public void Fire()
-    {
-        _isReloaded = false;
-        _fireTimer = 0f;
-        if(PhotonNetwork.IsMasterClient)
-            BulletManager.Instance.CallMadeBullet(_tankData.BulletType , _nozzle.transform.position, _burrelTransform.rotation);
-
-        AudioManager.Instance.PlaySE(AudioManager.TankGameSoundType.Fire);
-    }
-    
-
-    #endregion
-
 
     public override void OnEnable()
     {
@@ -163,7 +99,6 @@ public class TankController : MonoBehaviourPunCallbacks, IAwakeAnim ,IActivatabl
     {
         base.OnDisable();
         _damageable.OnDead -= OnDead;
-        _cts?.Cancel(); 
         MyServiceLocator.IUnRegister(this as IActivatable);
         MyServiceLocator.IUnRegister(this as IAwakeAnim);
         MyServiceLocator.IUnRegister(this as IPause);
@@ -180,20 +115,11 @@ public class TankController : MonoBehaviourPunCallbacks, IAwakeAnim ,IActivatabl
     }
     public void Active()
     {
-        _cts = new();
-        if(photonView.IsMine)
-            Bind();
         _active = true;
     }
-    private void Bind()
-    {
-        _nextInputMoveVertical.DistinctUntilChanged().Subscribe(SendInputMove).AddTo(_cts.Token);
-        _nextInputMoveHorizontal.DistinctUntilChanged().Subscribe(SendInputTurn).AddTo(_cts.Token);
-        _nextInputVertical.DistinctUntilChanged().Subscribe(SendInputBarrelTurn).AddTo(_cts.Token);
-    }
+
     public void DeActive()
     {
-        _cts?.Cancel();   
         _active = false;
     }
     public void Pause()

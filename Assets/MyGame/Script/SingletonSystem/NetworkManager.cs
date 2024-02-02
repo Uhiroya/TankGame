@@ -213,7 +213,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks // Photon Realtime 用�
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
         photonView.RPC(nameof(MasterGameManager.Instance.JoinSoloGame), RpcTarget.All);
-        _ = SceneUIManager.Instance.ShowPlayerLeftText(3000);
+        _ = UIManager.Instance.ShowPlayerLeftText(3000);
     }
 
     /// <summary>マスタークライアントが変わった時</summary>

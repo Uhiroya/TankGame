@@ -6,9 +6,9 @@ using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
 
-public class EnemyController : MonoBehaviour
+public class EnemyAutoInput : MonoBehaviour
 {
-    [SerializeField] private TankController _tankController;
+    [SerializeField] private InputReceiver _inputReceiver;
     [SerializeField] private SphereCollider _scanPlayerCollider;
     [SerializeField] private SphereCollider _scanFieldCollider;
     [SerializeField] private float _playerScanRadius = 20f;
@@ -32,7 +32,7 @@ public class EnemyController : MonoBehaviour
     {
         _barrelInput
             .DistinctUntilChanged()
-            .Subscribe( x => _tankController.InputBarrelTurn(x));
+            .Subscribe( x => _inputReceiver.InputBarrelTurn(x));
         
         _scanPlayerCollider.radius = _playerScanRadius;
         _scanFieldCollider.radius = _currentScanMoveRadius =  _scanMoveRadius;
@@ -132,22 +132,22 @@ public class EnemyController : MonoBehaviour
             bool isTurn = true;
             if (IsInferiorAngle(transform.forward, randomDirection))
             {
-                _tankController.InputTurn(-1.0f);
+                _inputReceiver.InputTurn(-1.0f);
                 _rotateBarrelByMove = 1.0f;
             }
             else
             {
-                _tankController.InputTurn(1.0f);
+                _inputReceiver.InputTurn(1.0f);
                 _rotateBarrelByMove = -1.0f;
             }
-            _tankController.InputMove(1.0f);
+            _inputReceiver.InputMove(1.0f);
             //ゴール地点まで動く
             while ((transform.position - previousPosition).magnitude < (randomDirection * _currentScanMoveRadius).magnitude)
             {
                 //Rayが飛ばされた向きまで履帯を回転させる
                 if (isTurn && Vector3.Angle(transform.forward, randomDirection) < 1f)
                 {
-                    _tankController.InputTurn(0f);
+                    _inputReceiver.InputTurn(0f);
                     _rotateBarrelByMove = 0f;
                     isTurn = false;
                 }
@@ -165,8 +165,8 @@ public class EnemyController : MonoBehaviour
         }
         finally
         {
-            _tankController.InputTurn(0f);
-            _tankController.InputMove(0f);
+            _inputReceiver.InputTurn(0f);
+            _inputReceiver.InputMove(0f);
         }
     }
 
@@ -232,7 +232,7 @@ public class EnemyController : MonoBehaviour
     public void DetectedPlayer(Collider player)
     {
         //円でサーチ
-        var bullelTransform = _tankController.BurrelTransform;
+        var bullelTransform = _inputReceiver.BurrelTransform;
         var toPlayerVec = player.gameObject.transform.position - transform.position;
         //外積を利用して最速方向に回転する
         if (IsInferiorAngle(bullelTransform.forward, toPlayerVec))
@@ -244,7 +244,7 @@ public class EnemyController : MonoBehaviour
         var angleToPlayer = Vector3.Angle(bullelTransform.forward, toPlayerVec);
         if (angleToPlayer < 5f)
         {
-            _tankController.InputFire();
+            _inputReceiver.InputFire();
             if (angleToPlayer < 2f) _rotateBarrelBySearch = 0f;
         }
     }
@@ -288,9 +288,9 @@ public class EnemyController : MonoBehaviour
     /// </summary>
     private void ResetRotation()
     {
-        if (IsInferiorAngle(_tankController.BurrelTransform.forward, transform.forward))
+        if (IsInferiorAngle(_inputReceiver.BurrelTransform.forward, transform.forward))
         {
-            if (Vector3.Angle(transform.forward, _tankController.BurrelTransform.forward) > 2f)
+            if (Vector3.Angle(transform.forward, _inputReceiver.BurrelTransform.forward) > 2f)
                 _rotateBarrelBySearch =-1.0f;
             else
             {
@@ -299,7 +299,7 @@ public class EnemyController : MonoBehaviour
         }
         else
         {
-            if (Vector3.Angle(transform.forward, _tankController.BurrelTransform.forward) > 2f)
+            if (Vector3.Angle(transform.forward, _inputReceiver.BurrelTransform.forward) > 2f)
                 _rotateBarrelBySearch = 1.0f;
             else
             {

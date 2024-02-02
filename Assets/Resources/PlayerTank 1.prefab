@@ -332,6 +332,7 @@ GameObject:
   - component: {fileID: -4052623351017134777}
   - component: {fileID: 7023698139113070306}
   - component: {fileID: 2049067761}
+  - component: {fileID: 7064132836246474013}
   m_Layer: 0
   m_Name: PlayerTank 1
   m_TagString: Player
@@ -370,8 +371,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _rigidBody: {fileID: 7023698139113070306}
-  _slider: {fileID: 2072660019}
-  _nozzle: {fileID: 1936718049}
   _burrelTransform: {fileID: 618895634568474580}
   _tankData:
     _bulletType: 0
@@ -392,7 +391,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7956da16389d7c4598a5c7e04533a51, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerInputManager: {fileID: 356938334051565101}
+  _playerInput: {fileID: 356938334051565101}
   _destroyEffect: {fileID: 1000011797152326, guid: acf39d9f4addf294d93fa56fa373961b, type: 3}
   _meText: {fileID: 1456384949}
   _tankController: {fileID: 7023698139113070305}
@@ -408,7 +407,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e68393de5d3c2d94ebaef9525f6e4d4e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _tankController: {fileID: 7023698139113070305}
+  _inputReceiver: {fileID: 7064132836246474013}
   _audioSource: {fileID: 1875112551630194737}
 --- !u!114 &2049067750
 MonoBehaviour:
@@ -608,6 +607,20 @@ LineRenderer:
     generateLightingData: 0
   m_UseWorldSpace: 1
   m_Loop: 0
+--- !u!114 &7064132836246474013
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2642512349154686061}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d84a0f63ec00cdf4298907abf165a97e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _slider: {fileID: 2072660019}
+  _nozzle: {fileID: 1936718049}
 --- !u!1 &2867080395422199797
 GameObject:
   m_ObjectHideFlags: 0

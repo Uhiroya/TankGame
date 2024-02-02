@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class PlayerManager : MonoBehaviourPunCallbacks, IActivatable, IPause
 {
-    [SerializeField] private PlayerInputManager _playerInputManager;
+    [SerializeField] private PlayerInput _playerInput;
     [SerializeField] private GameObject _destroyEffect;
     [SerializeField] private GameObject _meText;
     [SerializeField] private TankController _tankController;
@@ -12,7 +12,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IActivatable, IPause
     {
        
         if (photonView.IsMine) _meText.SetActive(true);
-        _playerInputManager.enabled = false;
+        _playerInput.enabled = false;
     }
 
     public override void OnEnable()
@@ -33,24 +33,24 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IActivatable, IPause
 
     public void Active()
     {
-        if (photonView.IsMine) _playerInputManager.enabled = true;
+        if (photonView.IsMine) _playerInput.enabled = true;
     }
 
     public void DeActive()
     {
-        _playerInputManager.StopTankAudio();
-        _playerInputManager.enabled = false;
+        _playerInput.StopTankAudio();
+        _playerInput.enabled = false;
     }
 
     public void Pause()
     {
-        _playerInputManager.StopTankAudio();
-        _playerInputManager.enabled = false;
+        _playerInput.StopTankAudio();
+        _playerInput.enabled = false;
     }
 
     public void Resume()
     {
-        _playerInputManager.enabled = true;
+        _playerInput.enabled = true;
     }
     
     private void CallDestroy()

@@ -81,7 +81,7 @@ public class LocalGameManager : MonoBehaviourPunCallbacks
         await AnimateObjects();
         //ゲームスタート
         AudioManager.Instance.PlaySE(AudioManager.TankGameSoundType.Start);
-        await SceneUIManager.Instance.ShowStartText();
+        await UIManager.Instance.ShowStartText();
         ActivateObjects();
     }
 
@@ -101,7 +101,7 @@ public class LocalGameManager : MonoBehaviourPunCallbacks
     {
         DeActivateObjects();
         AudioManager.Instance.PlaySE(AudioManager.TankGameSoundType.Sucseece);
-        await SceneUIManager.Instance.ShowClearText();
+        await UIManager.Instance.ShowClearText();
     }
 
     [PunRPC]
@@ -109,20 +109,20 @@ public class LocalGameManager : MonoBehaviourPunCallbacks
     {
         DeActivateObjects();
         AudioManager.Instance.PlaySE(AudioManager.TankGameSoundType.Fail);
-        await SceneUIManager.Instance.ShowGameOverText();
+        await UIManager.Instance.ShowGameOverText();
     }
 
     [PunRPC]
     public async UniTask GoNextStage(string nextStage, int lifeCount)
     {
         AudioManager.Instance.PlaySE(AudioManager.TankGameSoundType.SceneChange);
-        _ = SceneUIManager.Instance.FadeIn();
-        await SceneUIManager.Instance.FadeInStageUI(nextStage, lifeCount);
+        _ = UIManager.Instance.FadeIn();
+        await UIManager.Instance.FadeInStageUI(nextStage, lifeCount);
 
         await SceneManager.LoadSceneAsync(nextStage);
 
-        _ = SceneUIManager.Instance.FadeOutStageUI();
-        await SceneUIManager.Instance.FadeOut();
+        _ = UIManager.Instance.FadeOutStageUI();
+        await UIManager.Instance.FadeOut();
     }
 
 
@@ -130,16 +130,16 @@ public class LocalGameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     public async UniTask BackToTitle(string titleScene, int sumBreakCount)
     {
-        await SceneUIManager.Instance.ShowUpResult(sumBreakCount);
+        await UIManager.Instance.ShowUpResult(sumBreakCount);
         await LoadTitle(titleScene);
     }
     [PunRPC]
     public async UniTask LoadTitle(string titleScene)
     {
         DeActivateObjects();
-        await SceneUIManager.Instance.FadeIn();
+        await UIManager.Instance.FadeIn();
         await SceneManager.LoadSceneAsync(titleScene);
-        _ = SceneUIManager.Instance.FadeOut();
+        _ = UIManager.Instance.FadeOut();
     }
     private void ActivateObjects()
     {

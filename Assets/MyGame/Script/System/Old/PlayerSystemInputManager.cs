@@ -35,12 +35,12 @@ public class PlayerSystemInputManager : MonoBehaviour , IActivatable
             if(PauseManager.IsPause)
             {
                 AudioManager.Instance._audioBGMSource.volume *= 0.25f ;
-                SceneUIManager.Instance?.Pause();
+                UIManager.Instance?.Pause();
             }
             else
             {
                 AudioManager.Instance._audioBGMSource.volume *= 4f;
-                SceneUIManager.Instance?.Resume();
+                UIManager.Instance?.Resume();
             }
         }
     }
