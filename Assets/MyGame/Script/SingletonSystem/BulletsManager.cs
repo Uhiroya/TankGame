@@ -8,14 +8,15 @@ namespace MyGame.Script.SingletonSystem
 {
     //TODO オブジェクトプールがオンライン上で同期できていない
     //TODO オブジェクトプールからゲットした弾の奪い合いが起きている。
-    public class BulletsManager : MonoBehaviourPunCallbacks , IActivatable
+    public class BulletsManager : MonoBehaviourPunCallbacks, IActivatable
     {
         [SerializeField] private List<GameObject> _bulletList = new();
         [SerializeField] private Transform _bulletParentTransform;
-        private static int _bulletID = 0;
-        public static BulletsManager Instance;
+        
         private readonly Dictionary<int , ObjectPool<GameObject>> _objectPools = new ();
         private readonly Dictionary<int, GameObject> _bulletIDReference = new();
+
+        public static BulletsManager Instance { get; private set; }
 
         private void Awake()
         {
@@ -27,23 +28,8 @@ namespace MyGame.Script.SingletonSystem
             {
                 Destroy(this);
             }
-        }
-        
-        #region MasterOnly
 
-        public void CallReleaseBullet(BulletType bulletType ,int bulletID)
-        {
-            photonView.RPC(nameof(ReleaseBullet), RpcTarget.AllViaServer, bulletType, bulletID);
         }
-        public void CallMadeBullet(BulletType bulletType , Vector3 position , Quaternion rotation )
-        {
-            _bulletID += 1;
-            //Debug.Log("CallMadeBullet" + _bulletID);
-            photonView.RPC(nameof(MadeBullet), RpcTarget.AllViaServer , bulletType,position, rotation , _bulletID);
-        }
-
-        #endregion
-
         #region synchronize
         
         [PunRPC]
@@ -117,7 +103,6 @@ namespace MyGame.Script.SingletonSystem
         public void Active()
         {
             _bulletIDReference.Clear();
-            _bulletID = 0;
         }
 
         public void DeActive()

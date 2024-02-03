@@ -36,7 +36,15 @@ public class InputReceiver : MonoBehaviourPunCallbacks, IActivatable
                 _isReloaded = true;
             }
     }
-
+    public void InputFire()
+    {
+        if (_fireTimer > TankData.FireCoolTime)
+        {
+            _isReloaded = false;
+            _fireTimer = 0f;
+            photonView.RPC(nameof(SendInputFire) , RpcTarget.MasterClient);
+        }
+    }
 
     public override void OnEnable()
     {
@@ -54,6 +62,12 @@ public class InputReceiver : MonoBehaviourPunCallbacks, IActivatable
     #region MasterClassのみでの呼び出し
 
     //ToDO メソッド場所正しく伝わってる？
+    
+    [PunRPC]
+    public void SendInputFire()
+    {
+        FireCaller.Instance.CallMadeBullet(TankData.BulletType, _nozzle.transform.position, _tankController.BurrelTransform.rotation);
+    }
     private void SendInputMove(float input)
     {
         photonView.RPC(nameof(_tankController.GetInputMove), RpcTarget.AllViaServer, input, transform.position);
@@ -105,16 +119,11 @@ public class InputReceiver : MonoBehaviourPunCallbacks, IActivatable
         _cts?.Cancel();
     }
 
-    public void InputFire()
-    {
-        if (_fireTimer > TankData.FireCoolTime)
-        {
-            _isReloaded = false;
-            _fireTimer = 0f;
-            BulletsManager.Instance.CallMadeBullet(TankData.BulletType, _nozzle.transform.position,
-                _tankController.BurrelTransform.rotation);
-        }
-    }
+
+    
+
 
     #endregion
+    
+
 }

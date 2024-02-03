@@ -223,7 +223,7 @@ public class EnemyAutoInput : MonoBehaviour
         Debug.DrawRay(transform.position, targetDir, Color.red);
         if (Physics.Raycast(transform.position, targetDir, out var hit, targetDir.magnitude))
             if (hit.collider.gameObject.CompareTag("Player"))
-                DetectedPlayer(_currentTargetPlayer);
+                 DetectedPlayer(_currentTargetPlayer);
             else
                 MissTarget();
         else
