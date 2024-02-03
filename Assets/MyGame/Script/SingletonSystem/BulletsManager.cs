@@ -17,6 +17,18 @@ namespace MyGame.Script.SingletonSystem
         private readonly Dictionary<int , ObjectPool<GameObject>> _objectPools = new ();
         private readonly Dictionary<int, GameObject> _bulletIDReference = new();
 
+        private void Awake()
+        {
+            if (Instance == null)
+            {
+                Instance = this;
+            }
+            else
+            {
+                Destroy(this);
+            }
+        }
+        
         #region MasterOnly
 
         public void CallReleaseBullet(BulletType bulletType ,int bulletID)
@@ -88,17 +100,7 @@ namespace MyGame.Script.SingletonSystem
             obstaclePool.Release(obj);
             return obstaclePool;
         }
-        private void Awake()
-        {
-            if (Instance == null)
-            {
-                Instance = this;
-            }
-            else
-            {
-                Destroy(this);
-            }
-        }
+
         public override void OnEnable()  
         {
             base.OnEnable();

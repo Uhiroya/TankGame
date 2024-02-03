@@ -34,8 +34,10 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
         if (Instance == null)
         {
             Instance = this;
-            var photon = gameObject.AddComponent<PhotonView>();
+            GameObject o;
+            var photon = (o = gameObject).AddComponent<PhotonView>();
             photon.ViewID = 1;
+            DontDestroyOnLoad(o);
         }
         else
         {

@@ -16,12 +16,10 @@ public class LocalGameManager : MonoBehaviourPunCallbacks
         if (Instance == null)
         {
             Instance = this;
-
-            DontDestroyOnLoad(gameObject);
         }
         else
         {
-            Destroy(gameObject);
+            Destroy(this);
         }
     }
 
