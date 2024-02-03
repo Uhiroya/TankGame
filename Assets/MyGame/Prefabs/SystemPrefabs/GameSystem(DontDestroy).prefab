@@ -527,6 +527,7 @@ GameObject:
   - component: {fileID: 3453020409330016195}
   - component: {fileID: 805620183}
   - component: {fileID: 805620189}
+  - component: {fileID: 812382151}
   m_Layer: 0
   m_Name: GameSystem(DontDestroy)
   m_TagString: Untagged
@@ -563,7 +564,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53bc73fac6f4cb545aeba3b8e926a4bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _startDelay: 3
 --- !u!114 &3453020409330016195
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -590,6 +590,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _maxMultiGamePlayers: 2
+  _startAnimTime: 3
   _timeOutMilliSecond: 20000
   _soloScene: SoloTitle
   _multiScene: NetWorkTitle
@@ -613,6 +614,18 @@ MonoBehaviour:
   - {fileID: 5634639283650341757, guid: 300596e1fb7db8d4e957a3eb26e7c598, type: 3}
   - {fileID: 5634639283650341757, guid: 16a681ac3797cce489131e78486ea3d9, type: 3}
   _bulletParentTransform: {fileID: 1620934882}
+--- !u!114 &812382151
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6192048530188749347}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 129fdbba177d35e4ca98a14ea0cfeaa0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &6192048530952596426
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -17,6 +17,7 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
     private static int _currentPlayerCount;
     private static int _currentLife;
     [SerializeField] private int _maxMultiGamePlayers;
+    [SerializeField] private int _startAnimTime;
     [SerializeField] private int _timeOutMilliSecond;
     [SerializeField] private string _soloScene;
     [SerializeField] private string _multiScene;
@@ -167,7 +168,7 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
             UIManager.Instance.StopWaitingUI();
             _timeoutController.Reset();
         }
-        photonView.RPC(nameof(LocalGameManager.Instance.StartTitle), RpcTarget.AllViaServer);
+        photonView.RPC(nameof(LocalGameManager.Instance.StartTitle), RpcTarget.AllViaServer,_startAnimTime);
     }
     
 
@@ -192,7 +193,7 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
         {
             _timeoutController.Reset();
         }
-        photonView.RPC(nameof(LocalGameManager.Instance.StartGame), RpcTarget.AllViaServer);
+        photonView.RPC(nameof(LocalGameManager.Instance.StartGame), RpcTarget.AllViaServer,_startAnimTime);
     }
 
     [PunRPC]

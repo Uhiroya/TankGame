@@ -311,7 +311,7 @@ MonoBehaviour:
   _leftBackWheel: {fileID: 4313235150904817626}
   _rightBackWheel: {fileID: 8941419961818861956}
   _trailObject: {fileID: 7094270856313174126, guid: 01a7aeab98b4b5b4aa06d8a347285207, type: 3}
-  _makeTrailDistance: 0.35
+  _makeTrailDistance: 0.6
 --- !u!114 &2999978805935059583
 MonoBehaviour:
   m_ObjectHideFlags: 0

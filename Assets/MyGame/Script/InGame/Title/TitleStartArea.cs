@@ -14,7 +14,7 @@ public class TitleStartArea : MonoBehaviour , IActivatable , IPause
         MultiMode,
         LeaveRoom,
     }
-    private bool _done;
+    private static bool _done;
     void OnEnable()
     {
         MyServiceLocator.IRegister(this as IPause);
@@ -27,6 +27,7 @@ public class TitleStartArea : MonoBehaviour , IActivatable , IPause
     }
     public void Active()
     {
+        _done = false;
         _startCollider.enabled = true;
     }
     public void DeActive()
@@ -45,6 +46,7 @@ public class TitleStartArea : MonoBehaviour , IActivatable , IPause
         {
             AudioManager.Instance._audioSESource.Stop();
             _startSlider.value = 0f;
+
         }
     }
 
@@ -52,8 +54,9 @@ public class TitleStartArea : MonoBehaviour , IActivatable , IPause
     {
         if (other.gameObject.CompareTag("Player"))
         {
+            if (_done) return;
             _startSlider.value += Time.deltaTime;
-            if (!_done && _startSlider.value >= _startSlider.maxValue)
+            if (_startSlider.value >= _startSlider.maxValue)
             {
                 if (PhotonNetwork.IsMasterClient)
                 {
@@ -70,13 +73,12 @@ public class TitleStartArea : MonoBehaviour , IActivatable , IPause
                             break;
                     }
                 }
-                    
                 _done = true;
                 //SceneManager.LoadScene( _nextScene );
             }
         }
-    }
-
+    } 
+    
     public void Pause()
     {
         _startCollider.enabled = false;

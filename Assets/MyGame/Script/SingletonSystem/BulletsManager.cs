@@ -36,7 +36,8 @@ namespace MyGame.Script.SingletonSystem
         public void ReleaseBullet(BulletType bulletType ,int bulletID)
         {
             GameObject bullet = _bulletIDReference[bulletID];
-            bullet.GetComponent<BulletController>().Release();
+            if(bullet)
+                bullet.GetComponent<BulletController>().Release();
             //_objectPools[(int)bulletType].Release(bullet);
         }
         

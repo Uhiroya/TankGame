@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CreateTankTrali : MonoBehaviour
+public class CreateTankTrail : MonoBehaviour
 {
     [SerializeField] GameObject _leftBackWheel;
     [SerializeField] GameObject _rightBackWheel;

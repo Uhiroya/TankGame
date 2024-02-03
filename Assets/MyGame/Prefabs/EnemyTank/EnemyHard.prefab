@@ -99,6 +99,10 @@ PrefabInstance:
       propertyPath: _tankData._turnBarrelSpeed
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 4511576773086303523, guid: 701cb9e513f49d54cb7c9f72cdda7d4a, type: 3}
+      propertyPath: _makeTrailDistance
+      value: 0.6
+      objectReference: {fileID: 0}
     - target: {fileID: 7981757442653421215, guid: 701cb9e513f49d54cb7c9f72cdda7d4a, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 

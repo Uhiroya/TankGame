@@ -9,7 +9,7 @@ public class LocalGameManager : MonoBehaviourPunCallbacks
 {
     public static LocalGameManager Instance;
     
-    [SerializeField] private float _startDelay = 3.0f;
+    
     private IEnumerable<PlayerManager> _playerManagers;
     private void Awake()
     {
@@ -57,36 +57,36 @@ public class LocalGameManager : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    public async UniTask StartTitle()
+    public async UniTask StartTitle(int startDelay)
     {
         foreach (var playerManager in _playerManagers)
             playerManager.ChangeImmortal(true);
         AudioManager.Instance.PlaySE(AudioManager.TankGameSoundType.Fall);
         DeActivateObjects();
-        await AnimateObjects();
+        await AnimateObjects(startDelay);
         ActivateObjects();
         AudioManager.Instance.PlaySE(AudioManager.TankGameSoundType.Landing);
     }
 
     [PunRPC]
-    public async UniTask StartGame()
+    public async UniTask StartGame(int startDelay)
     {
         //初期化・準備
         foreach (var playerManager in _playerManagers)
             playerManager.ChangeImmortal(false);
         DeActivateObjects();
         AudioManager.Instance.PlaySE(AudioManager.TankGameSoundType.Fall);
-        await AnimateObjects();
+        await AnimateObjects(startDelay);
         //ゲームスタート
         AudioManager.Instance.PlaySE(AudioManager.TankGameSoundType.Start);
         await UIManager.Instance.ShowStartText();
         ActivateObjects();
     }
 
-    private async UniTask AnimateObjects()
+    private async UniTask AnimateObjects(float startDelay)
     {
         await MyServiceLocator.IResolve<IAwakeAnim>().OfType<IAwakeAnim>()
-            .Select(x => x.AnimAwake(_startDelay));
+            .Select(x => x.AnimAwake(startDelay));
     }
 
     public void OnPlayerDead()
