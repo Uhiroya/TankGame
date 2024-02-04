@@ -28,7 +28,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 5675374089278361241}
   - {fileID: 6658911167942196392}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -46,7 +45,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9067893265843956449, guid: f4a333c56503da04399a9d90bfea238d, type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9067893265843956449, guid: f4a333c56503da04399a9d90bfea238d, type: 3}
       propertyPath: m_LocalPosition.x
@@ -102,82 +101,4 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 9067893265843956449, guid: f4a333c56503da04399a9d90bfea238d, type: 3}
   m_PrefabInstance: {fileID: 2431544181867042377}
-  m_PrefabAsset: {fileID: 0}
---- !u!1001 &6658911168577674621
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 6658911168488412877}
-    m_Modifications:
-    - target: {fileID: 1245248191986765618, guid: 07a2efe27b7c200449e3777085a77a05, type: 3}
-      propertyPath: _audioBGMClips.Array.data[0]
-      value: 
-      objectReference: {fileID: 8300000, guid: 7de5dc6a4b712ad4fac85e3ba4a238d2, type: 3}
-    - target: {fileID: 1345396268986307556, guid: 07a2efe27b7c200449e3777085a77a05, type: 3}
-      propertyPath: m_RootOrder
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1345396268986307556, guid: 07a2efe27b7c200449e3777085a77a05, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 424.93845
-      objectReference: {fileID: 0}
-    - target: {fileID: 1345396268986307556, guid: 07a2efe27b7c200449e3777085a77a05, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 473.44196
-      objectReference: {fileID: 0}
-    - target: {fileID: 1345396268986307556, guid: 07a2efe27b7c200449e3777085a77a05, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 5.5553474
-      objectReference: {fileID: 0}
-    - target: {fileID: 1345396268986307556, guid: 07a2efe27b7c200449e3777085a77a05, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1345396268986307556, guid: 07a2efe27b7c200449e3777085a77a05, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1345396268986307556, guid: 07a2efe27b7c200449e3777085a77a05, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1345396268986307556, guid: 07a2efe27b7c200449e3777085a77a05, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1345396268986307556, guid: 07a2efe27b7c200449e3777085a77a05, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1345396268986307556, guid: 07a2efe27b7c200449e3777085a77a05, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1345396268986307556, guid: 07a2efe27b7c200449e3777085a77a05, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2690924596229466889, guid: 07a2efe27b7c200449e3777085a77a05, type: 3}
-      propertyPath: m_audioClip
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 5808233370938434481, guid: 07a2efe27b7c200449e3777085a77a05, type: 3}
-      propertyPath: m_Volume
-      value: 0.15
-      objectReference: {fileID: 0}
-    - target: {fileID: 5808233370938434481, guid: 07a2efe27b7c200449e3777085a77a05, type: 3}
-      propertyPath: m_audioClip
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 7927343534124484795, guid: 07a2efe27b7c200449e3777085a77a05, type: 3}
-      propertyPath: m_Name
-      value: AudioManager
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 07a2efe27b7c200449e3777085a77a05, type: 3}
---- !u!4 &5675374089278361241 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1345396268986307556, guid: 07a2efe27b7c200449e3777085a77a05, type: 3}
-  m_PrefabInstance: {fileID: 6658911168577674621}
   m_PrefabAsset: {fileID: 0}

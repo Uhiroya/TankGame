@@ -61,7 +61,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: c521ec1ed1943764a95a2baa0f649eaa, type: 3}
   - {fileID: 8300000, guid: 5b7140a4e598b344fa20ede82798eb82, type: 3}
   _audioBGMClips:
-  - {fileID: 8300000, guid: 7de5dc6a4b712ad4fac85e3ba4a238d2, type: 3}
+  - {fileID: 8300000, guid: a375564c581f0ae428df3314007dfb64, type: 3}
   - {fileID: 8300000, guid: 001874bb5c4b529448ae3211404eed31, type: 3}
 --- !u!82 &2690924596229466889
 AudioSource:

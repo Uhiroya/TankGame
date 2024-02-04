@@ -73,14 +73,14 @@ public class EnemyAutoInput : MonoBehaviour
     }
     
 #if UNITY_EDITOR
-    private void OnDrawGizmosSelected()
+    private void OnDrawGizmos()
     {
         Gizmos.DrawWireCube (transform.position + _randomDirection * _currentScanMoveRadius ,Vector3.one * transform.lossyScale.x );
         Color c = new Color(0, 0, 0.7f, 0.2f); 
         UnityEditor.Handles.color = c;
         UnityEditor.Handles.DrawSolidDisc(transform.position , Vector3.up , _currentScanMoveRadius );
         //UnityEditor.Handles.DrawWireCube(transform.position - Vector3.back * _scanMoveRadius / 2 , new Vector3(transform.lossyScale.x ,transform.lossyScale.y , _scanMoveRadius ));
-        c = new Color(1.0f, 1.0f, 0.0f, 0.1f);
+        c = new Color(1.0f, 1.0f, 0.0f, 0.05f);
         UnityEditor.Handles.color = c;
         UnityEditor.Handles.DrawSolidDisc(transform.position , Vector3.up , _playerScanRadius );
     }

@@ -196,11 +196,16 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
         photonView.RPC(nameof(LocalGameManager.Instance.StartGame), RpcTarget.AllViaServer,_startAnimTime);
     }
 
+    private bool _isSceneChange = false;
     [PunRPC]
     public void OnPlayerDead()
     {
         _currentPlayerCount--;
-        if (_currentPlayerCount == 0) _ = CallRoundFailed();
+        if (_currentPlayerCount == 0)
+        {
+            _isSceneChange = true;
+            _ = CallRoundFailed();
+        }
     }
 
     [PunRPC]
@@ -208,7 +213,11 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
     {
         _currentEnemyCount--;
         Debug.Log("_currentEnemyCount : " + _currentEnemyCount);
-        if (_currentEnemyCount == 0) _ = CallRoundClear();
+        if (_currentEnemyCount == 0)
+        {
+            _isSceneChange = true;
+            _ = CallRoundClear();
+        }
     }
 
     private async UniTaskVoid CallRoundClear()
@@ -217,6 +226,7 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
         photonView.RPC(nameof(LocalGameManager.Instance.RoundClear), RpcTarget.Others);
         await LocalGameManager.Instance.RoundClear();
         _ = _currentStage <= _maxStageCount ? CallChangeStages($"Stage {_currentStage}") : CallBackToTitle();
+        _isSceneChange = false;
     }
 
     private async UniTaskVoid CallRoundFailed()
@@ -226,6 +236,7 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
         photonView.RPC(nameof(LocalGameManager.Instance.RoundFailed), RpcTarget.Others);
         await LocalGameManager.Instance.RoundFailed();
         _ = _currentLife > 0 ? CallChangeStages($"Stage {_currentStage}") : CallBackToTitle();
+        _isSceneChange = false;
     }
 
     public async UniTaskVoid CallChangeStages(string nextScene)

@@ -8,8 +8,6 @@ using UnityEngine.SceneManagement;
 public class LocalGameManager : MonoBehaviourPunCallbacks
 {
     public static LocalGameManager Instance;
-    
-    
     private IEnumerable<PlayerManager> _playerManagers;
     private void Awake()
     {
@@ -113,6 +111,7 @@ public class LocalGameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     public async UniTask GoNextStage(string nextStage, int lifeCount)
     {
+        DeActivateObjects();
         AudioManager.Instance.PlaySE(AudioManager.TankGameSoundType.SceneChange);
         _ = UIManager.Instance.FadeIn();
         await UIManager.Instance.FadeInStageUI(nextStage, lifeCount);

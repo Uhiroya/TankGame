@@ -97,7 +97,7 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 0}
+  m_LightingDataAsset: {fileID: 112000000, guid: 26684469f4481ed40bdf5782dc4b5319, type: 2}
   m_LightingSettings: {fileID: 0}
 --- !u!196 &4
 NavMeshSettings:
@@ -544,7 +544,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -0.8, y: 3}
-  m_SizeDelta: {x: 30, y: 11}
+  m_SizeDelta: {x: 31, y: 12}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &510088850
 MonoBehaviour:
@@ -1243,8 +1243,8 @@ RectTransform:
   m_GameObject: {fileID: 1096802593}
   m_LocalRotation: {x: 0.70441604, y: -0.06162845, z: 0.06162845, w: 0.70441604}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 0.9999998, z: 0.9999998}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 510088849}
   m_Father: {fileID: 915997985}
@@ -1986,6 +1986,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 6658911167942196393, guid: 62f88b7d244d2c8498ba511a3a11e266, type: 3}
+      propertyPath: _bgmType
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6658911168488412866, guid: 62f88b7d244d2c8498ba511a3a11e266, type: 3}
       propertyPath: m_Name
       value: System

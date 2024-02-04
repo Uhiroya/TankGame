@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -6,6 +7,18 @@ using UnityEngine;
 public class AudioManager : MonoBehaviour
 {
     public static AudioManager Instance;
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(this);
+        }
+    }
+    
     public enum TankGameSoundType
     {
         Fire = 0,
@@ -24,6 +37,7 @@ public class AudioManager : MonoBehaviour
     {
         Title = 0, 
         InGame = 1, 
+        InGame2 = 2,
     }
     public AudioSource _audioSESource;
     public AudioSource _audioBGMSource;
@@ -38,15 +52,5 @@ public class AudioManager : MonoBehaviour
         _audioBGMSource.clip = _audioBGMClips[(int)soundIndex];
         _audioBGMSource.Play();
     }
-    private void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(this);
-        }
-    }
+    
 }
