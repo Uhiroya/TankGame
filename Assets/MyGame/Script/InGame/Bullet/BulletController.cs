@@ -45,7 +45,7 @@ public class BulletController : MonoBehaviourPunCallbacks
     public void Release()
     {
         _isActive = false;
-        Destroy(gameObject);
+        //Destroy(gameObject);
     }
 
     private void FixedUpdate()

@@ -239,7 +239,9 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
         _isSceneChange = false;
     }
 
-    public async UniTaskVoid CallChangeStages(string nextScene)
+    public CancellationTokenSource Cts { get; set; } = new();
+
+    private async UniTaskVoid CallChangeStages(string nextScene )
     {
         if (PhotonNetwork.OfflineMode)
         {
