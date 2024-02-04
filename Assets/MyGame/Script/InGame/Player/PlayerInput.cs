@@ -2,7 +2,7 @@
 
 public class PlayerInput : MonoBehaviour
 {
-    [SerializeField] private InputReceiver _inputReceiver;
+    [SerializeField] private TankInputSync _tankInputSync;
     [SerializeField] private AudioSource _audioSource;
     private float _inputHorizontal;
     private float _inputMoveHorizontal;
@@ -15,7 +15,7 @@ public class PlayerInput : MonoBehaviour
         _inputMoveVertical = Input.GetAxisRaw("Vertical");
         _inputMoveHorizontal = Input.GetAxisRaw("Horizontal");
         _inputHorizontal = Input.GetAxisRaw("Horizontal2");
-        if (Input.GetButtonDown("Fire1")) _inputReceiver.InputFire();
+        if (Input.GetButtonDown("Fire1")) _tankInputSync.InputFire();
         if (_inputMoveVertical == 0f)
         {
             _audioSource.Pause();
@@ -28,12 +28,12 @@ public class PlayerInput : MonoBehaviour
 
     private void FixedUpdate()
     {
-        _inputReceiver.InputMove(_inputMoveVertical);
+        _tankInputSync.InputMove(_inputMoveVertical);
         if (_inputMoveVertical >= 0)
-            _inputReceiver.InputTurn(_inputMoveHorizontal);
+            _tankInputSync.InputTurn(_inputMoveHorizontal);
         else
-            _inputReceiver.InputTurn(-_inputMoveHorizontal);
-        _inputReceiver.InputBarrelTurn(_inputHorizontal);
+            _tankInputSync.InputTurn(-_inputMoveHorizontal);
+        _tankInputSync.InputBarrelTurn(_inputHorizontal);
     }
 
     public void StopTankAudio()

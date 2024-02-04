@@ -6,7 +6,7 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class InputReceiver : MonoBehaviourPunCallbacks, IActivatable
+public class TankInputSync : MonoBehaviourPunCallbacks, IActivatable
 {
     [SerializeField] private Slider _slider;
     [SerializeField] private GameObject _nozzle;
@@ -66,7 +66,7 @@ public class InputReceiver : MonoBehaviourPunCallbacks, IActivatable
     [PunRPC]
     public void SendInputFire()
     {
-        FireCaller.Instance.CallMadeBullet(TankData.BulletType, _nozzle.transform.position, _tankController.BurrelTransform.rotation);
+        BulletsFireSync.Instance.CallMadeBullet(TankData.BulletType, _nozzle.transform.position, _tankController.BurrelTransform.rotation);
     }
     private void SendInputMove(float input)
     {

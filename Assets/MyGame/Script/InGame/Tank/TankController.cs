@@ -30,7 +30,7 @@ public class TankController : MonoBehaviourPunCallbacks, IAwakeAnim ,IActivatabl
     private float _inputVertical;
     
 
-    private readonly InputReceiver _inputReceiver;
+    private readonly TankInputSync _tankInputSync;
     
     public event Action DeadEvent;
 

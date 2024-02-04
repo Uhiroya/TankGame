@@ -6,9 +6,9 @@ using UnityEngine;
 /// <summary>
 /// Masterのみで動かす
 /// </summary>
-public class FireCaller : MonoBehaviourPunCallbacks , IActivatable
+public class BulletsFireSync : MonoBehaviourPunCallbacks , IActivatable
 {
-    public static FireCaller Instance { get; private set; }
+    public static BulletsFireSync Instance { get; private set; }
 
     private void Awake()
     {

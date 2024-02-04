@@ -230,6 +230,14 @@ public class MasterGameManager : MonoBehaviourPunCallbacks
 
     public async UniTaskVoid CallChangeStages(string nextScene)
     {
+        if (PhotonNetwork.OfflineMode)
+        {
+            nextScene = "s" + nextScene;
+        }
+        else
+        {
+            nextScene = "m" + nextScene;
+        }
         photonView.RPC(nameof(LocalGameManager.Instance.GoNextStage),
             RpcTarget.Others, nextScene, _currentLife);
         await LocalGameManager.Instance.GoNextStage(nextScene, _currentLife);

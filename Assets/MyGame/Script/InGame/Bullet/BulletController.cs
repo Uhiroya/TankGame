@@ -26,7 +26,7 @@ public class BulletController : MonoBehaviourPunCallbacks
     {
         if (_isActive && PhotonNetwork.IsMasterClient)
         {
-            FireCaller.Instance.CallReleaseBullet( _bulletType , _id );
+            BulletsFireSync.Instance.CallReleaseBullet( _bulletType , _id );
             _isActive = false;
         }
     }

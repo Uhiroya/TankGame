@@ -1,21 +1,22 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class EnemyAutoInput : MonoBehaviour
 {
-    [SerializeField] private InputReceiver _inputReceiver;
+    [SerializeField] private TankInputSync _tankInputSync;
     [SerializeField] private SphereCollider _scanPlayerCollider;
     [SerializeField] private SphereCollider _scanFieldCollider;
     [SerializeField] private float _playerScanRadius = 20f;
     [SerializeField] private float _scanMoveRadius = 3f;
     
     private Collider _currentTargetPlayer;
-    private TankEnemyParam _enemyParam;
 
     private bool _moveFlag;
     private readonly List<Collider> _playerColliderList = new();
@@ -27,12 +28,12 @@ public class EnemyAutoInput : MonoBehaviour
     private readonly ReactiveProperty<float> _barrelInput = new();
     private float _rotateBarrelByMove;
     private float _rotateBarrelBySearch;
-    private bool _isNearField = false;
+    private bool _isNearField ;
     private void Awake()
     {
         _barrelInput
             .DistinctUntilChanged()
-            .Subscribe( x => _inputReceiver.InputBarrelTurn(x));
+            .Subscribe( x => _tankInputSync.InputBarrelTurn(x));
         
         _scanPlayerCollider.radius = _playerScanRadius;
         _scanFieldCollider.radius = _currentScanMoveRadius =  _scanMoveRadius;
@@ -70,7 +71,20 @@ public class EnemyAutoInput : MonoBehaviour
             .Subscribe(_ => _isNearField = false)
             .AddTo(this);
     }
-
+    
+#if UNITY_EDITOR
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.DrawWireCube (transform.position + _randomDirection * _currentScanMoveRadius ,Vector3.one * transform.lossyScale.x );
+        Color c = new Color(0, 0, 0.7f, 0.2f); 
+        UnityEditor.Handles.color = c;
+        UnityEditor.Handles.DrawSolidDisc(transform.position , Vector3.up , _currentScanMoveRadius );
+        //UnityEditor.Handles.DrawWireCube(transform.position - Vector3.back * _scanMoveRadius / 2 , new Vector3(transform.lossyScale.x ,transform.lossyScale.y , _scanMoveRadius ));
+        c = new Color(1.0f, 1.0f, 0.0f, 0.1f);
+        UnityEditor.Handles.color = c;
+        UnityEditor.Handles.DrawSolidDisc(transform.position , Vector3.up , _playerScanRadius );
+    }
+#endif
     #region 自動移動
     private readonly TimeoutController _timeoutController = new TimeoutController();
     public async UniTask AutoMover(CancellationToken cts)
@@ -83,24 +97,25 @@ public class EnemyAutoInput : MonoBehaviour
             _timeoutController.Reset();
         }
     }
+    Vector3 _randomDirection;
     public async UniTask Move(CancellationToken cts)
     {
         RaycastHit[] hits = new RaycastHit[100];
         var previousPosition = transform.position;
         var boxCastScale = Vector3.one * transform.lossyScale.x / 2;
-        Vector3 randomDirection;
         
-        _scanFieldCollider.radius = _currentScanMoveRadius = _scanMoveRadius;
+        
+        _currentScanMoveRadius = _scanMoveRadius;
         var searchCount = 0;
+        _randomDirection = Quaternion.Euler(0f, Random.Range(0, 360f), 0f) * transform.forward ;
         while(true)
         {
             var isMovable = true;
-            randomDirection = Quaternion.Euler(0f, Random.Range(0, 360f), 0f) * transform.forward ;
-            var size = Physics.BoxCastNonAlloc(previousPosition, boxCastScale, randomDirection, hits, Quaternion.identity, _currentScanMoveRadius);
+            
+            var size = Physics.BoxCastNonAlloc(previousPosition, boxCastScale, _randomDirection, hits, Quaternion.identity, _currentScanMoveRadius);
+            Debug.DrawRay(transform.position , _randomDirection * _currentScanMoveRadius , Color.magenta , 0.5f);
             if(hits.Length != 0)
             {
-                Debug.DrawRay(previousPosition, randomDirection * _currentScanMoveRadius, Color.green, 5f);
-                
                 for (int i = 0; i < size; i++)
                 {
                     var hit = hits[i];
@@ -115,12 +130,19 @@ public class EnemyAutoInput : MonoBehaviour
                 {
                     searchCount++;
                     //Debug.Log(searchCount); 
-                    if (searchCount % 5 == 0)
+                    if (searchCount % 6 == 0)
                     {
                         _currentScanMoveRadius /= 2f;
-                        _scanFieldCollider.radius =　_currentScanMoveRadius;
+                        _randomDirection = Quaternion.Euler(0f, Random.Range(0, 360f), 0f) * transform.forward;
                     }
-
+                    //周りが囲まれた際、動きを止める
+                    if (searchCount > 60)
+                    {
+                        _moveFlag = false;
+                        return;
+                    }
+                    _randomDirection = Quaternion.Euler(0f, 60f, 0f) * _randomDirection;
+                    await UniTask.Delay(100, cancellationToken: cts);
                     continue;
                 }
             }
@@ -130,33 +152,33 @@ public class EnemyAutoInput : MonoBehaviour
         try
         {
             bool isTurn = true;
-            if (IsInferiorAngle(transform.forward, randomDirection))
+            if (IsInferiorAngle(transform.forward, _randomDirection))
             {
-                _inputReceiver.InputTurn(-1.0f);
+                _tankInputSync.InputTurn(-1.0f);
                 _rotateBarrelByMove = 1.0f;
             }
             else
             {
-                _inputReceiver.InputTurn(1.0f);
+                _tankInputSync.InputTurn(1.0f);
                 _rotateBarrelByMove = -1.0f;
             }
-            _inputReceiver.InputMove(1.0f);
+            _tankInputSync.InputMove(1.0f);
             //ゴール地点まで動く
-            while ((transform.position - previousPosition).magnitude < (randomDirection * _currentScanMoveRadius).magnitude)
+            while ((transform.position - previousPosition).magnitude < (_randomDirection * _currentScanMoveRadius).magnitude)
             {
                 //Rayが飛ばされた向きまで履帯を回転させる
-                if (isTurn && Vector3.Angle(transform.forward, randomDirection) < 1f)
+                if (isTurn && Vector3.Angle(transform.forward, _randomDirection) < 1f)
                 {
-                    _inputReceiver.InputTurn(0f);
+                    _tankInputSync.InputTurn(0f);
                     _rotateBarrelByMove = 0f;
                     isTurn = false;
                 }
-                await UniTask.Yield(cts);
                 if (_isNearField)
                 {
                     _isNearField = false;
                     break;
                 }
+                await UniTask.Yield(cts);
             }
         }
         catch
@@ -165,8 +187,8 @@ public class EnemyAutoInput : MonoBehaviour
         }
         finally
         {
-            _inputReceiver.InputTurn(0f);
-            _inputReceiver.InputMove(0f);
+            _tankInputSync.InputTurn(0f);
+            _tankInputSync.InputMove(0f);
         }
     }
 
@@ -232,7 +254,7 @@ public class EnemyAutoInput : MonoBehaviour
     public void DetectedPlayer(Collider player)
     {
         //円でサーチ
-        var bullelTransform = _inputReceiver.BurrelTransform;
+        var bullelTransform = _tankInputSync.BurrelTransform;
         var toPlayerVec = player.gameObject.transform.position - transform.position;
         //外積を利用して最速方向に回転する
         if (IsInferiorAngle(bullelTransform.forward, toPlayerVec))
@@ -244,7 +266,7 @@ public class EnemyAutoInput : MonoBehaviour
         var angleToPlayer = Vector3.Angle(bullelTransform.forward, toPlayerVec);
         if (angleToPlayer < 5f)
         {
-            _inputReceiver.InputFire();
+            _tankInputSync.InputFire();
             if (angleToPlayer < 2f) _rotateBarrelBySearch = 0f;
         }
     }
@@ -288,9 +310,9 @@ public class EnemyAutoInput : MonoBehaviour
     /// </summary>
     private void ResetRotation()
     {
-        if (IsInferiorAngle(_inputReceiver.BurrelTransform.forward, transform.forward))
+        if (IsInferiorAngle(_tankInputSync.BurrelTransform.forward, transform.forward))
         {
-            if (Vector3.Angle(transform.forward, _inputReceiver.BurrelTransform.forward) > 2f)
+            if (Vector3.Angle(transform.forward, _tankInputSync.BurrelTransform.forward) > 2f)
                 _rotateBarrelBySearch =-1.0f;
             else
             {
@@ -299,7 +321,7 @@ public class EnemyAutoInput : MonoBehaviour
         }
         else
         {
-            if (Vector3.Angle(transform.forward, _inputReceiver.BurrelTransform.forward) > 2f)
+            if (Vector3.Angle(transform.forward, _tankInputSync.BurrelTransform.forward) > 2f)
                 _rotateBarrelBySearch = 1.0f;
             else
             {
@@ -307,11 +329,12 @@ public class EnemyAutoInput : MonoBehaviour
             }
         }
     }
-
+    
     private enum EnemyState
     {
         Waiting = 0,
         Searching = 1,
         Detected = 2
     }
+
 }

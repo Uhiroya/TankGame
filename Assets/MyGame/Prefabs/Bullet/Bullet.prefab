@@ -133,7 +133,7 @@ MonoBehaviour:
   _maxReflectCount: 1
   _bulletSpeed: 15
   _bulletDamage: 100
-  _maxLifeTime: 5
+  _maxLifeTime: 3.5
   _trailParticleSystem: {fileID: 8225393408373870282}
   _bulletRigidBody: {fileID: 5794515309080821721}
 --- !u!1 &8969699059392585249

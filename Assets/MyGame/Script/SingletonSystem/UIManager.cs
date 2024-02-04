@@ -102,7 +102,7 @@ public class UIManager : MonoBehaviour
     public async UniTask FadeInStageUI(string nextStage , int lifeCount)
     {
         _nextStageUI.gameObject.SetActive(true);
-        _nextStageText.text = nextStage + "\n" ;
+        _nextStageText.text = nextStage.Remove(0 , 1) + "\n" ;
         _playerCountText.text = "×" + lifeCount;
         await _nextStageUIgroup.DOFade(1, _startStageFade);
     }

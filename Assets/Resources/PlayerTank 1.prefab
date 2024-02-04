@@ -5231,7 +5231,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e68393de5d3c2d94ebaef9525f6e4d4e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _inputReceiver: {fileID: 7064132836246474013}
+  _tankInputSync: {fileID: 7064132836246474013}
   _audioSource: {fileID: 1875112551630194737}
 --- !u!114 &2049067760
 MonoBehaviour:

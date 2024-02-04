@@ -7,6 +7,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -4399299388019068585, guid: 701cb9e513f49d54cb7c9f72cdda7d4a, type: 3}
+      propertyPath: _playerScanRadius
+      value: 35
+      objectReference: {fileID: 0}
     - target: {fileID: 1978459458, guid: 701cb9e513f49d54cb7c9f72cdda7d4a, type: 3}
       propertyPath: sceneViewId
       value: 0
@@ -89,7 +93,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4340692467272015649, guid: 701cb9e513f49d54cb7c9f72cdda7d4a, type: 3}
       propertyPath: _tankData._rotateSpeed
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4340692467272015649, guid: 701cb9e513f49d54cb7c9f72cdda7d4a, type: 3}
       propertyPath: _tankData._fireCoolTime
@@ -97,7 +101,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4340692467272015649, guid: 701cb9e513f49d54cb7c9f72cdda7d4a, type: 3}
       propertyPath: _tankData._turnBarrelSpeed
-      value: 2
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 4511576773086303523, guid: 701cb9e513f49d54cb7c9f72cdda7d4a, type: 3}
       propertyPath: _makeTrailDistance

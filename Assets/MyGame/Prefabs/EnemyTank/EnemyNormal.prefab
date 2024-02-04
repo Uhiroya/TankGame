@@ -246,11 +246,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e25d85e5897a4245a662a397af6473d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _inputReceiver: {fileID: -8269351973301035550}
+  _tankInputSync: {fileID: -8269351973301035550}
   _scanPlayerCollider: {fileID: 1505011591}
   _scanFieldCollider: {fileID: 500501642}
-  _playerScanRadius: 20
-  _scanMoveRadius: 7
+  _playerScanRadius: 25
+  _scanMoveRadius: 8
 --- !u!114 &3168279919712731350
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -9,7 +9,6 @@ public enum BulletType
     Normal = 0,
     Speed = 1,
     SlowBullet = 2,
-    
 }
 [System.Serializable]
 public class TankData
@@ -33,12 +32,4 @@ public class TankData
     public float MoveSpeed => _moveSpeed;
     public float RotateSpeed => _rotateSpeed;
     public float TurnBarrelSpeed => _turnBarrelSpeed;
-}
-[System.Serializable]
-public class TankEnemyParam
-{
-    public float TargetSpeed = 1f;
-    public float EnemyScanRadius = 20f;
-    public float ScanMoveRange = 1.0f;
-    public float MoveDelay = 1.0f;
 }
