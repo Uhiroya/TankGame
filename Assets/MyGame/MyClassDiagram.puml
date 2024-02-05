@@ -1,0 +1,46 @@
+﻿@startuml
+
+
+abstract SingletonMonoBehavior
+
+abstract SingletonMonoBehaviorPunCallback
+
+    class MasterGameManager
+    class LocalGameManager
+    class NetworkManager
+    class BulletsManager
+    class UIManager
+    class AudioManager
+
+'SingletonMonoBehaviorPunCallback <|-- MasterGameManager
+'SingletonMonoBehaviorPunCallback <|-- LocalGameManager
+'SingletonMonoBehaviorPunCallback <|-- NetworkManager
+'SingletonMonoBehaviorPunCallback <|-- BulletsManager
+'SingletonMonoBehavior <|-- UIManager
+'SingletonMonoBehavior <|-- AudioManager
+
+
+MasterGameManager ...> LocalGameManager
+package Player
+{
+    class PlayerInput
+    class PlayerManager
+}
+
+
+package Enemy
+{
+    class EnemyAutoInput
+    class EnemyManager
+}
+
+
+package Tank
+{
+    class TankInputReceiver
+    class TankController
+    TankInputReceiver ..> TankController :入力の同期
+}
+
+
+@enduml
