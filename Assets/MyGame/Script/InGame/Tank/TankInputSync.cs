@@ -24,7 +24,7 @@ public class TankInputSync : MonoBehaviourPunCallbacks, IActivatable
         _tankController = GetComponent<TankController>();
         _slider.maxValue = TankData.FireCoolTime;
     }
-
+    #region 共通呼び出し
     private void FixedUpdate()
     {
         _fireTimer += Time.deltaTime;
@@ -45,7 +45,26 @@ public class TankInputSync : MonoBehaviourPunCallbacks, IActivatable
             photonView.RPC(nameof(SendInputFire) , RpcTarget.MasterClient);
         }
     }
+    [PunRPC]
+    public void GetInputMove(float inputVertical, Vector3 position)
+    {
+        //transform.position = position;
+        _tankController.InputMove(inputVertical, position);
+    }
 
+    [PunRPC]
+    public void GetInputTurn(float inputHorizontal, Quaternion rotation)
+    {
+        //transform.rotation = rotation;
+        _tankController.InputTurn(inputHorizontal,  rotation);
+    }
+
+    [PunRPC]
+    public void GetInputBarrelTurn(float inputVertical, Quaternion rotation)
+    {
+        //_burrelTransform.rotation = rotation;
+        _tankController.InputBarrelTurn(inputVertical,  rotation);
+    }
     public override void OnEnable()
     {
         base.OnEnable();
@@ -58,10 +77,10 @@ public class TankInputSync : MonoBehaviourPunCallbacks, IActivatable
         _cts?.Cancel();
         MyServiceLocator.IUnRegister(this as IActivatable);
     }
-
+    #endregion
+    
     #region MasterClassのみでの呼び出し
-
-    //ToDO メソッド場所正しく伝わってる？
+    
     
     [PunRPC]
     public void SendInputFire()
@@ -70,17 +89,17 @@ public class TankInputSync : MonoBehaviourPunCallbacks, IActivatable
     }
     private void SendInputMove(float input)
     {
-        photonView.RPC(nameof(_tankController.GetInputMove), RpcTarget.AllViaServer, input, transform.position);
+        photonView.RPC(nameof(GetInputMove), RpcTarget.AllViaServer, input, transform.position);
     }
 
     private void SendInputTurn(float input)
     {
-        photonView.RPC(nameof(_tankController.GetInputTurn), RpcTarget.AllViaServer, input, transform.rotation);
+        photonView.RPC(nameof(GetInputTurn), RpcTarget.AllViaServer, input, transform.rotation);
     }
 
     private void SendInputBarrelTurn(float input)
     {
-        photonView.RPC(nameof(_tankController.GetInputBarrelTurn), RpcTarget.AllViaServer, input,
+        photonView.RPC(nameof(GetInputBarrelTurn), RpcTarget.AllViaServer, input,
             BurrelTransform.rotation);
     }
 
@@ -118,11 +137,7 @@ public class TankInputSync : MonoBehaviourPunCallbacks, IActivatable
     {
         _cts?.Cancel();
     }
-
-
     
-
-
     #endregion
     
 

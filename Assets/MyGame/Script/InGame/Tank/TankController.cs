@@ -11,7 +11,7 @@ using UnityEngine.UI;
 
 
 [RequireComponent(typeof(Rigidbody))]
-public class TankController : MonoBehaviourPunCallbacks, IAwakeAnim ,IActivatable ,IPause
+public class TankController : MonoBehaviour, IAwakeAnim ,IActivatable ,IPause
 {
     [SerializeField] private Rigidbody _rigidBody;
     [SerializeField] Transform _burrelTransform;
@@ -45,9 +45,6 @@ public class TankController : MonoBehaviourPunCallbacks, IAwakeAnim ,IActivatabl
     {
         _rigidBody = GetComponent<Rigidbody>();
         transform.position += Vector3.up * StartPositionY;
-        
-        
-        
          _damageable = gameObject.AddComponent<Damageable>().Initialize(_tankData.TankHP);
     }
     
@@ -65,39 +62,37 @@ public class TankController : MonoBehaviourPunCallbacks, IAwakeAnim ,IActivatabl
         //Fire準備
 
     }
-    [PunRPC]
-    public void GetInputMove(float inputVertical, Vector3 position)
+    
+    public void InputMove(float inputVertical, Vector3 position)
     {
         //transform.position = position;
         _inputMoveVertical = inputVertical;
     }
 
-    [PunRPC]
-    public void GetInputTurn(float inputHorizontal, Quaternion rotation)
+    
+    public void InputTurn(float inputHorizontal, Quaternion rotation)
     {
         //transform.rotation = rotation;
         _inputMoveHorizontal = inputHorizontal;
     }
 
-    [PunRPC]
-    public void GetInputBarrelTurn(float inputVertical, Quaternion rotation)
+    
+    public void InputBarrelTurn(float inputVertical, Quaternion rotation)
     {
         //_burrelTransform.rotation = rotation;
         _inputVertical = inputVertical;
     }
 
-    public override void OnEnable()
+    public void OnEnable()
     {
         _damageable.OnDead += OnDead;
-        base.OnEnable();
         MyServiceLocator.IRegister(this as IActivatable);
         MyServiceLocator.IRegister(this as IAwakeAnim);
         MyServiceLocator.IRegister(this as IPause);
     }
 
-    public override void  OnDisable()
+    public void  OnDisable()
     {
-        base.OnDisable();
         _damageable.OnDead -= OnDead;
         MyServiceLocator.IUnRegister(this as IActivatable);
         MyServiceLocator.IUnRegister(this as IAwakeAnim);
